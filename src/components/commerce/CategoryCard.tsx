@@ -55,11 +55,11 @@ export default function CategoryCard({ category, className = '', to, active = fa
     <Link
       to={to ?? `/products?category=${category.slug}`}
       aria-current={active ? 'page' : undefined}
-      className={`group flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border bg-surface ${active ? 'border-forest ring-2 ring-forest' : 'border-border'} transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${className}`}
+      className={`group relative isolate flex aspect-[4/5] h-full flex-col justify-end overflow-hidden rounded-[var(--radius-card)] bg-forest-dark shadow-[var(--shadow-soft)] ring-offset-2 ring-offset-canvas transition-[box-shadow,transform] duration-500 ease-[var(--ease-premium)] hover:-translate-y-1 hover:shadow-[var(--shadow-lift)] motion-reduce:hover:translate-y-0 ${active ? 'ring-2 ring-copper' : ''} ${className}`}
     >
-      <div className="relative aspect-[3/2] overflow-hidden" style={image ? undefined : textures[category.texture]}>
+      <div className="absolute inset-0 -z-10" style={image ? undefined : textures[category.texture]}>
         {/* Decorative image (alt=""): the link text already names the category. */}
-        {image ? (
+        {image && (
           <img
             src={image.src}
             alt=""
@@ -68,24 +68,30 @@ export default function CategoryCard({ category, className = '', to, active = fa
             onError={() => setImageFailed(true)}
             loading="lazy"
             decoding="async"
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="size-full object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.08]"
           />
-        ) : (
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 grid place-items-center transition-transform duration-500 group-hover:scale-105"
-          >
-            <span className="grid size-12 place-items-center rounded-full bg-white/20 text-white ring-1 ring-white/40 backdrop-blur-sm">
-              <Icon className="size-6" />
-            </span>
-          </span>
         )}
       </div>
-      <div className="flex flex-1 flex-col px-3.5 py-3">
-        <span className={`text-[0.875rem] leading-snug font-semibold group-hover:text-forest ${active ? 'text-forest' : 'text-ink'}`}>{category.name}</span>
-        {category.productCount !== undefined && (
-          <span className="mt-0.5 text-[0.75rem] text-muted">{category.productCount} Products</span>
-        )}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(11_31_24/0)_30%,rgb(11_31_24/0.55)_62%,rgb(11_31_24/0.92)_100%)]" />
+      <span aria-hidden="true" className="absolute top-2.5 left-2.5 grid size-9 place-items-center rounded-full glass-dark text-white">
+        <Icon className="size-[1.125rem]" />
+      </span>
+      {active && (
+        <span className="absolute top-2.5 right-2.5 rounded-full bg-copper px-2 py-0.5 text-[0.625rem] font-bold tracking-[0.1em] text-white uppercase">
+          Selected
+        </span>
+      )}
+      <div className="flex items-end justify-between gap-2 p-3 sm:p-3.5">
+        <span className="min-w-0">
+          <span className="block text-[0.875rem] leading-snug font-bold text-white sm:text-[0.9375rem]">{category.name}</span>
+          {category.productCount !== undefined && <span className="mt-0.5 block text-[0.75rem] text-white/70">{category.productCount} Products</span>}
+        </span>
+        <span
+          aria-hidden="true"
+          className="grid size-7 shrink-0 translate-x-1 place-items-center rounded-full bg-white text-forest-dark opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+        >
+          →
+        </span>
       </div>
     </Link>
   )

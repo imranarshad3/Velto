@@ -1,3 +1,4 @@
+import CrmWorkspace from './CrmWorkspace.tsx'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { Users } from 'lucide-react'
@@ -15,10 +16,12 @@ export default function AdminCustomersPage() {
 
   return (
     <>
-      <title>Customers — Admin — NOVARO</title>
+      <title>Customers — Admin — VELTO</title>
       <AdminHeading title="Customers" crumbs={[{ label: 'Customers' }]}>
-        Account holders who have sent quotes or saved products. Contact details come from their latest quote.
+        Manage relationships, lead stages, assignments, and follow-ups. Existing account records remain available below.
       </AdminHeading>
+      <CrmWorkspace />
+      <h2 className="mb-4 mt-8 font-display text-2xl">Existing customer accounts</h2>
       <label htmlFor="customer-filter" className="sr-only">
         Filter customers
       </label>
@@ -41,7 +44,7 @@ export default function AdminCustomersPage() {
                       {c.email ?? '—'}
                       {c.company && ` · ${c.company}`}
                     </span>
-                    <span className="block truncate font-mono text-[0.75rem] text-muted">{c.clerkUserId}</span>
+                    <Link to={`/admin/customers?email=${encodeURIComponent(c.email ?? '')}&name=${encodeURIComponent(c.fullName ?? '')}`} className="block text-xs text-forest underline">Create CRM profile</Link>
                   </span>
                   <Link to={`/admin/quotes?q=${encodeURIComponent(c.email ?? '')}`} className="inline-flex min-h-11 items-center text-[0.9375rem] text-forest hover:underline">
                     {c.quotes} {c.quotes === 1 ? 'quote' : 'quotes'}

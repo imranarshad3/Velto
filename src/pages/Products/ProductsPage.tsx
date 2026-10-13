@@ -1,7 +1,9 @@
 import { useMemo, useRef, useState, type CSSProperties } from 'react'
-import { LayoutGrid, LayoutList, Search, SearchX, SlidersHorizontal, X } from 'lucide-react'
+import { ChevronDown, LayoutGrid, LayoutList, RotateCcw, Search, SearchX, SlidersHorizontal, X } from 'lucide-react'
 import ProductCard from '../../components/commerce/ProductCard.tsx'
 import DemoNotice from '../../components/ui/DemoNotice.tsx'
+import EmptyState from '../../components/ui/EmptyState.tsx'
+import { buttonClass } from '../../components/ui/button.ts'
 import Drawer from '../../components/ui/Drawer.tsx'
 import Pagination from '../../components/ui/Pagination.tsx'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
@@ -43,15 +45,18 @@ export default function ProductsPage() {
 
   return (
     <>
-      <title>Products — NOVARO</title>
+      <title>Products — VELTO</title>
       <ProductsHero />
       <CategoryNav query={query} />
 
-      <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-[clamp(1.5rem,3vw,2.5rem)] lg:grid-cols-[15.5rem_minmax(0,1fr)] xl:gap-10 min-[90rem]:container-wide">
+      <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-[clamp(1.75rem,3.5vw,3rem)] lg:grid-cols-[16.5rem_minmax(0,1fr)] xl:gap-10 min-[90rem]:container-wide">
         <aside aria-labelledby="filters-title" className="hidden lg:block">
-          <div className="sticky top-[calc(var(--header-height)+1rem)] max-h-[calc(100dvh-var(--header-height)-2rem)] overflow-y-auto rounded-[var(--radius-card)] border border-border bg-surface p-5">
-            <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
-              <h2 id="filters-title" className="flex items-center gap-2 font-display text-[1.375rem]">
+          <div className="no-scrollbar sticky top-[calc(var(--header-height)+1rem)] max-h-[calc(100dvh-var(--header-height)-2rem)] overflow-y-auto rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-soft)]">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-border bg-surface/95 px-5 py-4 backdrop-blur-md">
+              <h2 id="filters-title" className="flex items-center gap-2.5 font-display text-[1.5rem] leading-none">
+                <span className="grid size-9 place-items-center rounded-xl bg-forest-soft text-forest">
+                  <SlidersHorizontal aria-hidden="true" className="size-4" />
+                </span>
                 Filters
                 {filterCount > 0 && (
                   <span className="rounded-full bg-forest px-2 font-sans text-[0.75rem] leading-[1.6] font-bold text-white">
@@ -61,12 +66,13 @@ export default function ProductsPage() {
                 )}
               </h2>
               {filterCount > 0 && (
-                <button type="button" onClick={clearFilters} className="min-h-11 px-1 text-[0.8125rem] font-semibold text-copper underline-offset-2 hover:underline">
+                <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center gap-1 px-1 text-[0.8125rem] font-semibold text-copper underline-offset-2 hover:underline">
+                  <RotateCcw aria-hidden="true" className="size-3.5" />
                   Clear all
                 </button>
               )}
             </div>
-            {filterPanel('side')}
+            <div className="p-5">{filterPanel('side')}</div>
           </div>
         </aside>
 
@@ -75,13 +81,13 @@ export default function ProductsPage() {
             Product results
           </h2>
 
-          <div className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-border bg-surface p-[clamp(0.875rem,2vw,1.25rem)] shadow-[0_0.0625rem_0.125rem_rgb(23_28_25/0.04)]">
-            <form role="search" onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-1.5">
-              <label htmlFor="product-search" className="text-[0.8125rem] font-semibold text-ink">
+          <div className="relative flex flex-col gap-4 overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface p-[clamp(1rem,2vw,1.5rem)] shadow-[var(--shadow-card)]">
+            <form role="search" onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-2">
+              <label htmlFor="product-search" className="text-[0.75rem] font-bold tracking-[0.16em] text-muted uppercase">
                 Search products
               </label>
               <div className="relative">
-                <Search aria-hidden="true" className="pointer-events-none absolute top-1/2 left-4 size-[1.125rem] -translate-y-1/2 text-muted" />
+                <Search aria-hidden="true" className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-forest/70" />
                 <input
                   id="product-search"
                   type="search"
@@ -89,14 +95,14 @@ export default function ProductsPage() {
                   onChange={(e) => update({ q: e.target.value }, { replace: true })}
                   placeholder="e.g. tile adhesive, roof waterproofing"
                   autoComplete="off"
-                  className="min-h-12 w-full rounded-lg border border-border bg-canvas pr-12 pl-11 text-[1rem] transition-colors placeholder:text-muted/70 focus:border-forest focus:bg-surface focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-copper [&::-webkit-search-cancel-button]:hidden"
+                  className="min-h-[3.25rem] w-full rounded-xl border border-border bg-canvas pr-12 pl-12 text-[1rem] transition-[border-color,background-color,box-shadow] duration-300 placeholder:text-muted/70 hover:border-ink/20 focus:border-forest focus:bg-surface focus:shadow-[0_0_0_0.25rem_rgb(23_60_45/0.08)] focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-copper [&::-webkit-search-cancel-button]:hidden"
                 />
                 {query.q && (
                   <button
                     type="button"
                     onClick={() => update({ q: '' }, { replace: true })}
                     aria-label="Clear search"
-                    className="absolute top-1/2 right-0.5 grid size-11 -translate-y-1/2 place-items-center rounded-md text-muted hover:text-forest"
+                    className="absolute top-1/2 right-1 grid size-11 -translate-y-1/2 place-items-center rounded-lg text-muted transition-colors hover:bg-sand hover:text-forest"
                   >
                     <X aria-hidden="true" className="size-4" />
                   </button>
@@ -104,8 +110,8 @@ export default function ProductsPage() {
               </div>
             </form>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4">
-              <p className="mr-auto flex flex-wrap items-center gap-x-2 text-[0.9375rem] text-muted" aria-live="polite">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-3 border-t border-border pt-4">
+              <p className="mr-auto flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[0.9375rem] text-muted" aria-live="polite">
                 {results.length > 0 ? (
                   <>
                     Showing{' '}
@@ -117,36 +123,39 @@ export default function ProductsPage() {
                 ) : (
                   <span className="font-semibold text-ink">No products found</span>
                 )}
-                <span className="rounded-full bg-sand px-2 py-0.5 text-[0.6875rem] font-bold tracking-[0.08em] text-muted">DEMO</span>
+                <span className="rounded-full bg-sand px-2 py-0.5 text-[0.6875rem] font-bold tracking-[0.08em] text-copper">DEMO</span>
               </p>
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
                 aria-haspopup="dialog"
                 aria-controls="filter-drawer"
-                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-[0.875rem] font-semibold hover:border-forest lg:hidden"
+                className={buttonClass('secondary', 'sm', 'lg:hidden')}
               >
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
                 Filters{filterCount > 0 && <span className="rounded-full bg-forest px-1.5 text-[0.75rem] text-white">{filterCount}</span>}
               </button>
               <div className="flex items-center gap-2">
-                <label htmlFor="product-sort" className="text-[0.8125rem] text-muted">
+                <label htmlFor="product-sort" className="text-[0.8125rem] whitespace-nowrap text-muted">
                   Sort by
                 </label>
-                <select
-                  id="product-sort"
-                  value={query.sort}
-                  onChange={(e) => update({ sort: e.target.value as SortKey })}
-                  className="min-h-11 rounded-lg border border-border bg-surface px-3 text-[0.875rem] font-semibold accent-forest"
-                >
-                  {sortOptions.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    id="product-sort"
+                    value={query.sort}
+                    onChange={(e) => update({ sort: e.target.value as SortKey })}
+                    className="min-h-11 cursor-pointer appearance-none rounded-xl border border-border bg-surface pr-9 pl-3.5 text-[0.875rem] font-semibold text-ink shadow-[var(--shadow-soft)] transition-colors hover:border-forest/40"
+                  >
+                    {sortOptions.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted" />
+                </div>
               </div>
-              <div role="group" aria-label="View" className="flex rounded-lg border border-border bg-surface p-0.5">
+              <div role="group" aria-label="View" className="flex rounded-xl border border-border bg-canvas p-1">
                 {(
                   [
                     ['grid', 'Grid view', LayoutGrid],
@@ -159,7 +168,7 @@ export default function ProductsPage() {
                     aria-label={label}
                     aria-pressed={query.view === mode}
                     onClick={() => update({ view: mode, page })}
-                    className={`grid size-11 place-items-center rounded-md transition-colors ${query.view === mode ? 'bg-forest text-white' : 'text-muted hover:text-forest'}`}
+                    className={`grid size-11 place-items-center rounded-lg transition-[background-color,color,box-shadow] duration-300 ${query.view === mode ? 'bg-forest text-white shadow-[var(--shadow-button)]' : 'text-muted hover:bg-surface hover:text-forest'}`}
                   >
                     <Icon aria-hidden="true" className="size-[1.125rem]" />
                   </button>
@@ -168,13 +177,13 @@ export default function ProductsPage() {
             </div>
 
             {chips.length > 0 && (
-              <ul className="flex flex-wrap gap-2" aria-label="Active filters">
+              <ul className="flex flex-wrap items-center gap-2" aria-label="Active filters">
                 {chips.map((chip) => (
                   <li key={`${chip.facet}-${chip.value}`}>
                     <button
                       type="button"
                       onClick={() => toggle(chip.facet, chip.value)}
-                      className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-forest/25 bg-forest-soft px-3 text-[0.8125rem] font-semibold text-forest hover:border-forest"
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-forest/20 bg-forest-soft pr-2.5 pl-3.5 text-[0.8125rem] font-semibold text-forest transition-colors hover:border-forest hover:bg-forest hover:text-white"
                       aria-label={`Remove filter: ${chip.label}`}
                     >
                       {chip.label}
@@ -183,7 +192,7 @@ export default function ProductsPage() {
                   </li>
                 ))}
                 <li>
-                  <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center px-2 text-[0.8125rem] font-semibold text-copper hover:underline">
+                  <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center px-2 text-[0.8125rem] font-semibold text-copper underline-offset-2 hover:underline">
                     Clear all
                   </button>
                 </li>
@@ -195,7 +204,7 @@ export default function ProductsPage() {
             <>
               <ul
                 key={`${query.view}-${page}`}
-                className={`mt-6 grid gap-[clamp(0.75rem,1.6vw,1.25rem)] ${query.view === 'list' ? 'grid-cols-1' : 'grid-cols-1 min-[22rem]:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 min-[90rem]:gap-6 min-[112.5rem]:grid-cols-4'}`}
+                className={`mt-[var(--heading-gap)] grid gap-[var(--grid-gap)] ${query.view === 'list' ? 'grid-cols-1' : 'grid-cols-1 min-[30rem]:grid-cols-2 min-[90rem]:gap-[var(--grid-gap-lg)] min-[100rem]:grid-cols-3'}`}
               >
                 {visible.map((product, i) => (
                   <li key={product.id} className="animate-rise" style={{ '--delay': `${Math.min(i, 8) * 0.04}s` } as CSSProperties}>
@@ -203,25 +212,35 @@ export default function ProductsPage() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+              <div className="mt-[var(--heading-gap)] flex flex-col items-center gap-4 border-t border-border pt-6 sm:flex-row sm:justify-between">
                 <p className="text-[0.875rem] text-muted">
-                  Showing {from}–{to} of {results.length}
+                  Showing{' '}
+                  <span className="font-semibold text-ink tabular-nums">
+                    {from}–{to}
+                  </span>{' '}
+                  of <span className="font-semibold text-ink tabular-nums">{results.length}</span>
                 </p>
                 <Pagination page={page} pageCount={pageCount} onChange={goToPage} />
               </div>
             </>
           ) : (
-            <div className="mt-6 flex flex-col items-center rounded-[var(--radius-card)] border border-dashed border-border bg-surface px-6 py-14 text-center">
-              <SearchX aria-hidden="true" className="size-10 text-muted" />
-              <h3 className="mt-4 font-display text-[1.5rem]">No products match</h3>
-              <p className="mt-2 max-w-[26rem] text-[0.9375rem] text-muted">Try a different search term or remove some filters.</p>
-              <button type="button" onClick={clearFilters} className="mt-6 inline-flex min-h-11 items-center rounded-lg bg-forest px-5 font-semibold text-white hover:bg-forest-dark">
-                Clear search & filters
-              </button>
+            <div className="mt-[var(--heading-gap)]">
+              <EmptyState
+                icon={SearchX}
+                title="No products match"
+                actions={
+                  <button type="button" onClick={clearFilters} className={buttonClass('primary', 'md', 'px-6')}>
+                    <RotateCcw aria-hidden="true" className="size-4" />
+                    Clear search & filters
+                  </button>
+                }
+              >
+                Try a different search term or remove some filters.
+              </EmptyState>
             </div>
           )}
 
-          <div className="mt-6">
+          <div className="mt-6 rounded-[var(--radius-card)] border border-border/80 bg-cream/70 px-4 py-3">
             <DemoNotice>
               DEMO catalogue: entries are generic product types. Images are illustrative concepts or placeholders, not
               official ULTRA product photographs. Prices marked DEMO are illustrative only; confirmed pricing and
@@ -240,10 +259,10 @@ export default function ProductsPage() {
         onClose={() => setFiltersOpen(false)}
         footer={
           <div className="flex gap-3">
-            <button type="button" onClick={clearFilters} disabled={filterCount === 0} className="min-h-11 flex-1 rounded-lg border border-border font-semibold disabled:opacity-40">
+            <button type="button" onClick={clearFilters} disabled={filterCount === 0} className={buttonClass('secondary', 'md', 'flex-1')}>
               Clear all
             </button>
-            <button type="button" onClick={() => setFiltersOpen(false)} className="min-h-11 flex-[2] rounded-lg bg-forest font-semibold text-white">
+            <button type="button" onClick={() => setFiltersOpen(false)} className={buttonClass('primary', 'md', 'flex-[2]')}>
               Show {results.length} {results.length === 1 ? 'product' : 'products'}
             </button>
           </div>

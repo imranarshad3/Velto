@@ -1,7 +1,8 @@
+import { useContentData } from '../../features/cms/context.ts'
 import { LayoutGrid } from 'lucide-react'
 import CategoryCard from '../../components/commerce/CategoryCard.tsx'
 import type { Category } from '../../data/demoCategories.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
+import { demoCategories as defaultdemoCategories } from '../../data/demoCategories.ts'
 import type { CatalogQuery } from '../../features/catalog/catalogQuery.ts'
 import { toParams } from '../../features/catalog/catalogQuery.ts'
 
@@ -14,6 +15,7 @@ const allProducts: Category = {
 }
 
 export default function CategoryNav({ query }: { query: CatalogQuery }) {
+  const demoCategories = useContentData('categories', 'Categories.data', defaultdemoCategories)
   const href = (categories: string[]) => {
     const params = toParams({ ...query, categories, page: 1 }).toString()
     return `/products${params ? `?${params}` : ''}`
@@ -21,18 +23,32 @@ export default function CategoryNav({ query }: { query: CatalogQuery }) {
   const single = query.categories.length === 1 ? query.categories[0] : null
 
   return (
-    <nav aria-label="Product categories" className="container-page min-[90rem]:container-wide pt-[clamp(1.5rem,3vw,2.5rem)]">
-      <ul className="no-scrollbar -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-3 overflow-x-auto px-[var(--page-gutter)] pt-1 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 xl:grid-cols-9">
-        {[allProducts, ...demoCategories].map((category) => (
-          <li key={category.slug} className="w-[38%] min-w-[8.5rem] shrink-0 snap-start md:w-auto md:min-w-0">
-            <CategoryCard
-              category={category}
-              to={href(category === allProducts ? [] : [category.slug])}
-              active={category === allProducts ? query.categories.length === 0 : single === category.slug}
-            />
-          </li>
-        ))}
-      </ul>
+    <nav
+      aria-label="Product categories"
+      className="container-page min-[90rem]:container-wide relative z-10 pt-[clamp(1.5rem,3vw,2.5rem)] md:-mt-[clamp(4.5rem,8vw,6.5rem)] md:pt-0"
+    >
+      <div className="md:rounded-[var(--radius-panel)] md:border md:border-white/70 md:bg-surface/80 md:p-[clamp(0.875rem,1.4vw,1.25rem)] md:shadow-[var(--shadow-float)] md:backdrop-blur-xl">
+        <div className="mb-3 flex items-center justify-between gap-3 md:mb-4 md:px-1">
+          <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
+            <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+            Browse by category
+          </p>
+          <span className="text-[0.75rem] text-muted md:hidden" aria-hidden="true">
+            Swipe
+          </span>
+        </div>
+        <ul className="no-scrollbar -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-[var(--grid-gap)] overflow-x-auto px-[var(--page-gutter)] pt-1 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-9">
+          {[allProducts, ...demoCategories].map((category) => (
+            <li key={category.slug} className="w-[38%] min-w-[8.5rem] shrink-0 snap-start md:w-auto md:min-w-0">
+              <CategoryCard
+                category={category}
+                to={href(category === allProducts ? [] : [category.slug])}
+                active={category === allProducts ? query.categories.length === 0 : single === category.slug}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   )
 }

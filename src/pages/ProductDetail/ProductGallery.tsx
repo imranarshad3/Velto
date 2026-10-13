@@ -7,6 +7,8 @@ export interface GallerySlide {
   caption: string
   /** Undefined renders a labelled placeholder. */
   image?: ImageAsset
+  /** Photographs fill the frame; packshots sit on the stage at a modest size. */
+  fill?: boolean
 }
 
 interface ProductGalleryProps {
@@ -14,8 +16,12 @@ interface ProductGalleryProps {
   productName: string
 }
 
-/** Images never render above their natural size: current assets are small concept crops. */
-const naturalSize = 'h-auto max-h-full w-auto max-w-full object-contain'
+/**
+ * Packshots are small concept crops (≈236 px), so they are capped at ~1.6× their natural size on a sand stage
+ * (multiply blends their light backdrop away). Photographs fill the frame.
+ */
+const packshot = 'h-auto max-h-full w-[min(68%,23.5rem)] object-contain mix-blend-multiply'
+const photo = 'absolute inset-0 size-full object-cover'
 
 function SlideImage({ slide, priority }: { slide: GallerySlide; priority?: boolean }) {
   const [failed, setFailed] = useState(false)
@@ -39,7 +45,7 @@ function SlideImage({ slide, priority }: { slide: GallerySlide; priority?: boole
       fetchPriority={priority ? 'high' : 'auto'}
       decoding="async"
       onError={() => setFailed(true)}
-      className={naturalSize}
+      className={slide.fill ? photo : packshot}
     />
   )
 }
@@ -76,13 +82,13 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
         aria-label={`${productName} images`}
         tabIndex={count > 1 ? 0 : undefined}
         onKeyDown={onArrows}
-        className="relative grid aspect-square flex-1 place-items-center overflow-hidden rounded-[var(--radius-card)] border border-border bg-white p-[8%]"
+        className="relative grid aspect-square flex-1 place-items-center overflow-hidden rounded-[var(--radius-card)] bg-sand"
       >
         <div key={slide.key} aria-live="polite" className="grid size-full animate-[fade-in_0.3s_ease-out] place-items-center">
           <SlideImage slide={slide} priority={index === 0} />
         </div>
         <p
-          className={`absolute inset-x-0 bottom-0 bg-linear-to-t from-white via-white/90 to-transparent px-4 pt-6 pb-3 text-center text-[0.75rem] text-muted ${slide.image ? '' : 'sr-only'}`}
+          className={`absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium text-ink shadow-[0_0.125rem_0.5rem_rgb(23_28_25/0.08)] backdrop-blur-sm ${slide.image ? '' : 'sr-only'}`}
         >
           {slide.caption}
           {count > 1 && <span className="sr-only">, image {index + 1} of {count}</span>}
@@ -119,10 +125,10 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
                 onClick={() => setIndex(i)}
                 aria-label={`Show image ${i + 1}: ${s.caption}`}
                 aria-current={i === index ? 'true' : undefined}
-                className={`grid aspect-square w-full place-items-center overflow-hidden rounded-xl border bg-white p-1.5 transition-shadow ${i === index ? 'border-forest ring-2 ring-forest' : 'border-border hover:border-forest/50'}`}
+                className={`relative grid aspect-square w-full place-items-center overflow-hidden rounded-xl border-2 bg-sand transition-[border-color,opacity] ${i === index ? 'border-forest' : 'border-transparent opacity-75 hover:opacity-100'}`}
               >
                 {s.image ? (
-                  <img src={s.image.src} alt="" width={s.image.width} height={s.image.height} loading="lazy" decoding="async" className="size-full object-contain" />
+                  <img src={s.image.src} alt="" width={s.image.width} height={s.image.height} loading="lazy" decoding="async" className={s.fill ? 'absolute inset-0 size-full object-cover' : 'size-[80%] object-contain mix-blend-multiply'} />
                 ) : (
                   <ImageOff aria-hidden="true" className="size-6 text-muted" />
                 )}

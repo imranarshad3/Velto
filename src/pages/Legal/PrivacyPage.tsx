@@ -83,7 +83,7 @@ export default function PrivacyPage() {
     <LegalLayout
       title="Privacy Policy"
       updated="13 October 2026"
-      intro={<p>This policy explains what information NOVARO collects when you use this website, why we collect it and how it is protected.</p>}
+      intro={<p>This policy explains what information VELTO collects when you use this website, why we collect it and how it is protected.</p>}
       sections={sections}
     />
   )

@@ -5,8 +5,8 @@ import { z } from 'zod'
  * Keep this file free of relative runtime imports so serverless functions can load it directly.
  */
 
-export const quantityUnits = ['bags', 'buckets', 'kg', 'litres', 'units'] as const
-export type QuantityUnit = (typeof quantityUnits)[number]
+import { quantityUnits } from './units.ts'
+export { quantityUnits, type QuantityUnit } from './units.ts'
 export const projectTypes = ['residential', 'commercial', 'industrial', 'infrastructure', 'renovation', 'other'] as const
 export const quoteStatuses = ['submitted', 'reviewing', 'quoted', 'closed'] as const
 export type QuoteStatus = (typeof quoteStatuses)[number]

@@ -39,7 +39,12 @@ export const productInputSchema = z.object({
     blank,
     z
       .object({
-        src: z.string().regex(/^\/images\/[a-z0-9/_-]+\.(webp|jpe?g|png)$/, 'Use an image path under /images/'),
+        src: z
+          .string()
+          .regex(
+            /^(\/images\/[a-z0-9/_-]+\.(webp|jpe?g|png)|https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/website-media\/[0-9a-f-]{36}\.webp)$/,
+            'Use a bundled /images/ path or a Media Library image',
+          ),
         alt: line(200),
         width: z.number().int().min(1).max(6000),
         height: z.number().int().min(1).max(6000),

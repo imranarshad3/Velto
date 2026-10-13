@@ -28,3 +28,22 @@ dist-ssr
 .env.*
 !.env.example
 .vercel
+
+# Local database backups (may contain schema details)
+supabase/backups/
+
+# Local database backups (never commit)
+backups/
+*.dump
+
+# Supabase CLI local state, keys, temp files
+supabase/.temp/
+*.pem
+*.key
+*.p12
+*.pfx
+*.backup
+*.sql.gz
+tmp/
+.tmp/
+coverage/

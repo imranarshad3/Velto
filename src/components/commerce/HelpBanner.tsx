@@ -1,35 +1,43 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Headset } from 'lucide-react'
+import { Link } from 'react-router'
 import { professionalImage } from '../../data/images.ts'
-import ButtonLink from '../ui/ButtonLink.tsx'
+import { buttonArrow, buttonClass } from '../ui/button.ts'
 import Img from '../ui/Img.tsx'
+import Reveal from '../ui/Reveal.tsx'
 
 /** "Need help choosing?" professional assistance banner (products + product details). */
 export default function HelpBanner() {
   return (
     <section aria-labelledby="help-title" className="py-[var(--section-gap)]">
-      <div className="container-page grid overflow-hidden rounded-[var(--radius-card)] bg-forest text-white md:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)]">
-        <div className="flex flex-col justify-center p-[clamp(1.5rem,5vw,4rem)]">
-          <p className="text-[0.75rem] font-semibold tracking-[0.16em] text-[#e3c58f] uppercase">Professional assistance</p>
-          <h2 id="help-title" className="mt-2 font-display text-[length:var(--h2)] leading-[1.1]">
-            Need help choosing?
-          </h2>
-          <p className="mt-4 max-w-[32rem] text-[0.9375rem] text-white/80">
-            Share your project details and the surfaces involved, and we will help you select products and estimate
-            quantities.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <ButtonLink to="/quote" variant="secondary" className="border-transparent bg-white text-ink hover:text-forest">
-              Request a Quote <ArrowRight aria-hidden="true" className="size-4" />
-            </ButtonLink>
-            <ButtonLink to="/resources" variant="secondary" className="border-white/30 bg-transparent text-white hover:border-white hover:text-white">
-              Technical Resources
-            </ButtonLink>
+      <Reveal className="container-page">
+        <div className="relative isolate grid overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep text-white shadow-[var(--shadow-float)] md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]">
+          <div className="flex flex-col justify-center p-[clamp(1.75rem,5vw,4.5rem)]">
+            <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
+              <Headset aria-hidden="true" className="size-4" />
+              Professional assistance
+            </p>
+            <h2 id="help-title" className="mt-4 font-display text-[length:var(--h2)] leading-[1.06]">
+              Need help choosing?
+            </h2>
+            <p className="mt-4 max-w-[32rem] text-[clamp(0.9375rem,0.9rem+0.2vw,1.0625rem)] leading-relaxed text-white/75">
+              Share your project details and the surfaces involved, and we will help you select products and estimate
+              quantities.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/quote" className={buttonClass('light', 'lg')}>
+                Request a Quote <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              </Link>
+              <Link to="/resources" className={buttonClass('outline-light', 'lg')}>
+                Technical Resources
+              </Link>
+            </div>
+          </div>
+          <div className="relative order-first aspect-[4/3] bg-forest-dark md:order-none md:aspect-auto md:min-h-[24rem]">
+            <Img image={professionalImage} className="absolute inset-0 size-full object-cover object-[center_30%]" />
+            <div aria-hidden="true" className="absolute inset-0 hidden bg-[linear-gradient(90deg,var(--color-forest-deep),transparent_45%)] md:block" />
           </div>
         </div>
-        <div className="relative order-first aspect-[4/3] bg-forest-dark md:order-none md:aspect-auto md:min-h-[20rem]">
-          <Img image={professionalImage} className="absolute inset-0 size-full object-cover object-[center_30%]" />
-        </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

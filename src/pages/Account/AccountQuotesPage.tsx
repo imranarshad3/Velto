@@ -11,7 +11,7 @@ export default function AccountQuotesPage() {
 
   return (
     <>
-      <title>My Quotes — NOVARO</title>
+      <title>My Quotes — VELTO</title>
       <AccountHeading title="My quotes" crumbs={[{ label: 'My Quotes' }]} actions={<ButtonLink to="/quote">New quote request</ButtonLink>}>
         Requests sent while signed in, with their current status.
       </AccountHeading>

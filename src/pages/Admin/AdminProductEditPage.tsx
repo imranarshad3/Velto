@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { CircleAlert, LoaderCircle } from 'lucide-react'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
@@ -7,6 +7,7 @@ import { demoCategories } from '../../data/demoCategories.ts'
 import type { ImageAsset } from '../../data/images.ts'
 import { applications } from '../../data/homeContent.ts'
 import { adminApi } from '../../features/admin/api.ts'
+import { workspaceApi } from '../../features/cms/api.ts'
 import type { AdminProduct } from '../../features/admin/types.ts'
 import { applicationSlugs, areaSlugs, categorySlugs, productInputSchema, type ProductInput } from '../../features/catalog/productSchema.ts'
 import { QuoteApiError } from '../../features/quotes/api.ts'
@@ -14,7 +15,9 @@ import { useToasts } from '../../features/ui/toastStore.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 import { useAuthedRemote } from '../../lib/useAuthedRemote.ts'
 import RemoteState from '../Account/RemoteState.tsx'
+import { buttonClass } from '../../components/ui/button.ts'
 import AdminHeading from './AdminHeading.tsx'
+import CoveragePanel from './CoveragePanel.tsx'
 
 /** Images already shipped in /public/images that can be attached to a product. */
 const imageOptions: ImageAsset[] = [
@@ -72,8 +75,8 @@ const toForm = (p?: AdminProduct): FormState => ({
   sortOrder: String(p?.sortOrder ?? 0),
 })
 
-const toInput = (f: FormState): ProductInput => {
-  const image = imageOptions.find((i) => i.src === f.image)
+const toInput = (f: FormState, options: ImageAsset[] = imageOptions): ProductInput => {
+  const image = options.find((i) => i.src === f.image)
   return {
     slug: f.slug,
     name: f.name,
@@ -109,13 +112,42 @@ function ProductForm({ product }: { product?: AdminProduct }) {
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }))
+  // Media Library images are offered alongside bundled ones; dimensions are read so the storefront reserves aspect ratio.
+  const [options, setOptions] = useState<ImageAsset[]>(() =>
+    product?.image && !imageOptions.some((i) => i.src === product.image!.src) ? [...imageOptions, product.image] : imageOptions,
+  )
+  useEffect(() => {
+    let active = true
+    void getToken()
+      .then((t) => (t ? workspaceApi.media(t) : null))
+      .then((r) => {
+        if (!r || !active) return
+        return Promise.all(
+          r.media.map(
+            (m) =>
+              new Promise<ImageAsset | null>((resolve) => {
+                const img = new Image()
+                img.onload = () => resolve({ src: m.url, alt: m.alt || m.name, width: img.naturalWidth, height: img.naturalHeight })
+                img.onerror = () => resolve(null)
+                img.src = m.url
+              }),
+          ),
+        ).then((found) => {
+          if (active) setOptions((prev) => [...prev, ...found.filter((i): i is ImageAsset => !!i && !prev.some((p) => p.src === i.src))])
+        })
+      })
+      .catch(() => {}) // Library is optional here; bundled images remain available.
+    return () => {
+      active = false
+    }
+  }, [getToken])
   const toggle = (key: 'applications' | 'areas', value: string) =>
     setForm((f) => ({ ...f, [key]: f[key].includes(value) ? f[key].filter((v) => v !== value) : [...f[key], value] }))
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     setFormError(null)
-    const input = toInput(form)
+    const input = toInput(form, options)
     const parsed = productInputSchema.safeParse(input)
     if (!parsed.success) {
       const next: Record<string, string> = {}
@@ -177,7 +209,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
           <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" /> {formError}
         </p>
       )}
-      <section className="grid gap-5 rounded-[var(--radius-card)] border border-border bg-surface p-5 sm:grid-cols-2">
+      <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Basics</h2>
         {text('name', 'Name', { required: true })}
         {text('slug', 'URL slug', { required: true, hint: creating ? 'Lowercase letters, numbers and hyphens. Cannot be changed later.' : 'Fixed after creation.', disabled: !creating })}
@@ -200,7 +232,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         {checks('areas', 'Use areas', areaSlugs, (v) => (v === 'interior' ? 'Interior' : 'Exterior'))}
       </section>
 
-      <section className="grid gap-5 rounded-[var(--radius-card)] border border-border bg-surface p-5 sm:grid-cols-2">
+      <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Technical information</h2>
         {text('benefits', 'Benefits', { rows: 4, hint: 'One per line.' })}
         {text('specifications', 'Specifications', { rows: 4, hint: 'One per line as “Label: Value”.' })}
@@ -210,15 +242,15 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         <div className="sm:col-span-2">{text('faq', 'FAQ', { rows: 3, hint: 'One per line as “Question | Answer”.' })}</div>
       </section>
 
-      <section className="grid gap-5 rounded-[var(--radius-card)] border border-border bg-surface p-5 sm:grid-cols-2">
+      <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Image, price & visibility</h2>
-        <Field id="pf-image" label="Image" error={errors.image} hint="Images available in /public/images.">
+        <Field id="pf-image" label="Image" error={errors.image} hint="Bundled images and Media Library uploads.">
           {(a) => (
             <select {...a} value={form.image} onChange={(e) => set('image', e.target.value)} className={inputClass}>
               <option value="">No image (placeholder)</option>
-              {imageOptions.map((img) => (
+              {options.map((img) => (
                 <option key={img.src} value={img.src}>
-                  {img.src.replace('/images/', '')}
+                  {img.src.startsWith('/images/') ? img.src.replace('/images/', '') : `Library · ${img.alt}`}
                 </option>
               ))}
             </select>
@@ -239,7 +271,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         <button type="button" onClick={() => navigate('/admin/products')} className="inline-flex min-h-12 items-center rounded-lg border border-ink/15 bg-surface px-5 font-semibold">
           Cancel
         </button>
-        <button type="submit" disabled={saving} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-forest px-7 font-semibold text-white hover:bg-forest-dark disabled:opacity-70">
+        <button type="submit" disabled={saving} className={buttonClass('primary', 'lg')}>
           {saving && <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />} {creating ? 'Create product' : 'Save product'}
         </button>
       </div>
@@ -254,13 +286,22 @@ export default function AdminProductEditPage() {
 
   return (
     <>
-      <title>{`${creating ? 'New product' : slug} — Admin — NOVARO`}</title>
+      <title>{`${creating ? 'New product' : slug} — Admin — VELTO`}</title>
       <AdminHeading title={creating ? 'New product' : 'Edit product'} crumbs={[{ label: 'Products', to: '/admin/products' }, { label: creating ? 'New' : (slug ?? '') }]} />
       {creating ? (
         <ProductForm />
       ) : (
         <RemoteState state={state} reload={reload} skeleton={3}>
-          {(product) => (product ? <ProductForm product={product} /> : <p className="text-muted">Product not found.</p>)}
+          {(product) =>
+            product ? (
+              <>
+                <ProductForm product={product} />
+                <CoveragePanel product={product} />
+              </>
+            ) : (
+              <p className="text-muted">Product not found.</p>
+            )
+          }
         </RemoteState>
       )}
     </>

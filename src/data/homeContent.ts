@@ -52,7 +52,7 @@ export interface InspirationItem {
   image: ImageAsset
 }
 
-/** General inspiration only. These are not completed NOVARO projects. */
+/** General inspiration only. These are not completed VELTO projects. */
 export const inspiration: InspirationItem[] = [
   {
     title: 'Contemporary homes',
@@ -95,8 +95,8 @@ export interface Resource {
 }
 
 export const resources: Resource[] = [
-  { title: 'Product data sheets', text: 'Technical data for each product.', icon: FileText },
-  { title: 'Installation guides', text: 'Step-by-step application instructions.', icon: BookOpen },
-  { title: 'Coverage calculator', text: 'Estimate quantities for your area.', icon: Calculator },
+  { title: 'Product data sheets', text: 'Technical data for each product.', icon: FileText, href: '/resources/documents?kind=data_sheet' },
+  { title: 'Installation guides', text: 'Step-by-step application instructions.', icon: BookOpen, href: '/resources/documents?kind=installation_guide' },
+  { title: 'Coverage calculator', text: 'Estimate quantities for your area.', icon: Calculator, href: '/resources/coverage-calculator' },
   { title: 'Quote help', text: 'Tell us about your project requirements.', icon: MessagesSquare, href: '#quote' },
 ]

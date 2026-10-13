@@ -39,7 +39,7 @@ export default function AdminMessagesPage() {
 
   return (
     <>
-      <title>Messages — Admin — NOVARO</title>
+      <title>Messages — Admin — VELTO</title>
       <AdminHeading title="Messages" crumbs={[{ label: 'Messages' }]} />
       <div role="group" aria-label="Filter by status" className="mb-4 flex flex-wrap gap-2">
         {filters.map((f) => (
@@ -55,7 +55,7 @@ export default function AdminMessagesPage() {
           ) : (
             <ul className="flex flex-col gap-3">
               {messages.map((m) => (
-                <li key={m.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+                <li key={m.id} className="surface-card p-5">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-semibold">

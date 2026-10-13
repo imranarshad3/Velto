@@ -14,7 +14,7 @@ function pageItems(page: number, count: number): (number | 'gap')[] {
 }
 
 const base =
-  'grid size-11 place-items-center rounded-lg text-[0.9375rem] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40'
+  'grid size-11 place-items-center rounded-full text-[0.9375rem] font-semibold tabular-nums transition-[background-color,border-color,color,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-40'
 
 export default function Pagination({ page, pageCount, onChange }: PaginationProps) {
   if (pageCount <= 1) return null
@@ -23,7 +23,7 @@ export default function Pagination({ page, pageCount, onChange }: PaginationProp
     <nav aria-label="Pagination">
       <ul className="flex flex-wrap items-center justify-center gap-1.5">
         <li>
-          <button type="button" className={`${base} border border-border bg-surface hover:border-forest`} onClick={() => onChange(page - 1)} disabled={page === 1} aria-label="Previous page">
+          <button type="button" className={`${base} border border-border bg-surface shadow-[var(--shadow-soft)] hover:border-forest hover:text-forest`} onClick={() => onChange(page - 1)} disabled={page === 1} aria-label="Previous page">
             <ChevronLeft aria-hidden="true" className="size-5" />
           </button>
         </li>
@@ -36,7 +36,7 @@ export default function Pagination({ page, pageCount, onChange }: PaginationProp
             <li key={item}>
               <button
                 type="button"
-                className={`${base} ${item === page ? 'bg-forest text-white' : 'border border-border bg-surface text-ink hover:border-forest'}`}
+                className={`${base} ${item === page ? 'bg-forest text-white shadow-[var(--shadow-button)]' : 'border border-transparent text-ink hover:border-border hover:bg-surface'}`}
                 onClick={() => onChange(item)}
                 aria-current={item === page ? 'page' : undefined}
                 aria-label={`Page ${item}`}
@@ -47,7 +47,7 @@ export default function Pagination({ page, pageCount, onChange }: PaginationProp
           ),
         )}
         <li>
-          <button type="button" className={`${base} border border-border bg-surface hover:border-forest`} onClick={() => onChange(page + 1)} disabled={page === pageCount} aria-label="Next page">
+          <button type="button" className={`${base} border border-border bg-surface shadow-[var(--shadow-soft)] hover:border-forest hover:text-forest`} onClick={() => onChange(page + 1)} disabled={page === pageCount} aria-label="Next page">
             <ChevronRight aria-hidden="true" className="size-5" />
           </button>
         </li>

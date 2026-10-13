@@ -1,25 +1,52 @@
-/* NOVARO design tokens (docs/DESIGN_SYSTEM.md). All authored sizing is rem-based.
-   Values in @theme generate Tailwind utilities, e.g. bg-forest, text-ink, font-display. */
+/* VELTO design tokens (NOVARO_Claude_Code_Kit/docs/DESIGN_SYSTEM.md). All authored sizing is rem-based.
+   Values in @theme generate Tailwind utilities, e.g. bg-forest, text-ink, font-display, shadow-lift, rounded-panel. */
 @theme {
   --color-forest: #173c2d;
   --color-forest-dark: #102a21;
+  --color-forest-deep: #0b1f18;
+  --color-forest-mid: #24523f;
   --color-forest-soft: #e4ebe6;
   --color-copper: #a5532a;
   --color-copper-hover: #874121;
+  --color-copper-soft: #f5e6dc;
+  --color-nav: #102d25;
+  --color-footer: #081f19;
+  --color-emerald-muted: #8fb5a3;
+  /* Admin accents and analytics series (validated with the dataviz palette checker). */
+  --color-mint: #8fd4b3;
+  /* Muted sage for card eyebrows (AA on white). */
+  --color-sage: #5f7067;
+  --color-chart-views: #13845a;
+  --color-chart-quotes: #b4572a;
+  --color-gold: #e3c58f;
+  --color-gold-deep: #9a7339;
   --color-ink: #171c19;
   --color-muted: #5c625e;
   --color-canvas: #f8f7f3;
+  --color-cream: #f6f1e9;
   --color-surface: #fff;
   --color-sand: #efe9e2;
   --color-sand-deep: #e6dccf;
   --color-border: #e5e1db;
   --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-success: #1f6b45;
+  --color-success-soft: #e3f1e8;
 
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
 
   --radius-card: 1rem;
+  --radius-panel: 1.5rem;
+
+  /* Elevation: layered, low-opacity shadows tinted with the brand ink. */
+  --shadow-soft: 0 0.0625rem 0.125rem rgb(23 28 25 / 0.04), 0 0.25rem 0.75rem -0.25rem rgb(23 28 25 / 0.06);
   --shadow-card: 0 0.75rem 2rem -1rem rgb(23 28 25 / 0.25);
+  --shadow-lift: 0 0.125rem 0.25rem rgb(23 28 25 / 0.04), 0 1.5rem 3rem -1.5rem rgb(23 60 45 / 0.35);
+  --shadow-float: 0 0.5rem 1rem -0.5rem rgb(23 28 25 / 0.12), 0 2.5rem 5rem -2rem rgb(16 42 33 / 0.4);
+  --shadow-button: 0 0.0625rem 0 rgb(255 255 255 / 0.12) inset, 0 0.5rem 1.25rem -0.625rem rgb(23 60 45 / 0.7);
+
+  --ease-premium: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 :root {
@@ -27,7 +54,20 @@
   --h2: clamp(1.75rem, 1.35rem + 1.8vw, 2.75rem);
   --container-width: 84rem;
   --container-wide: 108rem;
-  --page-gutter: clamp(1rem, 4vw, 4rem);
-  --section-gap: clamp(3rem, 6vw, 6.5rem);
+  --page-gutter: clamp(1.25rem, 5vw, 4.5rem);
+  /* Spacing system: section rhythm, heading-to-content, and card-grid gaps (fluid, rem endpoints). */
+  --section-gap: clamp(4.5rem, 2.5rem + 6vw, 9rem);
+  --heading-gap: clamp(2.25rem, 1.5rem + 2.5vw, 4rem);
+  --grid-gap: clamp(1rem, 0.6rem + 1.2vw, 1.75rem);
+  --grid-gap-lg: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+  --content-pad: clamp(2.5rem, 1.75rem + 3vw, 4.5rem);
   --header-height: 4.5rem;
+  /* Admin console top bar (replaces the storefront header on /admin; see rule below). */
+  --admin-bar-height: 3.75rem;
+}
+
+/* On admin routes the top bar stands in for the storefront header, so every
+   `var(--header-height)` sticky/min-height offset follows its height. */
+body:has([data-admin-bar]) {
+  --header-height: var(--admin-bar-height);
 }

@@ -1,4 +1,4 @@
-# NOVARO
+# VELTO (formerly NOVARO)
 
 Construction-chemicals storefront: catalogue, product details, quote basket, multi-product quote requests,
 customer accounts and a staff admin area. React + Vite + TypeScript, Tailwind CSS v4, Clerk (identity),
@@ -49,8 +49,15 @@ for f in supabase/migrations/*.sql; do psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=
 3. `20261015000100_accounts.sql` – quote status history, wishlists
 4. `20261016000100_contact_messages.sql` – contact form
 5. `20261017000100_catalog_admin.sql` – products, admin members, audit log, admin RPCs
+6. `20261018000100_harden_privileges.sql` – removes Supabase default grants beyond what the server needs
 
-Optional demo catalogue: `supabase/seed.sql` (generate with `scripts/generate-seed.ts`).
+Preferred: one transaction, so any error rolls everything back:
+`psql "$SUPABASE_DB_URL" -1 -v ON_ERROR_STOP=1 $(for f in supabase/migrations/*.sql; do printf -- '-f %s ' "$f"; done)`
+
+Pre-launch rollback (refuses if any customer/admin data exists): `supabase/rollback/rollback_all_pre_launch.sql`.
+
+Demo catalogue: `supabase/seed.sql` (generate with `scripts/generate-seed.ts`). Needed until real products are
+added: once Supabase is connected, quotes and wishlists only accept products published in `public.products`.
 Grant the first admin manually, using a real Clerk user ID from the Clerk dashboard:
 `insert into public.admin_members (clerk_user_id) values ('user_...');`
 

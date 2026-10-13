@@ -20,11 +20,11 @@ export default function NotFoundPage() {
   }
 
   return (
-    <section aria-labelledby="not-found-title" className="container-page grid min-h-[60dvh] place-items-center py-[var(--section-gap)] text-center">
-      <title>Page not found — NOVARO</title>
+    <section aria-labelledby="not-found-title" className="relative isolate grid min-h-[64dvh] place-items-center overflow-hidden bg-cream px-[var(--page-gutter)] py-[var(--section-gap)] text-center">
+      <title>Page not found — VELTO</title>
       <meta name="robots" content="noindex" />
       <div className="max-w-[36rem]">
-        <p className="font-display text-[clamp(4rem,3rem+5vw,7rem)] leading-none text-copper">404</p>
+        <p className="font-display text-[clamp(6rem,4rem+9vw,11rem)] leading-none tracking-[-0.03em] text-transparent [-webkit-text-stroke:1px_var(--color-copper)]">404</p>
         <h1 id="not-found-title" className="mt-2 font-display text-[clamp(1.75rem,1.4rem+1.5vw,2.5rem)]">
           This page doesn’t exist
         </h1>
@@ -34,7 +34,7 @@ export default function NotFoundPage() {
             Search products
           </label>
           <input id="notfound-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" className={inputClass} />
-          <button type="submit" className="grid size-12 shrink-0 place-items-center rounded-lg bg-forest text-white hover:bg-forest-dark" aria-label="Search">
+          <button type="submit" className="grid size-12 shrink-0 place-items-center rounded-xl bg-forest text-white shadow-[var(--shadow-button)] transition-colors hover:bg-forest-dark" aria-label="Search">
             <Search aria-hidden="true" className="size-5" />
           </button>
         </form>

@@ -1,6 +1,9 @@
 import { catalog } from '../../src/data/catalog.js'
 import { createClerkVerifier, type AuthVerifier } from './auth.js'
+import { createClerkDirectory, withDevDirectory } from './directory.js'
 import { createApiHandlers } from './handlers.js'
+import { createClient } from '@supabase/supabase-js'
+import { createMemoryFileStorage, createSupabaseFileStorage, type FileStorage } from './fileStorage.js'
 import { createMemoryStore } from './memoryStore.js'
 import type { DataStore } from './store.js'
 import { createSupabaseStore } from './supabaseStore.js'
@@ -11,6 +14,7 @@ const CATALOG_TTL_MS = 60_000
 const list = (value: string | undefined) => (value ?? '').split(',').map((v) => v.trim()).filter(Boolean)
 
 let devStore: DataStore | undefined
+let devFiles: FileStorage | undefined
 
 const isDeployed = (env: NodeJS.ProcessEnv) => env.VERCEL === '1' || env.NODE_ENV === 'production'
 
@@ -20,9 +24,9 @@ const isDeployed = (env: NodeJS.ProcessEnv) => env.VERCEL === '1' || env.NODE_EN
  */
 export function withDevAuth(env: NodeJS.ProcessEnv, verifier: AuthVerifier): AuthVerifier {
   if (isDeployed(env) || env.NOVARO_DEV_FAKE_AUTH !== '1') return verifier
-  return async (token) => {
+  return async (token, origin) => {
     const match = token ? /^dev:(dev_[a-z0-9_]{1,40})$/.exec(token) : null
-    return match ? { kind: 'user', userId: match[1] } : verifier(token)
+    return match ? { kind: 'user', userId: match[1] } : verifier(token, origin)
   }
 }
 
@@ -32,6 +36,13 @@ function resolveStore(env: NodeJS.ProcessEnv): DataStore | null {
   // Opt-in, local-only fallback so the UI can be exercised without a database.
   if (!isDeployed(env) && env.QUOTE_DEV_MEMORY_STORE === '1') return (devStore ??= createMemoryStore({ products: catalog, admins: ['dev_admin'] }))
   return null
+}
+
+/** Private bucket in the same Supabase project; in-memory files alongside the local memory store. */
+function resolveFiles(env: NodeJS.ProcessEnv, store: DataStore | null): FileStorage | null {
+  const secretKey = env.SUPABASE_SECRET_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY
+  if (env.SUPABASE_URL && secretKey) return createSupabaseFileStorage(createClient(env.SUPABASE_URL, secretKey, { auth: { persistSession: false, autoRefreshToken: false } }))
+  return store && store === devStore ? (devFiles ??= createMemoryFileStorage()) : null
 }
 
 let handlers: ReturnType<typeof createApiHandlers> | undefined
@@ -58,6 +69,7 @@ export function getApiHandlers(env: NodeJS.ProcessEnv = process.env) {
 
   handlers = createApiHandlers({
     store,
+    files: resolveFiles(env, store),
     knownProducts,
     onCatalogChange: () => {
       cached = undefined
@@ -71,6 +83,7 @@ export function getApiHandlers(env: NodeJS.ProcessEnv = process.env) {
         authorizedParties: list(env.CLERK_AUTHORIZED_PARTIES),
       }),
     ),
+    directory: !isDeployed(env) && env.NOVARO_DEV_FAKE_AUTH === '1' ? withDevDirectory(createClerkDirectory(env.CLERK_SECRET_KEY)) : createClerkDirectory(env.CLERK_SECRET_KEY),
     humanCheck: env.TURNSTILE_SECRET_KEY ? createTurnstileCheck(env.TURNSTILE_SECRET_KEY) : undefined,
     allowedOrigins: list(env.ALLOWED_ORIGINS),
   })

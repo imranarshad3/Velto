@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import LegalLayout, { type LegalSection } from './LegalLayout.tsx'
 
 const sections: LegalSection[] = [
-  { id: 'about', title: 'About these terms', body: <p>These terms apply to your use of the NOVARO website. By using the site you agree to them.</p> },
+  { id: 'about', title: 'About these terms', body: <p>These terms apply to your use of the VELTO website. By using the site you agree to them.</p> },
   {
     id: 'information',
     title: 'Product information',

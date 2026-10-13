@@ -2,6 +2,14 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { catalog as bundled, type CatalogProduct } from '../../data/catalog.ts'
 import { CatalogContext, type CatalogState } from './catalogContext.ts'
 
+const bundledDemoPrices = new Map(bundled.flatMap((p) => (p.demoPrice ? [[p.slug, p.demoPrice] as const] : [])))
+
+/** Seeded DEMO rows keep their labelled, display-only DEMO price until a verified price is set by an admin. */
+const withDemoPrice = (product: CatalogProduct): CatalogProduct => {
+  const demoPrice = !product.verified && !product.price ? bundledDemoPrices.get(product.slug) : undefined
+  return demoPrice ? { ...product, demoPrice } : product
+}
+
 /**
  * Catalogue source of truth for the app: the published catalogue from `/api/catalog`, with the bundled
  * DEMO list rendered immediately and kept as the fallback when the API is unavailable or unconfigured.
@@ -15,7 +23,7 @@ export default function CatalogProvider({ children }: { children: ReactNode }) {
     fetch('/api/catalog', { signal: controller.signal })
       .then((r) => (r.ok ? r.json() : null))
       .then((body: { products?: CatalogProduct[] } | null) => {
-        if (Array.isArray(body?.products) && body.products.length) setLive(body.products)
+        if (Array.isArray(body?.products) && body.products.length) setLive(body.products.map(withDemoPrice))
       })
       .catch(() => {})
       .finally(() => !controller.signal.aborted && setSettled(true))

@@ -14,8 +14,8 @@ export interface AppAuth {
   loaded: boolean
   signedIn: boolean
   user: AppUser | null
-  /** Session token for `Authorization: Bearer`; the server verifies it. */
-  getToken: () => Promise<string | null>
+  /** Session token for `Authorization: Bearer`; the server verifies it. `skipCache` mints a fresh one. */
+  getToken: (options?: { skipCache?: boolean }) => Promise<string | null>
   signOut: () => Promise<void>
 }
 

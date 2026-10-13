@@ -7,23 +7,33 @@ interface PageHeaderProps {
   eyebrow?: string
   description?: ReactNode
   actions?: ReactNode
+  /** Optional right-hand content on wide screens (stats, a card, an icon panel). */
+  aside?: ReactNode
 }
 
-/** Standard cream page header used by utility and content pages. */
-export default function PageHeader({ title, crumbs, eyebrow, description, actions }: PageHeaderProps) {
+/** Standard page header for utility and content pages: cream field, blueprint grid and soft brand glow. */
+export default function PageHeader({ title, crumbs, eyebrow, description, actions, aside }: PageHeaderProps) {
   return (
-    <section aria-labelledby="page-title" className="bg-[#f6f1e9]">
-      <div className="container-page pt-2 pb-[clamp(1.75rem,4vw,3rem)]">
+    <section aria-labelledby="page-title" className="relative isolate overflow-hidden border-b border-border/70 bg-cream">
+      <div className="container-page pt-3 pb-[clamp(2.75rem,1.75rem+4vw,5rem)]">
         <Breadcrumb items={crumbs} />
-        <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
-          <div className="max-w-[44rem]">
-            {eyebrow && <p className="text-[0.75rem] font-semibold tracking-[0.16em] text-copper uppercase">{eyebrow}</p>}
-            <h1 id="page-title" className="animate-rise mt-1 font-display text-[clamp(2.25rem,1.6rem+2.6vw,3.5rem)] leading-[1.05] text-ink">
-              {title}
-            </h1>
-            {description && <div className="animate-rise mt-3 text-[clamp(0.9375rem,0.9rem+0.25vw,1.0625rem)] text-muted">{description}</div>}
+        <div className={`mt-5 grid items-end gap-8 ${aside ? 'lg:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-5">
+            <div className="max-w-[46rem]">
+              {eyebrow && (
+                <p className="animate-rise flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
+                  <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+                  {eyebrow}
+                </p>
+              )}
+              <h1 id="page-title" className="animate-rise mt-2 font-display text-[clamp(2.375rem,1.6rem+2.9vw,3.875rem)] leading-[1.02] tracking-[-0.015em] text-ink [--delay:0.05s] sm:mt-3">
+                {title}
+              </h1>
+              {description && <div className="animate-rise mt-5 max-w-[40rem] text-[clamp(0.9375rem,0.9rem+0.3vw,1.125rem)] leading-relaxed text-muted [--delay:0.1s]">{description}</div>}
+            </div>
+            {actions && <div className="animate-rise flex flex-wrap gap-3 [--delay:0.15s]">{actions}</div>}
           </div>
-          {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
+          {aside && <div className="animate-rise hidden [--delay:0.15s] lg:block">{aside}</div>}
         </div>
       </div>
     </section>

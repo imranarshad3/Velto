@@ -1,41 +1,46 @@
+import { useContent } from '../../features/cms/context.ts'
 import { ArrowRight } from 'lucide-react'
 import ProductCard from '../../components/commerce/ProductCard.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
+import { buttonArrow } from '../../components/ui/button.ts'
 import DemoNotice from '../../components/ui/DemoNotice.tsx'
+import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 
 export default function FeaturedProducts() {
+  const cms = useContent('home', 'FeaturedProducts')
   const { products } = useCatalog()
-  const featured = products.filter((product) => product.image).slice(0, 4)
+  const featured = products.filter((product) => product.image).slice(0, 3)
   return (
-    <section aria-labelledby="featured-title" className="py-[var(--section-gap)]">
+    <section aria-labelledby="featured-title" className="bg-surface py-[var(--section-gap)]">
       <div className="container-page">
-        <SectionHeading
-          id="featured-title"
-          title="Featured Products"
-          description="A preview of the product types in our range."
-          action={
-            <ButtonLink to="/products" variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
-              <span>
-                View All<span className="hidden sm:inline"> Products</span>
-              </span>
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </ButtonLink>
-          }
-        />
-        <ul className="mt-8 grid grid-cols-1 gap-4 min-[22rem]:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-          {featured.map((product) => (
-            <li key={product.id}>
-              <ProductCard product={product} />
-            </li>
+        <Reveal>
+          <SectionHeading
+            id="featured-title"
+            eyebrow={cms("field-1", "Featured")}
+            title={cms("field-2", "Featured Products")}
+            description={cms("field-3", "A preview of the product types in our range.")}
+            action={
+              <ButtonLink to={cms("field-4", "/products")} variant="secondary" size="sm">
+                <span>
+                  {cms("field-5", "View All")}<span className="hidden sm:inline"> {cms("field-6", " Products")}</span>
+                </span>
+                <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              </ButtonLink>
+            }
+          />
+        </Reveal>
+        <ul className="mt-[clamp(1.75rem,3vw,2.75rem)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 md:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
+          {featured.map((product, index) => (
+            <Reveal as="li" key={product.id} delay={index * 0.08} className="min-w-0">
+              <ProductCard product={product} density="roomy" />
+            </Reveal>
           ))}
         </ul>
-        <div className="mt-5">
+        <div className="mt-6 border-t border-border pt-5">
           <DemoNotice>
-            DEMO preview: product images are illustrative concepts, not official ULTRA product photographs. Names,
-            pricing and availability will be published once verified.
-          </DemoNotice>
+            {cms("field-7", "DEMO preview: product images are illustrative concepts, not official ULTRA product photographs. Names, pricing and availability will be published once verified.")}</DemoNotice>
         </div>
       </div>
     </section>

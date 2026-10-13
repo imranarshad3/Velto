@@ -13,3 +13,9 @@ export function POST(request: Request) {
 export function PATCH(request: Request) {
   return getApiHandlers().admin(request)
 }
+export function PUT(request: Request) {
+  return getApiHandlers().admin(request)
+}
+export function DELETE(request: Request) {
+  return getApiHandlers().admin(request)
+}

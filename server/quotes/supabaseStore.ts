@@ -1,8 +1,11 @@
+import { createSupabaseWorkspace } from '../workspace/supabase.js'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { AdminCustomer, AdminMessage, AdminOverview, AdminProduct, AdminQuoteRow, AuditEntry } from '../../src/features/admin/types.js'
+import type { AdminCustomer, AdminMessage, AdminOverview, AdminProduct, AdminQuoteRow, AuditEntry, ProductActivity } from '../../src/features/admin/types.js'
 import type { ProductData } from '../../src/features/catalog/productSchema.js'
 import type { QuoteDetail, QuoteEvent, QuoteSummary } from '../../src/features/quotes/schema.js'
-import type { DataStore } from './store.js'
+import { HttpError } from '../http.js'
+import type { ProductCoverage } from '../../src/features/resources/types.js'
+import type { DataStore, StoredResource } from './store.js'
 
 const SUMMARY_COLUMNS =
   'reference, status, project_type, city, created_at, updated_at, quote_request_items(position, product_slug, quantity, quantity_unit)'
@@ -76,6 +79,7 @@ interface ProductRow {
   price_currency: string | null
   verified: boolean
   published: boolean
+  archived: boolean | null
   sort_order: number
   updated_at: string
 }
@@ -99,6 +103,7 @@ const toProduct = (r: ProductRow): AdminProduct => ({
   price: r.price_amount !== null && r.price_currency ? { amount: Number(r.price_amount), currency: r.price_currency } : undefined,
   verified: r.verified,
   published: r.published,
+  archived: r.archived ?? false,
   sortOrder: r.sort_order,
   updatedAt: r.updated_at,
 })
@@ -128,7 +133,53 @@ const productPayload = (d: ProductData) => ({
 export const safeSearch = (value: string) => value.replace(/[^A-Za-z0-9@._ +-]/g, '').trim().slice(0, 80)
 
 /** Error codes only: database messages can echo submitted values (PII). */
+type ResourceRow = {
+  id: string
+  title: string
+  summary: string | null
+  kind: StoredResource['kind']
+  product_slugs: string[]
+  storage_path: string
+  file_name: string
+  file_size: number
+  published: boolean
+  created_at: string
+  updated_at: string
+}
+const toResource = (r: ResourceRow): StoredResource => ({
+  id: r.id,
+  title: r.title,
+  summary: r.summary,
+  kind: r.kind,
+  productSlugs: r.product_slugs,
+  storagePath: r.storage_path,
+  fileName: r.file_name,
+  fileSize: Number(r.file_size),
+  published: r.published,
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
+})
+type CoverageRow = { product_slug: string; rate: number | string; rate_unit: 'kg' | 'L'; coats: number; pack_amount: number | string; pack_container: ProductCoverage['packContainer']; source_resource_id: string | null; note: string | null; updated_at: string }
+const toCoverage = (r: CoverageRow): ProductCoverage => ({
+  productSlug: r.product_slug,
+  rate: Number(r.rate),
+  rateUnit: r.rate_unit,
+  coats: r.coats,
+  packAmount: Number(r.pack_amount),
+  packContainer: r.pack_container,
+  sourceResourceId: r.source_resource_id,
+  note: r.note,
+  updatedAt: r.updated_at,
+})
+
+/** Missing table/column/function: the database is behind the code (a migration was not applied). */
+const SCHEMA_MISSING = new Set(['42P01', '42703', '42883', 'PGRST202', 'PGRST204', 'PGRST205'])
+
 function fail(operation: string, error: { code?: string } | null): never {
+  if (error?.code && SCHEMA_MISSING.has(error.code)) {
+    console.error(`[db] ${operation}: schema object missing (${error.code}). Apply the pending migrations in supabase/migrations.`)
+    throw new HttpError(503, 'migration_required', 'This feature needs a database update. Apply the latest Supabase migrations and reload.')
+  }
   throw new Error(`supabase ${operation} failed (${error?.code ?? 'unknown'})`)
 }
 
@@ -139,6 +190,7 @@ export function createSupabaseStore(url: string, secretKey: string): DataStore {
   })
 
   return {
+    workspace: createSupabaseWorkspace(db),
     async insert(quote) {
       // Quote + items in one transaction (server-only database function).
       const { data, error } = await db
@@ -245,11 +297,73 @@ export function createSupabaseStore(url: string, secretKey: string): DataStore {
       return Boolean(data)
     },
 
+    async hasOpenAdminInvites() {
+      const { count, error } = await db.from('admin_invitations').select('id', { count: 'exact', head: true }).is('accepted_at', null).is('revoked_at', null).gt('expires_at', new Date().toISOString())
+      if (error) fail('open invites', error)
+      return (count ?? 0) > 0
+    },
+
+    async acceptAdminInvite(clerkUserId, verifiedEmails) {
+      if (!verifiedEmails.length) return false
+      const { data, error } = await db.rpc('accept_admin_invitation', { p_user: clerkUserId, p_emails: verifiedEmails })
+      if (error) fail('accept invite', error)
+      return data === true
+    },
+
+    async createAdminInvite(actor, email) {
+      const { data, error } = await db.rpc('admin_create_invitation', { p_actor: actor, p_email: email })
+      if (error) fail('create invite', error)
+      return data as string
+    },
+
+    async revokeAdminInvite(actor, id) {
+      const { data, error } = await db.rpc('admin_revoke_invitation', { p_actor: actor, p_id: id })
+      if (error) fail('revoke invite', error)
+      return data === true
+    },
+
+    async removeAdmin(actor, clerkUserId) {
+      const { data, error } = await db.rpc('admin_remove_member', { p_actor: actor, p_user: clerkUserId })
+      if (error) fail('remove admin', error)
+      return data === 'ok' || data === 'self' || data === 'last_admin' ? data : 'not_found'
+    },
+
+    async listAdminTeam() {
+      const [members, invites] = await Promise.all([
+        db.from('admin_members').select('clerk_user_id, note, created_at').order('created_at'),
+        db.from('admin_invitations').select('id, email, invited_by, created_at, expires_at').is('accepted_at', null).is('revoked_at', null).order('created_at', { ascending: false }).limit(50),
+      ])
+      if (members.error) fail('admin members', members.error)
+      if (invites.error) fail('admin invites', invites.error)
+      return {
+        members: (members.data as { clerk_user_id: string; note: string | null; created_at: string }[]).map((m) => ({ clerkUserId: m.clerk_user_id, note: m.note, createdAt: m.created_at })),
+        invites: (invites.data as { id: string; email: string; invited_by: string; created_at: string; expires_at: string }[]).map((i) => ({
+          id: i.id,
+          email: i.email,
+          invitedBy: i.invited_by,
+          createdAt: i.created_at,
+          expiresAt: i.expires_at,
+        })),
+      }
+    },
+
     async saveProduct(actor, slug, data, create) {
       const { data: ok, error } = await db.rpc('admin_save_product', { p_actor: actor, p_slug: slug, p_product: productPayload(data), p_create: create })
       if (error?.code === '23505') return 'conflict'
       if (error) fail('save product', error)
       return ok ? 'ok' : 'not_found'
+    },
+
+    async setProductStatus(actor, slug, status) {
+      const { data, error } = await db.rpc('admin_set_product_status', { p_actor: actor, p_slug: slug, p_status: status })
+      if (error) fail('product status', error)
+      return data === true
+    },
+
+    async deleteProduct(actor, slug) {
+      const { data, error } = await db.rpc('admin_delete_product', { p_actor: actor, p_slug: slug })
+      if (error) fail('delete product', error)
+      return data === 'ok' || data === 'in_use' ? data : 'not_found'
     },
 
     async adminListQuotes({ status, search, limit, offset }) {
@@ -345,6 +459,89 @@ export function createSupabaseStore(url: string, secretKey: string): DataStore {
       const { data, error } = await db.rpc('admin_update_message', { p_id: id, p_actor: actor, p_status: status })
       if (error) fail('update message', error)
       return data === true
+    },
+
+    async recordProductView(slug, visitorKey) {
+      const { data, error } = await db.rpc('record_product_view', { p_slug: slug, p_visitor_key: visitorKey })
+      if (error) fail('record view', error)
+      return data === true
+    },
+
+    async productActivity(since) {
+      const { data, error } = await db.rpc('admin_product_activity', { p_since: since })
+      if (error) fail('product activity', error)
+      const raw = data as ProductActivity
+      return {
+        views: raw.views.map((v) => ({ slug: v.slug, day: v.day, n: Number(v.n) })),
+        quotes: raw.quotes.map((q) => ({ slug: q.slug, day: q.day, unit: q.unit, requests: Number(q.requests), quantity: q.quantity === null ? null : Number(q.quantity) })),
+        viewTotals: raw.viewTotals.map((t) => ({ slug: t.slug, n: Number(t.n) })),
+      }
+    },
+
+    async listResources({ includeUnpublished }) {
+      let query = db.from('technical_resources').select('*').order('updated_at', { ascending: false }).limit(500)
+      if (!includeUnpublished) query = query.eq('published', true)
+      const { data, error } = await query
+      if (error) fail('resources', error)
+      return (data as ResourceRow[]).map(toResource)
+    },
+
+    async getResource(id) {
+      const { data, error } = await db.from('technical_resources').select('*').eq('id', id).maybeSingle()
+      if (error) fail('resource', error)
+      return data ? toResource(data as ResourceRow) : null
+    },
+
+    async saveResource(actor, id, r) {
+      const row = { title: r.title, summary: r.summary, kind: r.kind, product_slugs: r.productSlugs, published: r.published, storage_path: r.storagePath, file_name: r.fileName, file_size: r.fileSize }
+      const query = id ? db.from('technical_resources').update(row).eq('id', id) : db.from('technical_resources').insert({ ...row, created_by: actor })
+      const { data, error } = await query.select('*').maybeSingle()
+      if (error) fail('save resource', error)
+      if (!data) return null
+      const saved = toResource(data as ResourceRow)
+      await db.from('admin_audit_log').insert({ actor, action: id ? 'resource.update' : 'resource.create', entity: 'resource', entity_key: saved.id, details: { published: saved.published } })
+      return saved
+    },
+
+    async deleteResource(actor, id) {
+      const { data, error } = await db.from('technical_resources').delete().eq('id', id).select('*').maybeSingle()
+      if (error) fail('delete resource', error)
+      if (!data) return null
+      await db.from('admin_audit_log').insert({ actor, action: 'resource.delete', entity: 'resource', entity_key: id, details: {} })
+      return toResource(data as ResourceRow)
+    },
+
+    async listCoverage() {
+      const { data, error } = await db.from('product_coverage').select('*')
+      if (error) fail('coverage', error)
+      return (data as CoverageRow[]).map(toCoverage)
+    },
+
+    async saveCoverage(actor, slug, c) {
+      const { error } = await db.from('product_coverage').upsert({
+        product_slug: slug,
+        rate: c.rate,
+        rate_unit: c.rateUnit,
+        coats: c.coats,
+        pack_amount: c.packAmount,
+        pack_container: c.packContainer,
+        source_resource_id: c.sourceResourceId,
+        note: c.note ?? null,
+        updated_by: actor,
+        updated_at: new Date().toISOString(),
+      })
+      if (error?.code === '23503') return false
+      if (error) fail('save coverage', error)
+      await db.from('admin_audit_log').insert({ actor, action: 'coverage.update', entity: 'product', entity_key: slug, details: { rate: c.rate, unit: c.rateUnit } })
+      return true
+    },
+
+    async deleteCoverage(actor, slug) {
+      const { data, error } = await db.from('product_coverage').delete().eq('product_slug', slug).select('product_slug')
+      if (error) fail('delete coverage', error)
+      if (!data?.length) return false
+      await db.from('admin_audit_log').insert({ actor, action: 'coverage.delete', entity: 'product', entity_key: slug, details: {} })
+      return true
     },
 
     async hitRateLimit(key, windowSeconds, max) {

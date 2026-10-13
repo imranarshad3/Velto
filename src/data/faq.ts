@@ -1,4 +1,4 @@
-/** Store process FAQs: how NOVARO works today. No product, delivery-time or pricing claims. */
+/** Store process FAQs: how VELTO works today. No product, delivery-time or pricing claims. */
 export interface FaqGroup {
   id: string
   title: string

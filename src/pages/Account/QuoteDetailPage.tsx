@@ -19,7 +19,7 @@ export default function QuoteDetailPage() {
   if (state.kind === 'error' && state.status === 404) {
     return (
       <>
-        <title>Quote not found — NOVARO</title>
+        <title>Quote not found — VELTO</title>
         <AccountHeading title="Quote not found" crumbs={[{ label: 'My Quotes', to: '/account/quotes' }, { label: 'Not found' }]}>
           We couldn’t find that request in your account.
         </AccountHeading>
@@ -30,13 +30,13 @@ export default function QuoteDetailPage() {
 
   return (
     <>
-      <title>{`${reference} — My Quotes — NOVARO`}</title>
+      <title>{`${reference} — My Quotes — VELTO`}</title>
       <AccountHeading title={reference} crumbs={[{ label: 'My Quotes', to: '/account/quotes' }, { label: reference }]} />
       <RemoteState state={state} reload={reload} skeleton={3}>
         {(quote) => (
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+          <div className="grid gap-[var(--grid-gap)] xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
             <div className="flex flex-col gap-5">
-              <section aria-labelledby="status-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="status-title" className="surface-card p-5">
                 <h2 id="status-title" className="mb-3 font-display text-[1.375rem]">
                   Status
                 </h2>
@@ -46,7 +46,7 @@ export default function QuoteDetailPage() {
                 </p>
               </section>
 
-              <section aria-labelledby="items-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="items-title" className="surface-card p-5">
                 <h2 id="items-title" className="font-display text-[1.375rem]">
                   Products
                 </h2>
@@ -78,11 +78,11 @@ export default function QuoteDetailPage() {
                 )}
               </section>
 
-              <section aria-labelledby="project-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="project-title" className="surface-card p-5">
                 <h2 id="project-title" className="font-display text-[1.375rem]">
                   Project
                 </h2>
-                <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                <dl className="mt-3 grid gap-[var(--grid-gap)] sm:grid-cols-2">
                   <div>
                     <dt className="text-[0.75rem] font-semibold tracking-[0.12em] text-muted uppercase">Type</dt>
                     <dd>{quote.projectType ? projectTypeLabels[quote.projectType as keyof typeof projectTypeLabels] : 'Not specified'}</dd>
@@ -98,7 +98,7 @@ export default function QuoteDetailPage() {
             </div>
 
             <div className="flex flex-col gap-5">
-              <section aria-labelledby="history-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="history-title" className="surface-card p-5">
                 <h2 id="history-title" className="font-display text-[1.375rem]">
                   History
                 </h2>
@@ -115,7 +115,7 @@ export default function QuoteDetailPage() {
                   ))}
                 </ol>
               </section>
-              <section aria-labelledby="contact-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="contact-title" className="surface-card p-5">
                 <h2 id="contact-title" className="font-display text-[1.375rem]">
                   Your contact details
                 </h2>

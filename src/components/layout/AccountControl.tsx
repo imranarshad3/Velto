@@ -9,11 +9,11 @@ export default function AccountControl({ variant = 'header' }: { variant?: 'head
   const auth = useAppAuth()
   const menu = variant === 'menu'
 
-  if (auth.enabled && !auth.loaded) return <span className={`inline-block h-11 animate-pulse rounded-lg bg-sand ${menu ? 'w-full' : 'w-24'}`} aria-hidden="true" />
+  if (auth.enabled && !auth.loaded) return <span className={`inline-block h-11 animate-pulse rounded-lg ${menu ? 'w-full bg-sand' : 'w-24 bg-white/15'}`} aria-hidden="true" />
 
   if (!auth.signedIn) {
     return (
-      <ButtonLink to="/sign-in" className={menu ? 'w-full' : 'px-5 xl:px-7'}>
+      <ButtonLink to="/sign-in" variant={menu ? 'primary' : 'light'} className={menu ? 'w-full' : 'px-5 xl:px-7'}>
         Sign In
       </ButtonLink>
     )
@@ -21,7 +21,7 @@ export default function AccountControl({ variant = 'header' }: { variant?: 'head
 
   return (
     <div className={`flex items-center gap-2 ${menu ? 'justify-between' : ''}`}>
-      <Link to="/account" className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[0.9375rem] font-semibold text-ink hover:text-forest">
+      <Link to="/account" className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[0.9375rem] font-semibold ${menu ? 'text-ink hover:text-forest' : 'text-white/90 hover:text-white'}`}>
         <UserRound aria-hidden="true" className="size-5" /> My account
       </Link>
       {auth.mode === 'clerk' && <UserButton />}

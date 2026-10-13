@@ -1,24 +1,37 @@
-import { useCallback, useState } from 'react'
+import { useContentData } from '../../features/cms/context.ts'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router'
-import { Heart, Menu, Search, ShoppingCart } from 'lucide-react'
-import { primaryNav } from '../../data/navigation.ts'
+import { ArrowRight, Heart, Menu, Search, ShoppingCart } from 'lucide-react'
+import { primaryNav as defaultPrimaryNav } from '../../data/navigation.ts'
 import { useCart } from '../../features/cart/cartStore.ts'
 import { useWishlist } from '../../features/wishlist/wishlistStore.ts'
 import Logo from '../ui/Logo.tsx'
+import { buttonArrow, buttonClass } from '../ui/button.ts'
 import AccountControl from './AccountControl.tsx'
 import MobileNav from './MobileNav.tsx'
 
 const iconButton =
-  'relative grid size-11 place-items-center rounded-lg text-ink transition-colors hover:bg-sand hover:text-forest'
+  'relative grid size-11 place-items-center rounded-full text-white/90 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white'
 
 export default function Header() {
+  const primaryNav = useContentData('site', 'Navigation.data', defaultPrimaryNav)
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = useCallback(() => setMenuOpen(false), [])
   const cartCount = useCart((s) => s.items.length)
   const wishlistCount = useWishlist((s) => s.slugs.length)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
+    <header
+      className={`sticky top-0 z-40 border-b backdrop-blur-xl transition-[background-color,box-shadow,border-color] duration-300 border-white/[0.08] bg-nav ${scrolled ? 'shadow-[0_0.75rem_2rem_-1rem_rgb(11_31_24/0.6)]' : ''}`}
+    >
       <div className="container-page flex min-h-[var(--header-height)] items-center gap-2 lg:gap-6">
         <button
           type="button"
@@ -32,17 +45,17 @@ export default function Header() {
           <Menu aria-hidden="true" className="size-6" />
         </button>
 
-        <Logo />
+        <Logo className="!text-emerald-muted [&>span>span:first-child]:text-white [&>span>span:last-child]:text-white/55" />
 
         <nav aria-label="Main" className="mx-auto hidden lg:block">
-          <ul className="flex items-center gap-1 xl:gap-3">
+          <ul className="flex items-center gap-0.5 xl:gap-1.5">
             {primaryNav.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
                   end={item.to === '/'}
                   className={({ isActive }) =>
-                    `relative inline-flex min-h-11 items-center rounded-md px-2.5 xl:px-3 text-[0.9375rem] font-medium transition-colors after:absolute after:inset-x-2.5 xl:after:inset-x-3 after:bottom-1.5 after:h-0.5 after:rounded-full after:bg-copper after:transition-transform hover:text-forest ${isActive ? 'text-forest after:scale-x-100' : 'text-ink after:scale-x-0'}`
+                    `relative inline-flex min-h-11 items-center rounded-full px-3 xl:px-3.5 text-[0.9375rem] font-medium transition-colors duration-200 after:absolute after:inset-x-3 xl:after:inset-x-3.5 after:bottom-1.5 after:h-0.5 after:origin-left after:rounded-full after:bg-emerald-muted after:transition-transform after:duration-300 hover:bg-white/[0.06] hover:text-white ${isActive ? 'font-semibold text-white after:scale-x-100' : 'text-white/75 after:scale-x-0'}`
                   }
                 >
                   {item.label}
@@ -59,20 +72,29 @@ export default function Header() {
           <Link to="/wishlist" className={`${iconButton} hidden sm:grid`} aria-label={`Wishlist, ${wishlistCount} saved`}>
             <Heart aria-hidden="true" className="size-[1.375rem]" />
             {wishlistCount > 0 && (
-              <span aria-hidden="true" className="absolute top-1 right-0.5 grid min-w-[1.125rem] place-items-center rounded-full bg-copper px-1 text-[0.625rem] leading-[1.125rem] font-bold text-white">
+              <span aria-hidden="true" className="absolute top-1 right-0.5 grid min-w-[1.125rem] place-items-center rounded-full bg-emerald-muted px-1 text-[0.625rem] leading-[1.125rem] font-bold text-nav ring-2 ring-nav">
                 {wishlistCount}
               </span>
             )}
           </Link>
           <Link to="/cart" className={iconButton} aria-label={`Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}>
             <ShoppingCart aria-hidden="true" className="size-[1.375rem]" />
-            <span
-              aria-hidden="true"
-              className="absolute top-1 right-0.5 grid min-w-[1.125rem] place-items-center rounded-full bg-forest px-1 text-[0.625rem] leading-[1.125rem] font-bold text-white"
-            >
-              {cartCount}
-            </span>
+            {cartCount > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute top-1 right-0.5 grid min-w-[1.125rem] place-items-center rounded-full bg-emerald-muted px-1 text-[0.625rem] leading-[1.125rem] font-bold text-nav ring-2 ring-nav"
+              >
+                {cartCount}
+              </span>
+            )}
           </Link>
+          {/* Visibility lives on the wrapper: buttonClass sets display, which would override a bare `hidden`. */}
+          <div className="ml-2 hidden min-[90rem]:block">
+            <Link to="/quote" className={buttonClass('accent', 'sm')}>
+              Request a Quote
+              <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+            </Link>
+          </div>
           <div className="ml-2 hidden md:block xl:ml-3">
             <AccountControl />
           </div>

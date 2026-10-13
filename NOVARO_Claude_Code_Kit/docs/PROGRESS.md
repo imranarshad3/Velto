@@ -73,6 +73,73 @@
 - Env: `.env` normalised to the names the code reads (`VITE_CLERK_PUBLISHABLE_KEY`, `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, …); unused `NEXT_PUBLIC_*` duplicate removed; DB connection string renamed `SUPABASE_DB_URL` (tooling only); local `QUOTE_HASH_SECRET` generated; local origins set; file mode 600. `.env.example` documents every variable.
 - Guards: Vite config refuses secret-looking `VITE_` names; server logs an error in production if `CLERK_AUTHORIZED_PARTIES`/`ALLOWED_ORIGINS` are empty. Production bundle scanned: no server secret values present.
 - Node: `.nvmrc` (24) + `engines >= 22.15` — Node 18 fails the build (rolldown) and tests (`module.registerHooks`).
-- Migrations: applied in filename order twice on a throwaway Postgres 16 with Supabase roles — idempotent; RLS on all 9 tables; `anon`/`authenticated` denied on every table and RPC; `service_role` cannot update/delete `admin_audit_log` or `quote_events`. No policies are needed because the browser never queries Supabase.
+- Migrations: applied in filename order twice on a throwaway Postgres 16 with Supabase roles — idempotent; RLS on all 9 tables; `anon`/`authenticated` denied on every table and RPC. **Correction:** the claim that `service_role` cannot update/delete `admin_audit_log`/`quote_events` held only on plain Postgres; Supabase's default privileges give `service_role` ALL — fixed by migration 6 (see Live database readiness). No policies are needed because the browser never queries Supabase.
 - Live checks (read-only): Supabase project reachable, `public` schema empty (migrations NOT applied). Dev API with real keys: forged/fake tokens → 401 via real Clerk verification; foreign origin → 403; catalogue → 500 until migrations exist.
 - Not yet verified live: signed-in Clerk flow end-to-end, two-user isolation and admin access on the real database (blocked on applying migrations + creating test users/admin).
+
+## Live database readiness (2026-10-13) — superseded below: migrations applied with approval
+- Live project: DB connection and `SUPABASE_URL` point to the same project ref; Postgres 17.11; roles anon/authenticated/service_role present; `public` empty (0 tables/functions/types); `auth.users` 0; storage buckets 0; no name clashes; no migration-tracking schema. Supabase default privileges grant anon/authenticated/service_role ALL on new public tables, functions and sequences.
+- New migration `20261018000100_harden_privileges.sql`: revokes API-role access to identity sequences and trigger functions; resets `service_role` to exactly the grants migrations 1–5 intend, making `admin_audit_log`/`quote_events` append-only and `admin_members` read-only even for the server key. Revoke/grant only.
+- New `supabase/rollback/rollback_all_pre_launch.sql`: refuses to run if any quote/message/wishlist/admin/audit row exists; otherwise drops all migration objects.
+- `CatalogProvider`: seeded (unverified, unpriced) products keep the bundled, labelled DEMO price; verified DB prices win.
+- Rehearsal on the local `supabase/postgres:17.11.0.002` image (same version, Supabase roles and default ACLs) + PostgREST v16.4: 6 migrations in one transaction ✔, re-run ✔, seed + re-seed (27 products) ✔; 9 tables, RLS on all, 0 policies; anon/authenticated have no table, function or sequence access; `tests/supabase.integration.test.ts` 3/3 ✔ (direct-access denials, guest + account flow, ownership isolation, wishlist, rate limits, admin RPCs + audit). service_role via REST: PATCH/DELETE audit log 403, DELETE quote_events 403, INSERT admin_members 403, SELECT 200. Rollback: refused with data present ✔; clean on seed-only ✔; re-apply after rollback ✔.
+- Note: the pooler ignores `PGOPTIONS` read-only startup options; live inspection used SELECT statements only.
+- Checks: typecheck ✔, oxlint ✔, 34 unit tests ✔ (integration file skips without `SUPABASE_TEST_URL`), production build ✔ — Node 24.
+- Blocked on approval: apply migrations + seed to live; first admin (needs your real Clerk user ID); live signed-in two-user and admin tests.
+
+## Live Supabase integration (2026-10-13) — applied with owner approval
+- Backup: schema-only `pg_dump` (Postgres 17 tools) → `supabase/backups/pre_migration_schema_*.sql` (git-ignored, mode 600); `public` was empty.
+- Applied migrations 1–6 to the live project in ONE transaction (psql exit 0), then `supabase/seed.sql` in one transaction: 27 DEMO products, all published, none verified, none priced.
+- Verified live: 9 tables, RLS on all, 0 policies; anon/authenticated have no table, function or sequence privileges; service_role limited to the intended grants. Role probes (inside always-rolled-back transactions): anon/authenticated denied select/insert/self-grant-admin/RPCs; service_role denied UPDATE audit log, DELETE quote_events, INSERT admin_members. Public REST with the publishable key: 401 on all tables and admin RPCs; GraphQL extension disabled.
+- Live API (dev server with production-like env): `/api/catalog` 200 with 27 products and no price fields; guest lookup with wrong code 404 (no enumeration); my quotes / quote detail / wishlist / admin without or with forged token 401; dev fake token rejected (not enabled); foreign origin 403.
+- No test quotes, messages, wishlists or admins created (owner chose rehearsal + read-only live). Only side effect: 2 rate-limit counter rows (HMAC'd keys, auto-pruned).
+- Write-path isolation (guest + account quotes, cross-user denial, wishlists, admin RPCs + audit) verified on the Supabase 17.11 rehearsal (3/3), not on live.
+- Remaining blockers: first admin needs the owner's real Clerk user ID + approval; signed-in browser flow (Clerk token → API → DB) and two-user isolation on live need real Clerk test users; Vercel env + production Clerk keys not configured.
+
+## Premium UI/UX redesign (2026-10-13) — awaiting approval
+- Foundation: premium design system v2 (see DESIGN_SYSTEM.md) — tokens, utilities, `buttonClass`, StatCard, Reveal, Skeleton, upgraded PageHeader/SectionHeading/EmptyState/Pagination/inputs/Toaster, header/mobile menu/footer, image-led CategoryCard, ApplicationTile, HelpBanner; admin routes without marketing chrome.
+- Pages redesigned: home (all sections), products (hero, category rail, toolbar, filters), product detail (BuyBox: labelled DEMO price, quantity + unit stepper → cart), cart, wishlist, checkout, quote form/sidebar/success receipt, track, sign-in/up, account shell/dashboard/quote cards, admin shell/dashboard/quotes list, about, contact, solutions, applications, resources hub, FAQ accordion, legal reading layout, 404. Remaining account/admin/resource pages received the shared card/button treatment only.
+- Perf: `quantityUnits` moved to zod-free `features/quotes/units.ts` (re-exported by schema) so zod stays out of the main chunk (476 kB vs 564 kB).
+- QA: typecheck, oxlint, 34 tests, production build ✔ (Node 24). Headless Chrome at 1440/390 on 15 changed routes: no overflow, broken images or console errors.
+- Follow-up (same day): About layout/copy/imagery fixed; homepage hero trust bar, packshot blending (ProductCard), banner crop, inspiration grid, resources column; theme-color/color-scheme/Manrope 800; header CTA visibility bug. Remaining pages reviewed at 1440: consistent via shared system — calculator result hints and admin quote item thumbnails fixed; no rewrite needed.
+- Not done: full 360/768/1024/1920 sweep of every route.
+
+## Auth fix: false "session expired" after sign-in (2026-10-13)
+- Cause: the server collapsed every Clerk verification failure (azp/origin mismatch, wrong keys, missing keys, JWKS outage, real expiry) into 401 `session_invalid` "session expired"; azp had to equal the single configured origin, and the dev API rebuilt request URLs as `http://localhost` (port dropped). Client fetched once with a possibly stale cached token.
+- Fix: `server/quotes/auth.ts` classifies failures (expired / rejected / unconfigured / unavailable), always accepts the API's own request origin as azp in addition to `CLERK_AUTHORIZED_PARTIES`, and logs the failing claim (never the token). Handlers map: expired → 401 `session_invalid`; rejected → 401 `session_rejected`; unconfigured/unavailable → 503 `auth_unavailable`. `vite.config.ts` keeps host:port. `useAuthedRemote` waits for auth `loaded` and retries an expired 401 once with `getToken({ skipCache: true })`.
+- Diagnostics (no secrets printed): publishable/secret keys from the same Clerk instance; clock skew 0.6 s; JWKS reachable. Browser sign-in itself not reproducible headlessly — if a rejection persists, the dev/server log line `[auth] Clerk token rejected (...)` names the exact claim.
+- Tests: new `tests/auth.test.ts` (12): immediate post-login token, own-origin azp, foreign azp, expired, wrong signing key, unconfigured, status mapping, valid empty list. Suite 46/46.
+
+## M10: Product analytics + admin refresh (2026-10-13)
+- DB: `supabase/migrations/20261019000100_product_analytics.sql` — `product_view_daily` (daily aggregates), `product_view_dedup` (visitor/product/UTC-day ledger, self-pruning), `record_product_view`, `admin_product_activity`; indexes on items/quotes; service_role-only grants. Rollback script updated. **Apply the migration before deploying.**
+- API: `POST /api/track/view` (always 204; bot/headless/scripted UA, cross-site and missing-fetch-metadata requests ignored; 120/IP/10 min; visitor = HMAC of IP+UA+language, nothing raw stored). `GET /api/admin/analytics?range=7d|30d|90d|all` (admin-only) aggregated in `server/admin/analytics.ts`.
+- UI: `/admin/analytics` (KPIs with period deltas, daily views and quote-request charts, most viewed/requested/trending/sold rankings, sortable performance table); dashboard "Product activity"; per-product view counts in the products list; product detail sends a view after 1.5 s visible dwell. Admin gold accents → mint.
+- Sales: no verified orders source exists, so every sales figure reads "No sales data"; quote requests are never counted as sales.
+- QA: 11 new tests (`tests/analytics.test.ts`), suite 57/57, typecheck, oxlint, build ✔. Headless Chrome on the memory store at 360/390/768/1024/1440/1920 for dashboard/analytics/products: no overflow; real page visit counted once, repeat visit deduped.
+
+## M11: Admin products table (2026-10-13)
+- DB: `20261020000100_product_status.sql` adds `products.archived` (+ check: never archived and published; trigger un-archives on publish), `admin_set_product_status`, `admin_delete_product` (refuses products referenced by quote requests → 409, archive instead; removes wishlist entries/view stats; audited). **Apply before deploying.** Rollback updated.
+- API (admin-only): `PATCH /api/admin/product-status/:slug {status: published|draft|archived}`, `DELETE /api/admin/products/:slug`. Public catalog never exposes `archived`.
+- UI `/admin/products`: All/Published/Draft/Demo/Archived tabs with counts, search (name/category/slug; no SKU field exists), sortable table with real view counts, inline status select (optimistic, rolls back on error), edit/delete with native modal confirm, pagination (10), toasts, empty states; card layout below lg.
+- QA: 5 new API tests (suite 62/62), typecheck, oxlint, build ✔; headless Chrome e2e at 1440/390 (status persists, tabs recount, search, delete via dialog), no overflow at 360–1920.
+
+## M12: Admin team invitations (2026-10-13)
+- DB: `20261021000100_admin_invitations.sql` — `admin_invitations` (one open invite per email, 7-day expiry) and SECURITY DEFINER functions `admin_create_invitation`, `admin_revoke_invitation`, `accept_admin_invitation`, `admin_remove_member` (never self, never the last admin). service_role stays SELECT-only on `admin_members`; all changes audited. **Apply before deploying.** Rollback updated.
+- Server: `server/quotes/directory.ts` (Clerk Backend API: verified emails, sign-up invitation emails, member names; dev `dev_*` users own `<id>@example.test`). `/api/admin/me` accepts an open invite only when the user's Clerk-verified email matches exactly. Routes: `GET team`, `POST team/invites`, `DELETE team/invites/:id`, `DELETE team/members/:userId`; invites limited to 20 per admin per 10 min.
+- UI: `/admin/team` (invite form, delivery notice + copy link, admins list with remove, pending invites with resend/revoke); shared `ConfirmDialog` now also used by products.
+- QA: 6 new tests (suite 68/68), typecheck, oxlint, build ✔; headless Chrome flow at 1440/390 (customer refused → invite → invitee gains admin → removal revokes), no overflow 360–1440.
+
+## M11b: Products dashboard polish (2026-10-13)
+- `/admin/products`: KPI row (total, published, draft, total views), status tabs + search + category filter + sort menu, Quote requests column (all-time + 30 days from analytics), larger thumbnails with broken-image fallback, zebra rows, three-dot actions menu (Edit, View in store, Duplicate → unverified draft copy via existing create API, Delete), popover status menu with saving state. New shared `src/pages/Admin/Menu.tsx` (native popover, keyboard support). No migrations, no API changes.
+- QA: 69/69 tests, typecheck, oxlint, build ✔; headless Chrome e2e at 1440/390 (filters, sort, status, duplicate, delete, Escape/focus return), no overflow 360–1920.
+
+## M13: Resource Center (2026-10-13)
+- DB (not applied live): `20261022000100_technical_resources.sql` — `technical_resources`, `product_coverage`, private `technical-resources` bucket (PDF, 20 MB, no storage policies). Rollback updated.
+- API: `GET /api/resources` (published docs + coverage for verified products), `GET /api/resources/download?id=` (60 s signed URL); admin `resources` (upload ticket, CRUD, file replace/remove) and `coverage` routes. Uploads go browser → one-time signed URL; size/type re-checked from storage.
+- UI: Resource Center (search, type/category filters, downloads, assistance CTA), calculator uses verified coverage → "Request N bags in a quote" (cart), product Technical Resources section, hub/home "Coming soon" removed, contact deep-link prefill, `/admin/resources`, coverage panel in product editor.
+- QA: 7 new tests (76/76), typecheck, oxlint, build ✔; headless e2e (upload → publish → download → product page → calculator → quote basket), no overflow 360–1920.
+
+## Rebrand: NOVARO → VELTO (2026-10-14)
+- User-facing brand is now **VELTO** — tagline "Building Better Foundations"; new V mark in `Logo.tsx` and `public/favicon.svg`; title/meta in `index.html`; all UI/admin/CMS defaults updated.
+- Unchanged by design: env vars (`NOVARO_DEV_FAKE_AUTH`), localStorage keys and window events (`novaro:*`), package name, DB/storage identifiers, the `NOVARO_Claude_Code_Kit/` folder, ULTRA manufacturer branding.
+- Saved CMS content is not rewritten: one unpublished draft still mentions NOVARO; edit it in the Website Editor. Clerk email/app name must be changed in the Clerk dashboard.

@@ -74,6 +74,7 @@ describe('admin authorisation', () => {
       ['GET', 'overview'], ['GET', 'quotes'], ['GET', 'quotes/NQ-000000000000'], ['PATCH', 'quotes/NQ-000000000000', { status: 'quoted' }],
       ['GET', 'products'], ['POST', 'products', product], ['PATCH', 'products/tile-adhesive', product], ['GET', 'customers'],
       ['GET', 'messages'], ['PATCH', 'messages/00000000-0000-0000-0000-000000000000', { status: 'read' }],
+      ['GET', 'analytics'], ['PATCH', 'product-status/tile-adhesive', { status: 'archived' }], ['DELETE', 'products/tile-adhesive'],
     ]
     for (const [method, path, body] of routes) {
       assert.equal((await call(method, path, undefined, body)).status, 401, `guest ${method} ${path}`)
@@ -187,5 +188,57 @@ describe('admin customers, messages and overview', () => {
     assert.equal(overview.products, 5)
     assert.equal(overview.customers, 1)
     assert.equal(overview.recentAudit[0].action, 'message.update')
+  })
+})
+
+describe('product status and delete', () => {
+  const catalogSlugs = async () => ((await (await api.catalog(new Request('https://novaro.test/api/catalog'))).json()).products as { slug: string }[]).map((p) => p.slug)
+  const adminProduct = async (slug: string) => ((await (await call('GET', 'products', 'admin')).json()).products as { slug: string; published: boolean; archived: boolean }[]).find((p) => p.slug === slug)
+
+  it('moves a product between published, draft and archived', async () => {
+    const res = await call('PATCH', 'product-status/tile-adhesive', 'admin', { status: 'archived' })
+    assert.equal(res.status, 200)
+    assert.deepEqual([(await res.json()).product.published, (await adminProduct('tile-adhesive'))?.archived], [false, true])
+    assert.equal((await catalogSlugs()).includes('tile-adhesive'), false)
+    assert.equal(invalidated, 1)
+
+    await call('PATCH', 'product-status/tile-adhesive', 'admin', { status: 'draft' })
+    assert.deepEqual(await adminProduct('tile-adhesive').then((p) => [p?.published, p?.archived]), [false, false])
+
+    await call('PATCH', 'product-status/tile-adhesive', 'admin', { status: 'published' })
+    assert.equal((await catalogSlugs()).includes('tile-adhesive'), true)
+  })
+
+  it('keeps archive state through edits and un-archives on publish', async () => {
+    await call('PATCH', 'product-status/tile-adhesive', 'admin', { status: 'archived' })
+    const edited = { ...product, slug: 'tile-adhesive', published: false }
+    await call('PATCH', 'products/tile-adhesive', 'admin', edited)
+    assert.equal((await adminProduct('tile-adhesive'))?.archived, true)
+    await call('PATCH', 'products/tile-adhesive', 'admin', { ...edited, published: true })
+    assert.deepEqual(await adminProduct('tile-adhesive').then((p) => [p?.published, p?.archived]), [true, false])
+  })
+
+  it('validates status values and unknown products', async () => {
+    assert.equal((await call('PATCH', 'product-status/tile-adhesive', 'admin', { status: 'demo' })).status, 422)
+    assert.equal((await call('PATCH', 'product-status/nope', 'admin', { status: 'draft' })).status, 404)
+  })
+
+  it('never exposes the archived flag publicly', async () => {
+    const products = (await (await api.catalog(new Request('https://novaro.test/api/catalog'))).json()).products
+    assert.equal('archived' in products[0], false)
+  })
+
+  it('deletes unused products and refuses products in quote requests', async () => {
+    const slugs = (await store.listProducts({ includeUnpublished: true })).map((p) => p.slug)
+    const unused = slugs.find((s) => s !== 'tile-adhesive')!
+    assert.equal((await call('DELETE', `products/${unused}`, 'admin')).status, 200)
+    assert.equal(await adminProduct(unused), undefined)
+    assert.equal((await call('DELETE', `products/${unused}`, 'admin')).status, 404)
+
+    await submitQuote()
+    const res = await call('DELETE', 'products/tile-adhesive', 'admin')
+    assert.equal(res.status, 409)
+    assert.equal((await res.json()).error, 'product_in_use')
+    assert.ok(await adminProduct('tile-adhesive'))
   })
 })

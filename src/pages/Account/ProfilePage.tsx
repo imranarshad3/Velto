@@ -9,7 +9,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      <title>Profile — NOVARO</title>
+      <title>Profile — VELTO</title>
       <AccountHeading title="Profile & security" crumbs={[{ label: 'Profile' }]}>
         Manage your name, email addresses, password and signed-in devices.
       </AccountHeading>
@@ -18,7 +18,7 @@ export default function ProfilePage() {
           <UserProfile routing="path" path="/account/profile" appearance={clerkAppearance} />
         </div>
       ) : (
-        <dl className="grid gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-5 sm:grid-cols-2">
+        <dl className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
           <div>
             <dt className="text-[0.75rem] font-semibold tracking-[0.12em] text-muted uppercase">Name</dt>
             <dd className="font-semibold">{auth.user?.name}</dd>

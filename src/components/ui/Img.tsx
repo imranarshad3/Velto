@@ -12,8 +12,8 @@ interface ImgProps {
 
 /** Lazy, CLS-safe image that collapses to the parent's background colour if the file fails to load. */
 export default function Img({ image, className = '', alt = image.alt, priority = false }: ImgProps) {
-  const [failed, setFailed] = useState(false)
-  if (failed) return null
+  const [failed, setFailed] = useState<string | null>(null)
+  if (!image.src || failed === image.src) return null
 
   return (
     <img
@@ -24,7 +24,7 @@ export default function Img({ image, className = '', alt = image.alt, priority =
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : 'auto'}
       decoding="async"
-      onError={() => setFailed(true)}
+      onError={() => setFailed(image.src)}
       className={className}
     />
   )

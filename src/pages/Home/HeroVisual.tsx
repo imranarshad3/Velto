@@ -10,12 +10,12 @@ interface HeroVisualProps {
  * when no image is supplied or the file fails to load.
  */
 export default function HeroVisual({ image }: HeroVisualProps) {
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<string | null>(null)
 
-  if (image && !failed) {
+  if (image?.src && failed !== image.src) {
     return (
       <img
-        onError={() => setFailed(true)}
+        onError={() => setFailed(image.src)}
         src={image.src}
         alt={image.alt}
         width={image.width}

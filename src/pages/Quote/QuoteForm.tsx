@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CircleAlert, LoaderCircle, Lock, Plus, Send, Trash } from 'lucide-react'
+import { CircleAlert, LoaderCircle, Lock, Package, Plus, Send, ShieldCheck, Trash } from 'lucide-react'
 import { Link } from 'react-router'
+import { buttonClass } from '../../components/ui/button.ts'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import { demoCategories } from '../../data/demoCategories.ts'
@@ -48,16 +49,17 @@ const groupProducts = (products: CatalogProduct[]) =>
     .map((category) => ({ category, products: products.filter((p) => p.categorySlug === category.slug) }))
     .filter((group) => group.products.length > 0)
 
-function Section({ step, title, children }: { step: number; title: string; children: ReactNode }) {
+function Section({ step, title, description, children }: { step: number; title: string; description?: string; children: ReactNode }) {
   return (
-    <fieldset className="min-w-0 border-t border-border pt-6 first:border-0 first:pt-0">
-      <legend className="flex items-center gap-3 font-display text-[1.375rem] text-ink">
-        <span aria-hidden="true" className="grid size-8 place-items-center rounded-full bg-forest-soft font-sans text-[0.875rem] font-bold text-forest">
-          {step}
+    <fieldset className="relative min-w-0 rounded-[var(--radius-card)] border border-border bg-surface p-[clamp(1.25rem,3.5vw,2rem)] shadow-[var(--shadow-soft)] transition-[border-color,box-shadow] duration-300 ease-[var(--ease-premium)] focus-within:border-forest/30 focus-within:shadow-[var(--shadow-card)]">
+      <legend className="float-left flex w-full items-center gap-3.5 font-display text-[clamp(1.25rem,1.15rem+0.4vw,1.5rem)] leading-tight text-ink">
+        <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-xl bg-[linear-gradient(180deg,var(--color-forest-mid),var(--color-forest))] font-sans text-[0.9375rem] font-bold text-white shadow-[var(--shadow-button)] tabular-nums">
+          {String(step).padStart(2, '0')}
         </span>
-        {title}
+        <span className="min-w-0">{title}</span>
       </legend>
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">{children}</div>
+      {description && <p className="clear-left pt-2 pl-[3.375rem] text-[0.875rem] text-muted">{description}</p>}
+      <div className="clear-left grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] pt-6 md:grid-cols-2">{children}</div>
     </fieldset>
   )
 }
@@ -138,18 +140,19 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
               setFocus((index >= 0 ? `items.${index}.${key}` : 'items.0.productSlug') as Parameters<typeof setFocus>[0])
             } else if (first) setFocus(first)
           })(event)
-        } aria-labelledby="quote-form-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-[clamp(1.25rem,4vw,2.5rem)]">
-        <div className="mb-6 flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 id="quote-form-title" className="font-display text-[clamp(1.5rem,1.3rem+0.8vw,2rem)]">
+        } aria-labelledby="quote-form-title" aria-busy={isSubmitting} className="flex min-w-0 flex-col gap-5">
+        <div className="flex flex-col gap-4 pb-1 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[0.75rem] font-bold tracking-[0.18em] text-copper uppercase">Five short steps</p>
+            <h2 id="quote-form-title" className="mt-1 font-display text-[clamp(1.625rem,1.35rem+0.9vw,2.125rem)] leading-tight">
               Quote request
             </h2>
-            <p className="text-[0.875rem] text-muted">
+            <p className="mt-1 text-[0.875rem] text-muted">
               Fields marked <span className="text-copper">*</span> are required.
             </p>
           </div>
           {auth.enabled && auth.loaded && (
-            <p className="flex items-center gap-2 rounded-xl bg-sand/70 px-3.5 py-2 text-[0.8125rem] text-ink">
+            <p className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-1.5 text-[0.8125rem] text-ink shadow-[var(--shadow-soft)] sm:max-w-[24rem]">
               <Lock aria-hidden="true" className="size-4 shrink-0 text-forest" />
               {auth.signedIn ? (
                 'Signed in: this request will appear in My quotes.'
@@ -167,14 +170,14 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
         </div>
 
         {formError && (
-          <div ref={errorRef} tabIndex={-1} role="alert" className="mb-6 flex gap-3 rounded-xl border border-danger/30 bg-danger/5 p-4 text-[0.9375rem] text-danger focus:outline-none">
+          <div ref={errorRef} tabIndex={-1} role="alert" className="flex gap-3 rounded-[var(--radius-card)] border border-danger/30 bg-danger-soft p-4 text-[0.9375rem] text-danger focus:outline-none focus-visible:ring-2 focus-visible:ring-danger/40">
             <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
             <p>{formError}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-8">
-          <Section step={1} title="Contact details">
+        <div className="flex flex-col gap-5">
+          <Section step={1} title="Contact details" description="So we know who to send the quote to.">
             <Field id="fullName" label="Full name" required error={err('fullName')}>
               {(a) => <input {...a} {...register('fullName')} autoComplete="name" className={inputClass} />}
             </Field>
@@ -189,22 +192,27 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
             </Field>
           </Section>
 
-          <Section step={2} title="Products">
-            <div className="flex flex-col gap-4 sm:col-span-2">
+          <Section step={2} title="Products" description="Choose products and approximate quantities, if you know them.">
+            <div className="flex flex-col gap-4 md:col-span-2">
               {unknownProduct && (
-                <p className="rounded-xl bg-sand/70 p-3 text-[0.875rem] text-ink">
+                <p className="rounded-xl border border-copper/25 bg-copper-soft/60 p-3.5 text-[0.875rem] text-ink">
                   The product in your link isn’t in our catalogue. Choose one below, or send a general enquiry.
                 </p>
               )}
-              {fields.length === 0 && <p className="text-[0.9375rem] text-muted">No products added: this will be sent as a general enquiry.</p>}
+              {fields.length === 0 && (
+                <p className="flex items-center gap-3 rounded-xl border border-dashed border-border bg-canvas p-4 text-[0.9375rem] text-muted">
+                  <Package aria-hidden="true" className="size-5 shrink-0 text-forest/70" />
+                  No products added: this will be sent as a general enquiry.
+                </p>
+              )}
               {itemsError && (
                 <p id="items-error" role="alert" className="text-[0.8125rem] font-semibold text-danger">
                   {itemsError}
                 </p>
               )}
-              <ul className="flex flex-col gap-4">
+              <ul className="flex flex-col gap-3">
                 {fields.map((field, index) => (
-                  <li key={field.id} className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-canvas/60 p-3.5 sm:grid-cols-[minmax(0,1fr)_7rem_8rem_auto] sm:items-start">
+                  <li key={field.id} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-[var(--grid-gap)] rounded-xl border border-border bg-canvas/70 p-4 transition-colors hover:border-forest/25 sm:grid-cols-[minmax(0,1fr)_7rem_8rem_auto] sm:items-start">
                     <Field id={`items.${index}.productSlug`} label={`Product ${index + 1}`} required className="col-span-2 sm:col-span-1" error={itemErr(index, 'productSlug')}>
                       {(a) => (
                         <select {...a} {...register(`items.${index}.productSlug`)} className={inputClass}>
@@ -239,7 +247,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-[0.875rem] font-semibold text-muted hover:bg-sand hover:text-danger sm:col-span-1 sm:mt-[1.8rem]"
+                      className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-3 text-[0.875rem] font-semibold text-muted transition-colors hover:border-danger/30 hover:bg-danger-soft hover:text-danger sm:col-span-1 sm:mt-[1.8rem] sm:min-h-12 sm:border-transparent sm:bg-transparent"
                       aria-label={`Remove product ${index + 1}`}
                     >
                       <Trash aria-hidden="true" className="size-4" /> <span className="sm:sr-only">Remove</span>
@@ -251,14 +259,14 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
                 type="button"
                 onClick={() => append({ productSlug: '' })}
                 disabled={fields.length >= MAX_QUOTE_ITEMS}
-                className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg border border-dashed border-forest/50 px-4 text-[0.875rem] font-semibold text-forest hover:border-forest hover:bg-forest-soft disabled:opacity-50"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-forest/40 bg-forest-soft/30 px-4 text-[0.9375rem] font-semibold text-forest transition-colors duration-200 hover:border-forest hover:bg-forest-soft disabled:opacity-50 sm:w-fit"
               >
                 <Plus aria-hidden="true" className="size-4" /> {fields.length ? 'Add another product' : 'Add a product'}
               </button>
             </div>
           </Section>
 
-          <Section step={3} title="Project">
+          <Section step={3} title="Project" description="A few details help us recommend the right system.">
             <Field id="projectType" label="Project type" error={err('projectType')}>
               {(a) => (
                 <select {...a} {...register('projectType')} className={inputClass}>
@@ -271,12 +279,12 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
                 </select>
               )}
             </Field>
-            <div className="hidden sm:block" />
+            <div className="hidden md:block" />
             <Field
               id="description"
               label="Project details"
               required
-              className="sm:col-span-2"
+              className="md:col-span-2"
               hint={`Surfaces, areas, timeline and anything else that helps. ${description.length}/5000`}
               error={err('description')}
             >
@@ -284,7 +292,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
             </Field>
           </Section>
 
-          <Section step={4} title="Delivery">
+          <Section step={4} title="Delivery" description="Roughly where the products are needed.">
             <Field id="city" label="City / region" required error={err('city')}>
               {(a) => <input {...a} {...register('city')} autoComplete="address-level2" className={inputClass} />}
             </Field>
@@ -294,18 +302,18 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
           </Section>
 
           <Section step={5} title="Confirm">
-            <div className="sm:col-span-2">
-              <label htmlFor="consent" className="flex min-h-11 cursor-pointer items-start gap-3 text-[0.9375rem]">
+            <div className="md:col-span-2">
+              <label htmlFor="consent" className="flex min-h-11 cursor-pointer items-start gap-3.5 rounded-xl border border-border bg-canvas/70 p-4 text-[0.9375rem] leading-relaxed transition-colors hover:border-forest/30 has-[:checked]:border-forest/40 has-[:checked]:bg-forest-soft/50 has-[:focus-visible]:outline-[0.1875rem] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-copper has-[[aria-invalid=true]]:border-danger/40 has-[[aria-invalid=true]]:bg-danger-soft/40">
                 <input
                   id="consent"
                   type="checkbox"
                   {...register('consent')}
                   aria-invalid={Boolean(err('consent'))}
                   aria-describedby={err('consent') ? 'consent-error' : undefined}
-                  className="mt-1 size-[1.125rem] shrink-0 accent-forest"
+                  className="mt-1 size-5 shrink-0 cursor-pointer accent-forest"
                 />
                 <span>
-                  I agree that NOVARO may use these details to respond to this quote request. See our{' '}
+                  I agree that VELTO may use these details to respond to this quote request. See our{' '}
                   <Link to="/privacy" className="font-semibold text-forest underline underline-offset-2">
                     privacy policy
                   </Link>
@@ -313,7 +321,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
                 </span>
               </label>
               {err('consent') && (
-                <p id="consent-error" className="mt-1 text-[0.8125rem] font-semibold text-danger">
+                <p id="consent-error" className="mt-2 flex items-center gap-1.5 text-[0.8125rem] font-semibold text-danger before:size-1.5 before:shrink-0 before:rounded-full before:bg-danger">
                   {err('consent')}
                 </p>
               )}
@@ -325,26 +333,25 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
               <input id="website" type="text" tabIndex={-1} autoComplete="off" {...register('website')} />
             </div>
 
-            <div className="sm:col-span-2">
+            <div className="empty:hidden md:col-span-2">
               <Turnstile onToken={onToken} />
             </div>
           </Section>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[0.8125rem] text-muted">We only use your details to respond to this request.</p>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-forest px-7 font-semibold text-white transition-colors hover:bg-forest-dark disabled:cursor-wait disabled:opacity-70"
-          >
+        <div className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-forest/15 bg-forest-soft/50 p-[clamp(1.25rem,3vw,1.5rem)] sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex min-w-0 items-start gap-2.5 text-[0.875rem] text-ink">
+            <ShieldCheck aria-hidden="true" className="mt-0.5 size-[1.125rem] shrink-0 text-forest" />
+            We only use your details to respond to this request.
+          </p>
+          <button type="submit" disabled={isSubmitting} className={buttonClass('primary', 'lg', 'w-full disabled:pointer-events-auto disabled:cursor-wait disabled:opacity-80 sm:w-auto')}>
             {isSubmitting ? (
               <>
                 <LoaderCircle aria-hidden="true" className="size-5 animate-spin" /> Sending…
               </>
             ) : (
               <>
-                Send quote request <Send aria-hidden="true" className="size-4" />
+                Send quote request <Send aria-hidden="true" className="size-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
               </>
             )}
           </button>

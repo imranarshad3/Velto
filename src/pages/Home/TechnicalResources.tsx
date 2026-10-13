@@ -1,50 +1,75 @@
+import { useContentData } from '../../features/cms/context.ts'
+import { useContent } from '../../features/cms/context.ts'
+import { Link } from 'react-router'
 import { ArrowRight } from 'lucide-react'
+import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
-import { resources } from '../../data/homeContent.ts'
+import ButtonLink from '../../components/ui/ButtonLink.tsx'
+import { buttonArrow } from '../../components/ui/button.ts'
+import { resources as defaultresources } from '../../data/homeContent.ts'
 
 export default function TechnicalResources() {
+  const resources = useContentData('home', 'TechnicalResources.data', defaultresources)
+  const cms = useContent('home', 'TechnicalResources')
   return (
-    <section aria-labelledby="resources-title" className="border-t border-border py-[var(--section-gap)]">
-      <div className="container-page">
-        <SectionHeading
-          id="resources-title"
-          title="Technical Resources"
-          description="Documentation to help you choose and apply products correctly."
-        />
-        <ul className="mt-8 grid gap-4 min-[30rem]:grid-cols-2 lg:grid-cols-4">
-          {resources.map(({ title, text, icon: Icon, href }) => {
+    <section aria-labelledby="resources-title" className="bg-cream py-[var(--section-gap)]">
+      <div className="container-page grid gap-[clamp(1.75rem,4vw,4rem)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
+        <Reveal className="min-w-0">
+          <SectionHeading
+            id="resources-title"
+            eyebrow={cms("field-1", "Documentation")}
+            title={cms("field-2", "Technical Resources")}
+            description={cms("field-3", "Documentation to help you choose and apply products correctly.")}
+          />
+          <div className="mt-8 rounded-[var(--radius-card)] border border-dashed border-sand-deep p-5">
+            <p className="text-[0.9375rem] leading-relaxed text-muted">
+              {cms("field-4", "Search verified data sheets and installation guides, or estimate quantities with the coverage calculator.")}</p>
+            <ButtonLink to={cms("field-5", "/resources")} variant="secondary" className="mt-4">
+              {cms("field-6", "Visit the resource hub ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+            </ButtonLink>
+          </div>
+        </Reveal>
+
+        {/* Index-style list: distinct from the card grids elsewhere on the page. */}
+        <ul className="surface-card min-w-0 divide-y divide-border overflow-hidden">
+          {resources.map(({ title, text, icon: Icon, href }, index) => {
             const body = (
               <>
-                <span className="grid size-11 place-items-center rounded-xl bg-sand text-copper">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-copper-soft text-copper">
                   <Icon aria-hidden="true" className="size-5" />
                 </span>
-                <span className="mt-4 block font-semibold text-ink">{title}</span>
-                <span className="mt-1 block text-[0.875rem] text-muted">{text}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-bold text-ink">{title}</span>
+                  <span className="mt-0.5 block text-[0.875rem] text-muted">{text}</span>
+                  {!href && <span className="mt-2 inline-block rounded-full border border-border bg-sand px-2.5 py-0.5 text-[0.75rem] font-semibold text-muted sm:hidden">{cms("field-7", "Coming soon")}</span>}
+                </span>
                 {href ? (
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-[0.875rem] font-semibold text-forest">
-                    Get help <ArrowRight aria-hidden="true" className="size-4" />
+                  <span className="inline-flex shrink-0 items-center gap-1.5 text-[0.875rem] font-semibold text-forest">
+                    <span className="max-[30rem]:sr-only">{href.startsWith('#') ? 'Get help' : 'Open'}</span>
+                    <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                   </span>
                 ) : (
-                  <span className="mt-auto pt-4">
-                    <span className="inline-block rounded-full bg-sand px-2.5 py-0.5 text-[0.75rem] font-semibold text-muted">
-                      Coming soon
-                    </span>
-                  </span>
+                  <span className="hidden shrink-0 rounded-full border border-border bg-sand px-2.5 sm:inline-block py-0.5 text-[0.75rem] font-semibold text-muted">
+                    {cms("field-8", "Coming soon")}</span>
                 )}
               </>
             )
-            const card = 'flex h-full flex-col rounded-[var(--radius-card)] border border-border bg-surface p-5'
+            const row = 'flex min-h-[5.5rem] items-center gap-4 px-[clamp(1rem,3vw,1.75rem)] py-4'
 
             return (
-              <li key={title}>
-                {href ? (
-                  <a href={href} className={`${card} transition-shadow hover:shadow-[var(--shadow-card)]`}>
+              <Reveal as="li" key={title} delay={index * 0.06}>
+                {href?.startsWith('#') ? (
+                  <a href={href} className={`group ${row} transition-colors duration-300 hover:bg-forest-soft/50`}>
                     {body}
                   </a>
+                ) : href ? (
+                  <Link to={href} className={`group ${row} transition-colors duration-300 hover:bg-forest-soft/50`}>
+                    {body}
+                  </Link>
                 ) : (
-                  <div className={card}>{body}</div>
+                  <div className={row}>{body}</div>
                 )}
-              </li>
+              </Reveal>
             )
           })}
         </ul>

@@ -20,7 +20,7 @@ function ClerkBridge({ children }: { children: ReactNode }) {
       user: user
         ? { id: user.id, name: user.fullName ?? user.firstName ?? null, email: user.primaryEmailAddress?.emailAddress ?? null, imageUrl: user.imageUrl ?? null }
         : null,
-      getToken: () => getToken(),
+      getToken: (options) => getToken(options?.skipCache ? { skipCache: true } : undefined),
       signOut: () => signOut(),
     }),
     [isLoaded, isSignedIn, getToken, user, signOut],

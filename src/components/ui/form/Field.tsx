@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 export const inputClass =
-  'block min-h-12 w-full rounded-lg border border-border bg-surface px-3.5 text-[1rem] text-ink transition-colors placeholder:text-muted/70 hover:border-ink/30 focus:border-forest focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-offset-2 focus-visible:outline-copper aria-[invalid=true]:border-danger'
+  'block min-h-12 w-full rounded-xl border border-border bg-surface px-4 text-[1rem] text-ink shadow-[inset_0_0.0625rem_0.125rem_rgb(23_28_25/0.04)] transition-[border-color,box-shadow] duration-200 placeholder:text-muted/70 hover:border-ink/25 focus:border-forest focus:shadow-[0_0_0_0.25rem_rgb(23_60_45/0.1)] focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-offset-2 focus-visible:outline-copper aria-[invalid=true]:border-danger aria-[invalid=true]:bg-danger-soft/40'
 
 export interface FieldControlProps {
   id: string
@@ -43,7 +43,7 @@ export default function Field({ id, label, required, hint, error, className = ''
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="text-[0.8125rem] font-semibold text-danger">
+        <p id={`${id}-error`} className="flex items-center gap-1.5 text-[0.8125rem] font-semibold text-danger before:size-1.5 before:shrink-0 before:rounded-full before:bg-danger">
           {error}
         </p>
       )}

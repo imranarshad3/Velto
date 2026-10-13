@@ -19,9 +19,9 @@ interface LegalLayoutProps {
 export default function LegalLayout({ title, updated, intro, sections }: LegalLayoutProps) {
   return (
     <>
-      <title>{`${title} — NOVARO`}</title>
+      <title>{`${title} — VELTO`}</title>
       <PageHeader title={title} crumbs={[{ label: 'Home', to: '/' }, { label: title }]} description={<p>Last updated {updated}</p>} />
-      <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-[clamp(2rem,4vw,3.5rem)] pb-[var(--section-gap)] lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-[var(--content-pad)] pb-[var(--section-gap)] lg:grid-cols-[15rem_minmax(0,1fr)]">
         <nav aria-label="On this page" className="hidden lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:block lg:self-start">
           <p className="px-3 text-[0.75rem] font-semibold tracking-[0.14em] text-muted uppercase">On this page</p>
           <ul className="mt-2">
@@ -34,7 +34,7 @@ export default function LegalLayout({ title, updated, intro, sections }: LegalLa
             ))}
           </ul>
         </nav>
-        <article className="max-w-[48rem] min-w-0">
+        <article className="surface-card max-w-[52rem] min-w-0 rounded-[var(--radius-panel)] p-[clamp(1.25rem,4vw,3rem)]">
           <p role="note" className="flex gap-3 rounded-xl border border-copper/30 bg-copper/5 p-4 text-[0.9375rem]">
             <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-copper" />
             <span>

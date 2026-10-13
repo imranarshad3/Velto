@@ -1,107 +1,156 @@
 import { Link } from 'react-router'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Minus, Plus, ShoppingBasket, Trash2 } from 'lucide-react'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import { productPath } from '../../data/catalog.ts'
 import { demoCategories } from '../../data/demoCategories.ts'
+import { MAX_CART_ITEMS, useCart } from '../../features/cart/cartStore.ts'
 import { cardPrice } from '../../features/catalog/price.ts'
+import { useToasts } from '../../features/ui/toastStore.ts'
 import Img from '../ui/Img.tsx'
-import AddToCartButton from './AddToCartButton.tsx'
 import WishlistButton from './WishlistButton.tsx'
 
 interface ProductCardProps {
   product: CatalogProduct
   layout?: 'grid' | 'list'
-  /** `roomy` enlarges grid cards on large desktops (>= 90rem); smaller viewports are unchanged. */
+  /** Kept for call-site compatibility; the card now sizes itself with container queries. */
   density?: 'default' | 'roomy'
 }
 
 const categories = new Map(demoCategories.map((c) => [c.slug, c]))
+const MAX_QTY = 9999
+const clamp = (n: number) => Math.min(MAX_QTY, Math.max(1, Math.round(n) || 1))
 
-/** DEMO card: no price, stock, rating or cart action until the catalogue is verified. */
-export default function ProductCard({ product, layout = 'grid', density = 'default' }: ProductCardProps) {
+/**
+ * Product card: full-bleed image, category, title, price, quote link and an add-to-cart button that
+ * becomes a cart-bound quantity stepper once the product is in the cart.
+ * Unverified products keep the DEMO badge and show only illustrative prices (see `cardPrice`).
+ * Variant swatches are intentionally absent: the catalogue has no variant data yet.
+ */
+export default function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
   const titleId = `${product.id}-title`
   const category = categories.get(product.categorySlug)
   const Icon = category?.icon
   const list = layout === 'list'
-  const roomy = density === 'roomy' && !list
   const price = cardPrice(product)
+
+  const cartItem = useCart((s) => s.items.find((i) => i.slug === product.slug))
+  const show = useToasts((s) => s.show)
+  const qty = clamp(cartItem?.quantity ?? 1)
+  const unit = cartItem?.unit ?? 'units'
+
+  const addToCart = () => {
+    const { add, update } = useCart.getState()
+    const result = add(product.slug)
+    if (result === 'full') {
+      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Request a quote for these first.`, { label: 'View cart', to: '/cart' })
+      return
+    }
+    update(product.slug, { quantity: 1, unit })
+    show(`${product.name} added to your cart`, { label: 'View cart', to: '/cart' })
+  }
+
+  const setQty = (n: number) => useCart.getState().update(product.slug, { quantity: clamp(n) })
+
+  const decrement = () => {
+    if (qty > 1) return setQty(qty - 1)
+    useCart.getState().remove(product.slug)
+    show(`${product.name} removed from your cart`, { label: 'View cart', to: '/cart' })
+  }
+
+  const step = 'grid size-11 shrink-0 place-items-center text-ink transition-colors hover:bg-sand disabled:cursor-not-allowed disabled:text-muted/50 disabled:hover:bg-transparent'
 
   return (
     <article
       aria-labelledby={titleId}
-      className={`@container group relative isolate flex h-full overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface shadow-[0_0.0625rem_0.125rem_rgb(23_28_25/0.04)] transition-[transform,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.2,0.7,0.2,1)] focus-within:border-forest/40 hover:-translate-y-1 hover:border-forest/25 hover:shadow-[0_1.5rem_3rem_-1.5rem_rgb(23_60_45/0.35)] motion-reduce:hover:translate-y-0 ${list ? 'flex-row' : 'flex-col'}`}
+      className={`@container group relative isolate flex h-full overflow-hidden rounded-[var(--radius-card)] border border-border/80 bg-surface shadow-[0_0.125rem_0.375rem_rgb(23_28_25/0.04)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-premium)] focus-within:border-forest/35 hover:-translate-y-1 hover:border-forest/20 hover:shadow-[0_1.5rem_3rem_-1.75rem_rgb(23_60_45/0.4)] motion-reduce:hover:translate-y-0 ${list ? 'flex-col sm:flex-row' : 'flex-col'}`}
     >
-      {/* Copper accent rule that draws in on hover/focus. */}
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-0 top-0 z-20 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-copper via-copper to-forest transition-transform duration-500 group-focus-within:scale-x-100 group-hover:scale-x-100"
-      />
-      <div
-        className={`relative grid shrink-0 place-items-center overflow-hidden bg-[radial-gradient(120%_90%_at_50%_30%,#fff_0%,#fff_45%,var(--color-sand)_100%)] ${list ? 'm-3 aspect-square w-[clamp(5.5rem,26%,10rem)] self-start rounded-xl p-[6%] ring-1 ring-border sm:m-4' : 'm-2 aspect-square rounded-[calc(var(--radius-card)-0.375rem)] p-[10%]'} ${roomy ? 'min-[90rem]:m-2.5 min-[90rem]:p-[9%]' : ''}`}
-      >
+      <div className={`relative grid shrink-0 place-items-center overflow-hidden bg-sand ${list ? 'aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(10rem,28%,14rem)]' : 'aspect-[5/4] w-full @[24rem]:aspect-[16/10]'}`}>
         {product.image ? (
           <Img
             image={product.image}
-            className="max-h-full w-auto object-contain drop-shadow-[0_0.75rem_1rem_rgb(23_28_25/0.12)] transition-transform duration-700 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover:scale-[1.06]"
+            className="h-[84%] w-auto max-w-[80%] object-contain mix-blend-multiply transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.05] motion-reduce:group-hover:scale-100"
           />
         ) : (
-          <span className="flex size-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-sand-deep text-muted">
-            {Icon && <Icon aria-hidden="true" className="size-[clamp(1.5rem,22%,2.5rem)] text-forest/60" />}
-            <span className={`text-[0.75rem] font-medium ${list ? 'sr-only sm:not-sr-only' : ''}`}>Image coming soon</span>
+          <span className="flex flex-col items-center gap-2 text-muted">
+            {Icon && <Icon aria-hidden="true" className="size-9 text-forest/50" />}
+            <span className="text-[0.75rem] font-medium">Image coming soon</span>
           </span>
         )}
         {!product.verified && (
-          <span className="absolute top-2.5 left-2.5 rounded-full border border-forest/15 bg-surface/85 px-2.5 py-0.5 text-[0.6875rem] font-bold tracking-[0.12em] text-forest backdrop-blur-sm">
+          <span className="absolute top-3 left-3 rounded-full bg-forest px-3 py-1 text-[0.6875rem] leading-none font-bold tracking-[0.12em] text-white @[18rem]:top-4 @[18rem]:left-4 @[18rem]:px-3.5 @[18rem]:py-1.5 @[18rem]:text-[0.75rem]">
             DEMO
           </span>
         )}
-        <WishlistButton slug={product.slug} name={product.name} className="absolute top-1.5 right-1.5 z-10 size-10 sm:size-11" />
+        <WishlistButton slug={product.slug} name={product.name} className="absolute top-2 right-2 z-10 bg-white @[18rem]:top-3 @[18rem]:right-3 @[18rem]:size-12" />
       </div>
-      <div className={`flex min-w-0 flex-1 flex-col ${list ? 'p-4 sm:p-5' : 'px-3.5 pt-3 pb-4 @[15rem]:px-5 @[15rem]:pb-5'} ${roomy ? 'min-[90rem]:px-6 min-[90rem]:pt-4 min-[90rem]:pb-6' : ''}`}>
-        {category && (
-          <p className={`flex items-center gap-1.5 text-[0.6875rem] font-bold tracking-[0.14em] text-copper uppercase ${roomy ? 'min-[90rem]:text-[0.75rem]' : ''}`}>
-            {Icon && <Icon aria-hidden="true" className="size-3.5" />}
-            {category.name}
-          </p>
-        )}
-        <h3 id={titleId} className={`mt-1.5 font-display text-[clamp(1.1875rem,1.1rem+0.3vw,1.375rem)] leading-[1.2] text-ink ${roomy ? 'min-[90rem]:mt-2 min-[90rem]:text-[clamp(1.5rem,1rem+0.55vw,1.75rem)]' : ''}`}>
-          {/* Stretched link: the whole card opens the product; the quote link sits above it. */}
-          <Link to={productPath(product)} className="transition-colors after:absolute after:inset-0 after:rounded-[var(--radius-card)] group-hover:text-forest">
-            {product.name}
-          </Link>
-        </h3>
-        <p className={`mt-1.5 line-clamp-2 text-[0.875rem] leading-relaxed text-muted ${roomy ? 'min-[90rem]:mt-2 min-[90rem]:text-[0.9375rem]' : ''}`}>{product.usage}</p>
-        <div className={`mt-auto flex flex-wrap items-end gap-x-2 gap-y-3 pt-4 ${list ? 'sm:flex-nowrap sm:items-center' : ''} ${roomy ? 'min-[90rem]:gap-y-4 min-[90rem]:pt-5' : ''}`}>
-          <div className={`flex min-w-0 items-end justify-between gap-3 ${list ? 'mr-auto' : 'w-full border-t border-border pt-3'}`}>
-            <p className="flex min-w-0 flex-col">
-              <span className="flex items-center gap-1.5 text-[0.6875rem] font-semibold tracking-[0.1em] text-muted uppercase">
-                Price
-                {price?.demo && <span className="rounded-sm bg-sand px-1 py-0.5 text-[0.625rem] font-bold tracking-[0.08em] text-copper">DEMO</span>}
-              </span>
-              <span className={`leading-tight font-extrabold text-ink tabular-nums ${price ? 'text-[clamp(1.125rem,1.05rem+0.3vw,1.3125rem)]' : 'text-[0.9375rem]'} ${roomy ? 'min-[90rem]:text-[1.5rem]' : ''}`}>
-                {price ? (
-                  <>
-                    {price.label}
-                    {price.demo && <span className="sr-only"> (illustrative demo price)</span>}
-                  </>
-                ) : (
-                  'On request'
-                )}
-              </span>
-            </p>
-            {!list && <AddToCartButton slug={product.slug} name={product.name} className="relative z-10" />}
-          </div>
-          <Link
-            to={`/quote?product=${product.slug}`}
-            className={`relative z-10 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-forest px-4 text-[0.875rem] font-semibold whitespace-nowrap text-white shadow-[0_0.5rem_1rem_-0.5rem_rgb(23_60_45/0.6)] transition-colors hover:bg-forest-dark ${list ? 'flex-1 sm:flex-none' : 'w-full'} ${roomy ? 'min-[90rem]:min-h-12 min-[90rem]:text-[0.9375rem]' : ''}`}
-          >
-            {/* Narrow cards (two-up on small phones) shorten the label to avoid wrapping. */}
-            <span>
-              <span className={list ? '' : 'hidden @[13rem]:inline'}>Request </span>Quote<span className="sr-only"> for {product.name}</span>
+
+      <div className="flex min-w-0 flex-1 flex-col p-4 @[18rem]:px-5 @[18rem]:pt-4 @[18rem]:pb-5">
+        {category && <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-sage uppercase @[18rem]:text-[0.75rem]">{category.name}</p>}
+        <div className="mt-1 flex flex-col gap-x-4 gap-y-1 @[18rem]:flex-row @[18rem]:items-start @[18rem]:justify-between">
+          <h3 id={titleId} className="min-w-0 font-display text-[1.3125rem] leading-[1.15] text-forest-deep @[20rem]:text-[1.5rem]">
+            {/* Stretched link: the whole card opens the product; controls sit above it. */}
+            <Link to={productPath(product)} className="transition-colors after:absolute after:inset-0 after:rounded-[var(--radius-card)] hover:text-forest">
+              {product.name}
+            </Link>
+          </h3>
+          <p className="flex shrink-0 flex-col @[18rem]:items-end @[18rem]:pt-0.5">
+            <span className={`leading-tight font-extrabold whitespace-nowrap text-forest tabular-nums ${price ? 'text-[1.125rem] @[18rem]:text-[1.1875rem]' : 'text-[0.9375rem]'}`}>
+              {price ? price.label : 'Price on request'}
+              {price?.demo && <span className="sr-only"> (illustrative demo price)</span>}
             </span>
-            <ArrowRight aria-hidden="true" className="hidden size-4 shrink-0 @[11rem]:block transition-transform duration-300 group-hover:translate-x-0.5" />
+            {price?.demo && <span aria-hidden="true" className="text-[0.6875rem] font-semibold tracking-[0.08em] text-copper uppercase">Demo price</span>}
+          </p>
+        </div>
+        {list && <p className="mt-2 line-clamp-2 text-[0.9375rem] leading-relaxed text-muted">{product.usage}</p>}
+
+        <div className={`relative z-10 mt-auto flex flex-wrap items-center gap-2 pt-4 @[15rem]:flex-nowrap ${list ? '@[40rem]:justify-end' : ''}`}>
+          <Link
+            to={`/quote?product=${product.slug}&qty=${qty}&unit=${unit}`}
+            className={`order-last inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-forest px-4 text-[0.9375rem] font-semibold whitespace-nowrap text-white shadow-[0_0.5rem_1rem_-0.5rem_rgb(23_60_45/0.6)] transition-colors hover:bg-forest-dark @[15rem]:order-none @[15rem]:w-auto @[15rem]:flex-1 @[20rem]:px-5 ${list ? '@[40rem]:max-w-[16rem]' : ''}`}
+          >
+            <span>
+              <span className="@min-[15rem]:@max-[19rem]:sr-only">Request </span>Quote<span className="sr-only"> for {qty} {unit} of {product.name}</span>
+            </span>
+            <ArrowRight aria-hidden="true" className="size-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
           </Link>
-          {list && <AddToCartButton slug={product.slug} name={product.name} className="relative z-10" />}
+          {cartItem ? (
+            <div role="group" aria-label={`Cart quantity for ${product.name}`} className="flex flex-1 items-center overflow-hidden rounded-full border border-forest/40 bg-surface @[15rem]:flex-none">
+              <button
+                type="button"
+                className={`${step} bg-canvas ${qty <= 1 ? 'hover:text-danger' : ''}`}
+                onClick={decrement}
+                aria-label={qty <= 1 ? `Remove ${product.name} from cart` : 'Decrease quantity'}
+              >
+                {qty <= 1 ? <Trash2 aria-hidden="true" className="size-4" /> : <Minus aria-hidden="true" className="size-4" />}
+              </button>
+              <label htmlFor={`${product.id}-qty`} className="sr-only">
+                Quantity in cart ({unit})
+              </label>
+              <input
+                id={`${product.id}-qty`}
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={MAX_QTY}
+                value={qty}
+                onChange={(e) => setQty(Number(e.target.value))}
+                className="h-11 w-full min-w-10 border-x border-border bg-surface text-center text-[1rem] font-semibold text-ink tabular-nums [appearance:textfield] focus:outline-none focus-visible:bg-forest-soft/50 @[15rem]:w-10 @[20rem]:w-12 [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <button type="button" className={`${step} bg-canvas`} onClick={() => setQty(qty + 1)} disabled={qty >= MAX_QTY} aria-label="Increase quantity">
+                <Plus aria-hidden="true" className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={addToCart}
+              aria-label={`Add ${product.name} to cart`}
+              className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-forest bg-surface px-4 text-[0.9375rem] font-semibold whitespace-nowrap text-forest transition-colors hover:bg-forest hover:text-white @[15rem]:flex-none"
+            >
+              <ShoppingBasket aria-hidden="true" className="size-[1.125rem] shrink-0" />
+              <span className="@min-[15rem]:@max-[19rem]:sr-only">Add to cart</span>
+            </button>
+          )}
         </div>
       </div>
     </article>

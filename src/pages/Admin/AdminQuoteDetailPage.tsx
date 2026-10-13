@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
-import { LoaderCircle } from 'lucide-react'
+import { ImageOff, LoaderCircle } from 'lucide-react'
+import Img from '../../components/ui/Img.tsx'
 import QuoteStatus from '../../components/commerce/QuoteStatus.tsx'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
 import { productPath } from '../../data/catalog.ts'
@@ -15,6 +16,7 @@ import { useAppAuth } from '../../lib/auth/context.ts'
 import { useAuthedRemote } from '../../lib/useAuthedRemote.ts'
 import RemoteState from '../Account/RemoteState.tsx'
 import AdminHeading from './AdminHeading.tsx'
+import { buttonClass } from '../../components/ui/button.ts'
 import Badge from './Badge.tsx'
 
 function UpdateForm({ quote, onSaved }: { quote: AdminQuoteDetail; onSaved: () => void }) {
@@ -71,7 +73,7 @@ function UpdateForm({ quote, onSaved }: { quote: AdminQuoteDetail; onSaved: () =
       <Field id="admin-internal" label="Internal notes" hint="Staff only. Never shown to customers.">
         {(a) => <textarea {...a} value={internalNotes} onChange={(e) => setInternalNotes(e.target.value)} rows={4} maxLength={5000} className={`${inputClass} py-3`} />}
       </Field>
-      <button type="submit" disabled={saving} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-forest px-6 font-semibold text-white hover:bg-forest-dark disabled:opacity-70">
+      <button type="submit" disabled={saving} className={buttonClass('primary', 'md')}>
         {saving && <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />} Save changes
       </button>
     </form>
@@ -85,20 +87,20 @@ export default function AdminQuoteDetailPage() {
 
   return (
     <>
-      <title>{`${reference} — Admin — NOVARO`}</title>
+      <title>{`${reference} — Admin — VELTO`}</title>
       <AdminHeading title={reference} crumbs={[{ label: 'Quotes', to: '/admin/quotes' }, { label: reference }]} />
       <RemoteState state={state} reload={reload} skeleton={3}>
         {(quote) => (
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
+          <div className="grid gap-[var(--grid-gap)] xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
             <div className="flex flex-col gap-5">
-              <section aria-labelledby="customer-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="customer-title" className="surface-card p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 id="customer-title" className="font-display text-[1.375rem]">
                     Customer
                   </h2>
                   <Badge tone={quote.owner === 'account' ? 'soft' : 'sand'}>{quote.owner === 'account' ? 'Account' : 'Guest'}</Badge>
                 </div>
-                <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                <dl className="mt-3 grid gap-[var(--grid-gap)] sm:grid-cols-2">
                   {[
                     ['Name', quote.fullName],
                     ['Company', quote.company ?? '—'],
@@ -126,7 +128,7 @@ export default function AdminQuoteDetailPage() {
                   ))}
                 </dl>
               </section>
-              <section aria-labelledby="admin-items-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="admin-items-title" className="surface-card p-5">
                 <h2 id="admin-items-title" className="font-display text-[1.375rem]">
                   Products
                 </h2>
@@ -135,15 +137,20 @@ export default function AdminQuoteDetailPage() {
                     {quote.items.map((item) => {
                       const p = find(item.productSlug)
                       return (
-                        <li key={item.productSlug} className="flex flex-wrap justify-between gap-2 py-2.5">
-                          {p ? (
-                            <Link to={productPath(p)} className="font-semibold hover:text-forest hover:underline">
-                              {p.name}
-                            </Link>
-                          ) : (
-                            <span className="font-mono">{item.productSlug}</span>
-                          )}
-                          <span className="text-muted">{formatItemQuantity(item) ?? 'No quantity'}</span>
+                        <li key={item.productSlug} className="flex items-center gap-3 py-3">
+                          <span className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-border bg-white p-1">
+                            {p?.image ? <Img image={p.image} alt="" className="max-h-full w-auto object-contain mix-blend-multiply" /> : <ImageOff aria-hidden="true" className="size-4 text-muted" />}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            {p ? (
+                              <Link to={productPath(p)} className="font-semibold hover:text-forest hover:underline">
+                                {p.name}
+                              </Link>
+                            ) : (
+                              <span className="font-mono">{item.productSlug}</span>
+                            )}
+                          </span>
+                          <span className="rounded-full bg-sand px-3 py-1 text-[0.8125rem] font-semibold whitespace-nowrap text-ink tabular-nums">{formatItemQuantity(item) ?? 'No quantity'}</span>
                         </li>
                       )
                     })}
@@ -152,7 +159,7 @@ export default function AdminQuoteDetailPage() {
                   <p className="mt-2 text-muted">General enquiry.</p>
                 )}
               </section>
-              <section aria-labelledby="admin-desc-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="admin-desc-title" className="surface-card p-5">
                 <h2 id="admin-desc-title" className="font-display text-[1.375rem]">
                   Project details
                 </h2>
@@ -160,11 +167,11 @@ export default function AdminQuoteDetailPage() {
               </section>
             </div>
             <div className="flex flex-col gap-5">
-              <div className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <div className="surface-card p-5">
                 <QuoteStatus status={quote.status} />
               </div>
               <UpdateForm key={quote.updatedAt} quote={quote} onSaved={reload} />
-              <section aria-labelledby="admin-history-title" className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
+              <section aria-labelledby="admin-history-title" className="surface-card p-5">
                 <h2 id="admin-history-title" className="font-display text-[1.375rem]">
                   History
                 </h2>

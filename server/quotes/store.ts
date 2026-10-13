@@ -1,5 +1,8 @@
-import type { AdminCustomer, AdminMessage, AdminOverview, AdminProduct, AdminQuoteDetail, AdminQuoteRow, MessageStatus } from '../../src/features/admin/types.js'
+import type { WorkspaceStore } from '../workspace/store.js'
+import type { AdminCustomer, AdminMessage, AdminOverview, AdminProduct, AdminQuoteDetail, AdminQuoteRow, AdminInvite, AdminMemberRow, MessageStatus, ProductActivity, ProductStatus } from '../../src/features/admin/types.js'
 import type { ProductData } from '../../src/features/catalog/productSchema.js'
+import type { CoverageData } from '../../src/features/resources/schema.js'
+import type { ProductCoverage, ResourceKind, TechnicalResource } from '../../src/features/resources/types.js'
 import type { QuoteDetail, QuoteItemSummary, QuoteStatus, QuoteSummary } from '../../src/features/quotes/schema.js'
 
 export interface NewQuote {
@@ -33,8 +36,21 @@ export interface NewContactMessage {
   consentAt: string
 }
 
+export type StoredResource = TechnicalResource & { storagePath: string }
+export interface ResourceRecord {
+  title: string
+  summary: string | null
+  kind: ResourceKind
+  productSlugs: string[]
+  published: boolean
+  storagePath: string
+  fileName: string
+  fileSize: number
+}
+
 /** Persistence boundary. Implementations run only on the server. */
 export interface DataStore {
+  workspace: WorkspaceStore
   insert(quote: NewQuote): Promise<InsertedQuote>
   listByUser(clerkUserId: string, limit: number): Promise<QuoteSummary[]>
   findGuestQuote(reference: string, guestTokenHash: string): Promise<QuoteSummary | null>
@@ -46,7 +62,18 @@ export interface DataStore {
   // Catalogue & admin
   listProducts(options: { includeUnpublished: boolean }): Promise<AdminProduct[]>
   isAdmin(clerkUserId: string): Promise<boolean>
+  // Admin team (membership changes only through invitation rules; see migration M12)
+  hasOpenAdminInvites(): Promise<boolean>
+  /** Grants admin when an open, unexpired invitation matches one of the user's VERIFIED emails. */
+  acceptAdminInvite(clerkUserId: string, verifiedEmails: string[]): Promise<boolean>
+  createAdminInvite(actor: string, email: string): Promise<string>
+  revokeAdminInvite(actor: string, id: string): Promise<boolean>
+  removeAdmin(actor: string, clerkUserId: string): Promise<'ok' | 'not_found' | 'self' | 'last_admin'>
+  listAdminTeam(): Promise<{ members: AdminMemberRow[]; invites: AdminInvite[] }>
   saveProduct(actor: string, slug: string, data: ProductData, create: boolean): Promise<'ok' | 'not_found' | 'conflict'>
+  setProductStatus(actor: string, slug: string, status: ProductStatus): Promise<boolean>
+  /** 'in_use' when quote requests reference the product (archive it instead). */
+  deleteProduct(actor: string, slug: string): Promise<'ok' | 'not_found' | 'in_use'>
   adminListQuotes(filter: { status?: QuoteStatus; search?: string; limit: number; offset: number }): Promise<{ rows: AdminQuoteRow[]; total: number }>
   adminGetQuote(reference: string): Promise<AdminQuoteDetail | null>
   adminUpdateQuote(reference: string, actor: string, status: QuoteStatus, note: string | null, internalNotes: string | null): Promise<boolean>
@@ -54,6 +81,21 @@ export interface DataStore {
   adminCustomers(): Promise<AdminCustomer[]>
   adminListMessages(status?: MessageStatus): Promise<AdminMessage[]>
   adminUpdateMessage(id: string, actor: string, status: MessageStatus): Promise<boolean>
+  // Product analytics
+  /** Counts a view once per visitor key, product and UTC day; false for duplicates or unknown products. */
+  recordProductView(slug: string, visitorKey: string): Promise<boolean>
+  /** Daily views and quote demand since a UTC day (null = all time). */
+  productActivity(since: string | null): Promise<ProductActivity>
+  // Resource Center
+  listResources(options: { includeUnpublished: boolean }): Promise<StoredResource[]>
+  getResource(id: string): Promise<StoredResource | null>
+  /** Creates (id null) or updates a resource; null when the id does not exist. */
+  saveResource(actor: string, id: string | null, record: ResourceRecord): Promise<StoredResource | null>
+  /** Returns the deleted row (so its file can be removed), or null. */
+  deleteResource(actor: string, id: string): Promise<StoredResource | null>
+  listCoverage(): Promise<ProductCoverage[]>
+  saveCoverage(actor: string, slug: string, data: CoverageData): Promise<boolean>
+  deleteCoverage(actor: string, slug: string): Promise<boolean>
   /** Returns true when the request is within the limit. */
   hitRateLimit(key: string, windowSeconds: number, max: number): Promise<boolean>
 }

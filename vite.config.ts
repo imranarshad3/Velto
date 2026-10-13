@@ -28,10 +28,22 @@ function devApi(mode: string): Plugin {
     apply: 'serve',
     configureServer(server) {
       // Server-only variables (no VITE_ prefix) for the handlers; never exposed to the client bundle.
-      for (const [key, value] of Object.entries(loadEnv(mode, process.cwd(), ''))) process.env[key] ??= value
+      // Vite restarts in-process when .env changes, so values loaded from .env must be re-applied (not `??=`),
+      // otherwise the API keeps stale keys until a full restart. Variables set in the shell still win.
+      const g = globalThis as { __novaroShellEnv?: Set<string>; __novaroInjected?: string[] }
+      const shellKeys = (g.__novaroShellEnv ??= new Set(Object.keys(process.env)))
+      // loadEnv lets process.env override the files, so drop what we injected last time before re-reading.
+      for (const key of g.__novaroInjected ?? []) delete process.env[key]
+      g.__novaroInjected = []
+      for (const [key, value] of Object.entries(loadEnv(mode, process.cwd(), ''))) {
+        if (shellKeys.has(key)) continue
+        process.env[key] = value
+        g.__novaroInjected.push(key)
+      }
 
       server.middlewares.use(async (req, res, next) => {
-        const url = new URL(req.url ?? '/', 'http://localhost')
+        // Keep the real host:port (e.g. localhost:5173) so the API sees the same origin as the browser.
+        const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`)
         const route = resolveApiFile(url.pathname)
         if (!route) return next()
         try {
@@ -53,6 +65,8 @@ function devApi(mode: string): Plugin {
           response.headers.forEach((value, key) => res.setHeader(key, value))
           res.end(Buffer.from(await response.arrayBuffer()))
         } catch (error) {
+          // The browser cancelled the request (navigation, AbortController): nothing to report.
+          if (req.destroyed || (error as Error).message === 'aborted') return
           next(error)
         }
       })

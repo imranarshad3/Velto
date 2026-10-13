@@ -7,7 +7,7 @@ import AccountHeading from './AccountHeading.tsx'
 export default function OrdersPage() {
   return (
     <>
-      <title>Orders — NOVARO</title>
+      <title>Orders — VELTO</title>
       <AccountHeading title="Orders" crumbs={[{ label: 'Orders' }]} />
       <EmptyState
         icon={Package}
