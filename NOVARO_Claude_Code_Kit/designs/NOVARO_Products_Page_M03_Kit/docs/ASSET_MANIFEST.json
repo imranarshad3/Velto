@@ -1,0 +1,116 @@
+[
+  {
+    "path": "public/images/products/banners/professional-contractor.webp",
+    "width": 420,
+    "height": 430,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/banners/brand-story-construction.webp",
+    "width": 1394,
+    "height": 336,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/banners/waterproofing-feature.webp",
+    "width": 918,
+    "height": 380,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/hero/hero-building-detail.webp",
+    "width": 1188,
+    "height": 486,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/hero/hero-architecture.webp",
+    "width": 1372,
+    "height": 810,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/hero/architecture.webp",
+    "width": 426,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/hero/concept-products.webp",
+    "width": 504,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/admixtures.webp",
+    "width": 351,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/grouts-sealants.webp",
+    "width": 351,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/waterproofing.webp",
+    "width": 420,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/concrete-repair.webp",
+    "width": 357,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/tools-accessories.webp",
+    "width": 405,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/tile-adhesives.webp",
+    "width": 366,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/flooring-solutions.webp",
+    "width": 363,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/categories/surface-treatments.webp",
+    "width": 582,
+    "height": 234,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/catalog-concepts/concept-product-04.webp",
+    "width": 345,
+    "height": 402,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/catalog-concepts/concept-product-01.webp",
+    "width": 327,
+    "height": 402,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/catalog-concepts/concept-product-03.webp",
+    "width": 321,
+    "height": 402,
+    "status": "concept placeholder - not verified official photo"
+  },
+  {
+    "path": "public/images/products/catalog-concepts/concept-product-02.webp",
+    "width": 327,
+    "height": 402,
+    "status": "concept placeholder - not verified official photo"
+  }
+]

@@ -1,0 +1,35 @@
+/* Copy to src/styles/tokens.css when initializing app. All authored sizing is rem-based. */
+:root {
+  font-family: "Manrope", system-ui, sans-serif;
+  color: #171c19;
+  background: #f8f7f3;
+  font-synthesis: none;
+  --color-forest: #173c2d;
+  --color-forest-dark: #102a21;
+  --color-copper: #a5532a;
+  --color-copper-hover: #874121;
+  --color-ink: #171c19;
+  --color-muted: #666c68;
+  --color-canvas: #f8f7f3;
+  --color-surface: #fff;
+  --color-sand: #efe9e2;
+  --color-border: #e5e1db;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-display: "DM Serif Display", Georgia, serif;
+  --text-xs: .75rem;
+  --text-sm: .875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --h1: clamp(2.5rem, 5vw, 4.75rem);
+  --h2: clamp(1.75rem, 3vw, 2.75rem);
+  --h3: clamp(1.25rem, 2vw, 1.625rem);
+  --radius-card: 1rem;
+  --container-width: 84rem;
+  --page-gutter: clamp(1rem, 4vw, 4rem);
+  --section-gap: clamp(3.25rem, 6vw, 6.5rem);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; height: auto; }
+:focus-visible { outline: .1875rem solid var(--color-copper); outline-offset: .1875rem; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

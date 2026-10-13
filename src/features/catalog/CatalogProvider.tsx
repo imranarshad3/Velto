@@ -1,0 +1,32 @@
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { catalog as bundled, type CatalogProduct } from '../../data/catalog.ts'
+import { CatalogContext, type CatalogState } from './catalogContext.ts'
+
+/**
+ * Catalogue source of truth for the app: the published catalogue from `/api/catalog`, with the bundled
+ * DEMO list rendered immediately and kept as the fallback when the API is unavailable or unconfigured.
+ */
+export default function CatalogProvider({ children }: { children: ReactNode }) {
+  const [live, setLive] = useState<CatalogProduct[] | null>(null)
+  const [settled, setSettled] = useState(false)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/catalog', { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { products?: CatalogProduct[] } | null) => {
+        if (Array.isArray(body?.products) && body.products.length) setLive(body.products)
+      })
+      .catch(() => {})
+      .finally(() => !controller.signal.aborted && setSettled(true))
+    return () => controller.abort()
+  }, [])
+
+  const value = useMemo<CatalogState>(() => {
+    const products = live ?? bundled
+    const bySlug = new Map(products.map((p) => [p.slug, p]))
+    return { products, source: live ? 'live' : 'demo', status: settled ? 'ready' : 'loading', find: (slug) => (slug ? bySlug.get(slug) : undefined) }
+  }, [live, settled])
+
+  return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>
+}

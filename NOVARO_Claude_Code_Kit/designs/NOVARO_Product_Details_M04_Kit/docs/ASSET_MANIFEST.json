@@ -1,0 +1,12 @@
+{
+  "reference_images": [
+    "designs/product-details/M04_FULL_DESIGN_REFERENCE.png",
+    "designs/product-details/M04_DESKTOP_REFERENCE.png",
+    "designs/product-details/M04_MOBILE_REFERENCE.png"
+  ],
+  "concept_only_not_for_web": [
+    "assets/concept-only/PRODUCT_GALLERY_CONCEPT_NOT_FOR_PRODUCTION.png"
+  ],
+  "authentic_ultra_product_photos_included": false,
+  "notes": "Mockup text, metrics, branded bags and specifications are invented for visual guidance. Real assets and product technical documentation must come from the supplier."
+}

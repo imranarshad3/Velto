@@ -1,0 +1,2 @@
+# Active homepage visuals
+Use NOVARO_Desktop_Homepage.png and NOVARO_Mobile_References.png as design references. The Complete_Concept image is a composite presentation board. **Do not copy sample product data/packaging or sample stats as real business facts.** Build a functional responsive React page, not a flat image. Older mockups were moved to `designs/archive_ultra_concept/` and are not authoritative for branding.

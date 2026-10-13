@@ -1,0 +1,1 @@
+Read CLAUDE.md, PROGRESS and HOMEPAGE_SPEC, and `designs/homepage/02_categories_products.png`. Implement **M02 only**: responsive category tiles and product grid, sort controls, marked DEMO data, reusable cards, clear CTAs, accessible focus and mobile overflow handling. Do not build checkout or backend. Test, update PROGRESS and stop with <=6 bullets.

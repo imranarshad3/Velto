@@ -1,0 +1,3 @@
+# M07 — Clerk authentication UI (only after approved account design)
+
+Read `CLAUDE.md`, `docs/CLERK_SUPABASE_INTEGRATION.md`, `docs/PAGE_REGISTRY.md`, `docs/ARCHITECTURE.md` and approved account design in `designs/account/`. Implement ClerkProvider and responsive SignIn, SignUp and customer account flows in React Router. Use Clerk components and secure client route guards without pretending they provide database authorization. Do not create Supabase Auth users. Use env placeholders, document dashboard steps, handle redirect after sign-in/sign-up to store account or intended page, and include logout. Keep UI matching NOVARO design system; typecheck/build; summarize in <=6 bullets. Do not implement M08.

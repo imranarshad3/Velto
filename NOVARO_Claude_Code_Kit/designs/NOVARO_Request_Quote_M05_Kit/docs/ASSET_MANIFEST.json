@@ -1,0 +1,13 @@
+{
+  "design_reference_only": [
+    "designs/quote/M05_FULL_DESKTOP_MOBILE_REFERENCE.png",
+    "designs/quote/M05_DESKTOP_REFERENCE.png",
+    "designs/quote/M05_MOBILE_AND_COMPONENTS_REFERENCE.png"
+  ],
+  "licensed_product_photos_included": false,
+  "external_assets_required": [
+    "verified ULTRA product packshots",
+    "licensed architecture/construction imagery if current project images unsuitable"
+  ],
+  "warning": "Generated reference artwork contains baked-in interface copy; do not render as an in-app picture."
+}
