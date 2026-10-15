@@ -1,7 +1,0 @@
-Act as a senior React/TypeScript ecommerce engineer and premium UI/UX designer. Implement **M04: NOVARO Product Details Page** in my EXISTING Vite app.
-
-1. Read `NOVARO_Claude_Code_Kit/CLAUDE.md`, current `docs/PROGRESS.md`, relevant M03 catalog/components/routes, and this kit's `docs/PRODUCT_DETAILS_SPEC.md`. Inspect `designs/product-details/` references.
-2. Build a reusable responsive `/products/:slug` detail template linked from M03 cards: breadcrumb, crisp image gallery (thumbs, keyboard-accessible zoom), brand/category, name, verified description and benefits, Request Quote, optional specs/application/packaging/coverage/docs, related products and help banner. Hide fields with no verified data; keep DEMO labels.
-3. Reuse shared Header/Footer/ProductCard/catalog/components. No fabricated ULTRA SKUs, spec numbers, prices, certificates, PDFs, stock, reviews or branded packshots. Concept mockup imagery must NOT be published as actual product photos. Graceful placeholders and empty/invalid slug states are required.
-4. Forest-green/cream NOVARO styling, rem spacing/type, CSS Grid/Flex/clamp, mobile-first, no overflow, focus states, reduced motion, photo `contain` for packshots. Keep M01–M03 unaffected. Avoid backend/Clerk/Supabase/cart scope creep.
-5. Run typecheck, lint, build; test supported interactions/responsive widths; update `NOVARO_Claude_Code_Kit/docs/PROGRESS.md`; report changed files, checks, blockers concisely. **Finish M04 only and stop. Optimize tokens: targeted reads/edits, no code dumps.**

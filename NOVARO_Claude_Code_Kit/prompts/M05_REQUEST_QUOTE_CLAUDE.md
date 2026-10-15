@@ -1,7 +1,0 @@
-# M05 Claude Code prompt
-
-Act as a senior React/TypeScript + Clerk/Supabase security engineer. Implement **M05 NOVARO Request Quote** (guest allowed, optional Clerk account) following `NOVARO_Claude_Code_Kit/CLAUDE.md` and the M05 kit at `NOVARO_Claude_Code_Kit/designs/NOVARO_Request_Quote_M05_Kit/`. Read `README.md`, `docs/DESIGN_SPEC.md`, `docs/SECURE_ARCHITECTURE.md`, migration, and approved visual reference. Reuse M04 product routes, existing layout/components/images and tokens.
-
-Build premium mobile-first `/quote?product=slug` form, validation, project/product summary, accessible success/errors and optional Clerk sign-in; authenticated `/account/quotes` for own records only. **Create a deployable server endpoint**, not a browser-side privileged client. Enforce server-side Zod validation, Clerk verification, rate limiting/bot protection, cryptographically random guest claim token hash, safe responses, and server-only Supabase writes/reads. Apply/review RLS migration: no public quote table access, never assign ownership from submitted email/user ID; no automatic guest linking by email. `.env.example` only, never include secrets.
-
-No fabricated ULTRA specs, prices, photos or response times; use existing licensed photos and show placeholders as needed. Use `rem`, `clamp()`, responsive accessible interactions; preserve M01–M04. Typecheck, lint, build and test guest/auth isolation and 320–1920px; update `NOVARO_Claude_Code_Kit/docs/PROGRESS.md`. Be token-efficient, summarize changed files/tests/blockers, and STOP after M05.
