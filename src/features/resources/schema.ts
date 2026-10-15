@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { coverageUnits, MAX_RESOURCE_BYTES, packContainers, resourceKinds } from './types.ts'
+import { coverageUnits, MAX_RESOURCE_BYTES, packContainers, resourceKinds } from './types.js'
 
 const slug = z.string().regex(/^[a-z0-9-]{1,80}$/)
 const blank = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? undefined : v)
