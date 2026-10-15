@@ -16,9 +16,9 @@ const sizes: Record<ButtonSize, string> = {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-[linear-gradient(180deg,var(--color-forest-mid),var(--color-forest))] text-white shadow-[var(--shadow-button)] hover:bg-[linear-gradient(180deg,var(--color-forest),var(--color-forest-dark))] hover:shadow-[0_0.75rem_1.75rem_-0.75rem_rgb(23_60_45/0.75)]',
+    'bg-[linear-gradient(180deg,var(--color-forest-mid),var(--color-forest))] text-white shadow-[var(--shadow-button)] hover:bg-[linear-gradient(180deg,var(--color-forest),var(--color-forest-dark))] hover:shadow-[0_0.75rem_1.75rem_-0.75rem_rgb(41_76_104/0.75)]',
   accent:
-    'bg-copper text-white shadow-[0_0.5rem_1.25rem_-0.625rem_rgb(165_83_42/0.7)] hover:bg-copper-hover',
+    'bg-copper text-white shadow-[0_0.5rem_1.25rem_-0.625rem_rgb(135_99_41/0.7)] hover:bg-copper-hover',
   secondary: 'border border-ink/12 bg-surface text-ink shadow-[var(--shadow-soft)] hover:border-forest/40 hover:text-forest',
   ghost: 'text-forest hover:bg-forest-soft/70',
   light: 'bg-white text-forest-dark shadow-[0_0.5rem_1.5rem_-0.75rem_rgb(0_0_0/0.45)] hover:bg-cream',

@@ -159,7 +159,7 @@ export default function ProductDetailPage() {
       <meta name="description" content={product.description ?? product.usage} />
 
       <div className="bg-cream">
-        <div className="container-page pt-2 pb-[clamp(2rem,5vw,4rem)]">
+        <div className="container-page pt-4 pb-[clamp(3rem,6vw,5rem)]">
           <Breadcrumb
             items={[
               { label: 'Home', to: '/' },
@@ -169,10 +169,10 @@ export default function ProductDetailPage() {
             ]}
           />
 
-          <div className="mt-3 grid gap-[clamp(1.5rem,4vw,3.5rem)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start xl:gap-[clamp(3rem,5vw,5rem)]">
+          <div className="mt-6 grid gap-[clamp(2rem,4vw,3.5rem)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start xl:gap-[clamp(3rem,5vw,5rem)]">
             <ProductGallery key={product.slug} slides={slides} productName={product.name} />
 
-            <div className="animate-rise flex flex-col">
+            <div className="animate-rise flex min-w-0 flex-col">
               <div className="flex flex-wrap items-center gap-3">
                 {category && (
                   <Link to={`/products?category=${category.slug}`} className="inline-flex min-h-11 items-center text-[0.75rem] font-semibold tracking-[0.16em] text-sage uppercase hover:text-forest">
@@ -181,8 +181,8 @@ export default function ProductDetailPage() {
                 )}
                 {!product.verified && <span className="rounded-full bg-forest px-3 py-1 text-[0.6875rem] leading-none font-bold tracking-[0.12em] text-white">DEMO</span>}
               </div>
-              <h1 className="mt-1 font-display text-[clamp(2.25rem,1.5rem+2.8vw,3.5rem)] leading-[1.04] text-forest-deep">{product.name}</h1>
-              <p className="mt-4 max-w-[34rem] text-[clamp(1.0625rem,1rem+0.25vw,1.1875rem)] leading-relaxed text-muted">{product.description ?? product.usage}</p>
+              <h1 className="mt-2 font-display text-[clamp(2.25rem,1.5rem+2.8vw,3.5rem)] leading-[1.08] tracking-[-0.02em] text-forest-deep">{product.name}</h1>
+              <p className="mt-4 max-w-[34rem] text-[clamp(1.0625rem,1rem+0.25vw,1.1875rem)] leading-relaxed text-muted">{product.usage}</p>
 
               {product.benefits?.length ? (
                 <ul className="mt-5 grid gap-2 sm:grid-cols-2">
@@ -194,7 +194,7 @@ export default function ProductDetailPage() {
                 </ul>
               ) : null}
 
-              <dl className="mt-6 grid gap-[var(--grid-gap)] border-y border-border py-5 sm:grid-cols-2">
+              <dl className="my-6 grid gap-[var(--grid-gap)] border-y border-border py-5 sm:grid-cols-2">
                 <div>
                   <dt className="text-[0.75rem] font-semibold tracking-[0.12em] text-muted uppercase">Applications</dt>
                   <dd className="mt-1.5 flex flex-wrap gap-1.5">
@@ -211,7 +211,7 @@ export default function ProductDetailPage() {
                 </div>
               </dl>
 
-              <BuyBox product={product} quoteHref={quoteHref} />
+              <BuyBox key={product.slug} product={product} quoteHref={quoteHref} />
 
               <div className="mt-3 flex flex-wrap items-center gap-x-4">
                 <WishlistButton slug={product.slug} name={product.name} variant="text" />
@@ -246,7 +246,7 @@ export default function ProductDetailPage() {
       <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 pt-[clamp(2.5rem,5vw,4rem)] pb-[var(--section-gap)] lg:grid-cols-[15rem_minmax(0,1fr)] xl:gap-14">
         <nav aria-label="Product information" className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:self-start lg:rounded-[var(--radius-card)] lg:border lg:border-border lg:bg-surface lg:p-3">
           <p className="hidden px-3 pt-1 pb-2 text-[0.6875rem] font-semibold tracking-[0.16em] text-sage uppercase lg:block">On this page</p>
-          <ul className="no-scrollbar -mx-[var(--page-gutter)] flex gap-2 overflow-x-auto px-[var(--page-gutter)] lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0">
+          <ul className="flex flex-wrap gap-2 lg:flex-col lg:gap-0.5">
             {sections.map((s) => {
               const active = activeSection === s.id
               return (
@@ -423,7 +423,7 @@ export default function ProductDetailPage() {
               <div className="mt-5 flex flex-col gap-2">
                 {product.faq!.map((f) => (
                   <details key={f.question} className="rounded-xl border border-border bg-surface p-4">
-                    <summary className="min-h-7 cursor-pointer font-semibold">{f.question}</summary>
+                    <summary className="min-h-11 cursor-pointer py-2 font-semibold">{f.question}</summary>
                     <p className="mt-2 text-muted">{f.answer}</p>
                   </details>
                 ))}
@@ -446,6 +446,8 @@ export default function ProductDetailPage() {
             <SectionHeading
               id="related-title"
               title="Related Products"
+              eyebrow="Explore the range"
+              description="Compare products for similar applications and project needs."
               action={
                 <ButtonLink to={category ? `/products?category=${category.slug}` : '/products'} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
                   View All <ArrowRight aria-hidden="true" className="size-4" />

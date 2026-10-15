@@ -1,7 +1,7 @@
 import { useContentData } from '../../features/cms/context.ts'
 import { useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
-import { X } from 'lucide-react'
+import { ArrowUpRight, Search, X } from 'lucide-react'
 import { primaryNav as defaultPrimaryNav, utilityNav } from '../../data/navigation.ts'
 import AccountControl from './AccountControl.tsx'
 import Logo from '../ui/Logo.tsx'
@@ -45,8 +45,8 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
       }}
       className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-[min(86vw,22rem)] max-w-none bg-canvas p-0 text-ink backdrop:bg-ink/50 open:animate-[slide-in-left_0.3s_ease-out] backdrop:open:animate-[fade-in_0.3s_ease-out]"
     >
-      <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <div className="flex min-h-full flex-col">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
           <h2 id="mobile-menu-title" className="sr-only">
             Menu
           </h2>
@@ -62,8 +62,12 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           </button>
         </div>
 
-        <nav aria-label="Main" className="flex-1 overflow-y-auto px-4 py-4">
-          <ul className="flex flex-col">
+        <nav aria-label="Main" className="flex-1 px-4 py-5" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) onClose() }}>
+          <Link to="/products" className="mb-6 flex min-h-12 items-center gap-3 rounded-xl border border-border bg-surface px-4 text-[0.9375rem] text-muted hover:border-forest">
+            <Search aria-hidden="true" className="size-5" /> Find a product
+          </Link>
+          <p className="mb-3 px-4 text-[0.6875rem] font-bold tracking-[0.16em] text-muted uppercase">Explore VELTO</p>
+          <ul className="flex flex-col gap-1">
             {primaryNav.map((item) => (
               <li key={item.to}>
                 <NavLink
@@ -73,7 +77,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                     `relative flex min-h-12 items-center rounded-xl px-4 text-[1.0625rem] font-semibold transition-colors hover:bg-sand ${isActive ? 'bg-forest-soft text-forest before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-full before:bg-copper' : 'text-ink'}`
                   }
                 >
-                  {item.label}
+                  <span className="flex-1">{item.label}</span><ArrowUpRight aria-hidden="true" className="size-4 text-sage" />
                 </NavLink>
               </li>
             ))}
@@ -92,8 +96,8 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           </ul>
         </nav>
 
-        <div className="flex flex-col gap-3 border-t border-border bg-surface p-4">
-          <Link to="/quote" className={buttonClass('accent', 'md', 'w-full')}>
+        <div className="flex shrink-0 flex-col gap-3 border-t border-border bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) onClose() }}>
+          <Link to="/quote" className={buttonClass('primary', 'md', 'w-full')}>
             Request a Quote
           </Link>
           <AccountControl variant="menu" />

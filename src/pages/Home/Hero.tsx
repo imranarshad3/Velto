@@ -22,10 +22,10 @@ export default function Hero() {
   return (
     <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-cream">
 
-      <div className="container-page grid pt-[clamp(2rem,5vw,4.5rem)] pb-[clamp(2rem,4vw,4.5rem)] lg:min-h-[clamp(38rem,76vh,48rem)] lg:grid-cols-[minmax(0,46fr)_minmax(0,54fr)] lg:items-center">
-        <div className="relative z-10 min-w-0 lg:pr-6">
+      <div className="container-page grid gap-8 py-[clamp(2.5rem,5vw,5rem)] lg:grid-cols-[minmax(0,46fr)_minmax(0,54fr)] lg:items-center lg:gap-10">
+        <div className="relative z-10 min-w-0">
           <p
-            className="animate-rise glass inline-flex items-center gap-2.5 rounded-full py-1.5 pr-4 pl-1.5 text-[0.8125rem] font-semibold text-forest shadow-[var(--shadow-soft)]"
+            className="animate-rise inline-flex items-center gap-2.5 text-[0.75rem] font-bold tracking-[0.12em] text-forest uppercase"
             style={delay(0)}
           >
             <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-forest">
@@ -35,53 +35,50 @@ export default function Hero() {
 
           <h1
             id="hero-title"
-            className="animate-rise mt-6 font-display text-[clamp(2.75rem,1.6rem+4.4vw,5.25rem)] leading-[1] tracking-[-0.02em] text-ink"
+            className="animate-rise mt-6 font-display text-[clamp(2.5rem,1.5rem+3.6vw,4.75rem)] leading-[1.06] tracking-[-0.025em] text-ink"
             style={delay(0.08)}
           >
             <span className="block">{cms("field-2", "Stronger Spaces.")}</span>
             <span className="block text-forest">
-              {cms("field-3", "Brighter ")}<span className="whitespace-nowrap">{cms("field-4", "Tomorrows.")}</span>
+              {cms("field-3", "Brighter ")}<span>{cms("field-4", "Tomorrows.")}</span>
             </span>
           </h1>
 
           <p
-            className="animate-rise mt-8 max-w-[32rem] text-[clamp(1rem,0.95rem+0.35vw,1.1875rem)] leading-relaxed text-muted"
+            className="animate-rise mt-6 max-w-[29rem] text-[clamp(1rem,0.95rem+0.35vw,1.1875rem)] leading-relaxed text-muted"
             style={delay(0.16)}
           >
             {cms("field-5", "Construction chemical solutions for every build — from homes to large infrastructure projects.")}</p>
           <p className="sr-only">{cms("field-6", "Imagery on this page is illustrative and not official product photography.")}</p>
 
           <div className="animate-rise mt-8 flex flex-wrap gap-3" style={delay(0.24)}>
-            <ButtonLink to={cms("field-7", "/products")} variant="accent" size="lg" className="max-sm:flex-1 max-sm:px-5">
+            <ButtonLink to={cms("field-7", "/products")} variant="primary" size="lg" className="max-sm:w-full">
               {cms("field-8", "Shop Products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
-            <ButtonLink to={cms("field-9", "/solutions")} variant="secondary" size="lg" className="max-sm:flex-1 max-sm:px-5">
+            <ButtonLink to={cms("field-9", "/solutions")} variant="secondary" size="lg" className="max-sm:w-full">
               {cms("field-10", "View Solutions")}</ButtonLink>
           </div>
 
           <HeroStats stats={heroStats} />
         </div>
-      </div>
-
-      <div className="relative mx-[var(--page-gutter)] aspect-[4/3] overflow-hidden rounded-[var(--radius-panel)] shadow-[var(--shadow-float)] ring-1 ring-ink/5 sm:aspect-[16/10] lg:absolute lg:inset-y-0 lg:right-0 lg:m-0 lg:aspect-auto lg:w-[56%] lg:rounded-none lg:shadow-none lg:ring-0">
-        <div className="animate-[fade-in_1s_ease-out_both] size-full">
-          <HeroVisual image={{ ...heroImage, src: cms('image-src', "/images/hero/hero-architecture-crop.webp"), alt: cms('image-alt', "Illustrative concept: modern concrete house with construction chemical packs on a stone ledge") }} />
+        <div className="relative min-w-0 aspect-[4/3] overflow-hidden rounded-[var(--radius-panel)] bg-sand shadow-[var(--shadow-card)] ring-1 ring-ink/5 lg:aspect-[1/1.05]">
+          <div className="animate-[fade-in_1s_ease-out_both] size-full">
+            <HeroVisual image={{ ...heroImage, src: cms('image-src', "/images/hero/hero-architecture-crop.webp"), alt: cms('image-alt', heroImage.alt) }} />
+          </div>
+          <span className="glass-dark absolute bottom-4 left-4 rounded-full px-3 py-1 text-[0.6875rem] font-semibold tracking-[0.12em] text-white uppercase">
+            {cms("field-11", "Concept imagery")}</span>
         </div>
-        {/* Blend the visual into the copy column on wide screens. */}
-        <div aria-hidden="true" className="absolute inset-y-0 left-0 hidden w-1/3 bg-linear-to-r from-cream via-cream/50 to-transparent lg:block" />
-        <span className="glass-dark absolute top-3 right-3 rounded-full lg:top-6 lg:right-[var(--page-gutter)] px-3 py-1 text-[0.6875rem] font-semibold tracking-[0.12em] text-white uppercase">
-          {cms("field-11", "Concept imagery")}</span>
       </div>
 
-      {/* Glass trust strip: true service value props only. */}
-      <div className="container-page relative z-10 -mt-[clamp(1.5rem,6vw,3rem)] pb-[clamp(2.5rem,5vw,4rem)] lg:-mt-[clamp(3rem,5vw,4.5rem)] lg:pb-[clamp(2.5rem,4vw,3.5rem)]">
+      {/* Service details stay in the page flow at every viewport size. */}
+      <div className="container-page pb-[clamp(2rem,4vw,3rem)]">
         <ul
           aria-label="How ordering works"
-          className="animate-rise glass grid gap-px overflow-hidden rounded-[var(--radius-card)] !bg-white/85 shadow-[var(--shadow-card)] sm:grid-cols-3 lg:!bg-white/75 lg:backdrop-blur-xl"
+          className="animate-rise grid divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0"
           style={delay(0.32)}
         >
           {trust.map(({ icon: Icon, title, text }) => (
-            <li key={title} className="flex min-w-0 items-center gap-3.5 px-5 py-4 sm:border-l sm:border-ink/8 sm:first:border-l-0">
+            <li key={title} className="flex min-w-0 items-center gap-3.5 py-5 sm:px-5 sm:first:pl-0 sm:last:pr-0">
               <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-forest-soft text-forest">
                 <Icon aria-hidden="true" className="size-5" />
               </span>

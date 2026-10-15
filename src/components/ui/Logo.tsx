@@ -10,7 +10,7 @@ export default function Logo({ className = '', showTagline = true }: LogoProps) 
     <Link
       to="/"
       aria-label="VELTO home"
-      className={`inline-flex min-h-11 items-center gap-2 rounded-md text-forest ${className}`}
+      className={`inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-md text-forest ${className}`}
     >
       <svg viewBox="0 0 32 32" aria-hidden="true" className="size-8 shrink-0 sm:size-9">
         <path d="M2 4h7.5l7 16.7L12.5 29z" fill="currentColor" />

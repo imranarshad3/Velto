@@ -64,7 +64,7 @@ export default function QuotePage() {
             <div aria-hidden="true" className="absolute -inset-3 -z-10 rounded-[calc(var(--radius-panel)+0.75rem)] border border-sand-deep/80" />
             <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-panel)] shadow-[var(--shadow-float)]">
               <Img image={brandStoryImage} priority className="size-full object-cover" />
-              <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_top,rgb(11_31_24/0.55),transparent_55%)]" />
+              <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_top,rgb(21_43_64/0.55),transparent_55%)]" />
               <p className="glass-dark absolute bottom-4 left-4 right-4 rounded-xl px-4 py-3 text-[0.875rem] font-semibold text-white lg:right-auto">
                 One request · pricing and availability confirmed by our team
               </p>

@@ -62,7 +62,7 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
   return (
     <article
       aria-labelledby={titleId}
-      className={`@container group relative isolate flex h-full overflow-hidden rounded-[var(--radius-card)] border border-border/80 bg-surface shadow-[0_0.125rem_0.375rem_rgb(23_28_25/0.04)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-premium)] focus-within:border-forest/35 hover:-translate-y-1 hover:border-forest/20 hover:shadow-[0_1.5rem_3rem_-1.75rem_rgb(23_60_45/0.4)] motion-reduce:hover:translate-y-0 ${list ? 'flex-col sm:flex-row' : 'flex-col'}`}
+      className={`@container group relative isolate flex h-full overflow-hidden rounded-[var(--radius-card)] border border-border/80 bg-surface shadow-[0_0.125rem_0.375rem_rgb(32_44_54/0.04)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-premium)] focus-within:border-forest/35 hover:-translate-y-1 hover:border-forest/20 hover:shadow-[0_1.5rem_3rem_-1.75rem_rgb(41_76_104/0.4)] motion-reduce:hover:translate-y-0 ${list ? 'flex-col sm:flex-row' : 'flex-col'}`}
     >
       <div className={`relative grid shrink-0 place-items-center overflow-hidden bg-sand ${list ? 'aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(10rem,28%,14rem)]' : 'aspect-[5/4] w-full @[24rem]:aspect-[16/10]'}`}>
         {product.image ? (
@@ -101,12 +101,12 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
             {price?.demo && <span aria-hidden="true" className="text-[0.6875rem] font-semibold tracking-[0.08em] text-copper uppercase">Demo price</span>}
           </p>
         </div>
-        {list && <p className="mt-2 line-clamp-2 text-[0.9375rem] leading-relaxed text-muted">{product.usage}</p>}
+        <p className="mt-3 line-clamp-2 text-[0.875rem] leading-relaxed text-muted">{product.usage}</p>
 
         <div className={`relative z-10 mt-auto flex flex-wrap items-center gap-2 pt-4 @[15rem]:flex-nowrap ${list ? '@[40rem]:justify-end' : ''}`}>
           <Link
             to={`/quote?product=${product.slug}&qty=${qty}&unit=${unit}`}
-            className={`order-last inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-forest px-4 text-[0.9375rem] font-semibold whitespace-nowrap text-white shadow-[0_0.5rem_1rem_-0.5rem_rgb(23_60_45/0.6)] transition-colors hover:bg-forest-dark @[15rem]:order-none @[15rem]:w-auto @[15rem]:flex-1 @[20rem]:px-5 ${list ? '@[40rem]:max-w-[16rem]' : ''}`}
+            className={`order-last inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-forest px-4 text-[0.9375rem] font-semibold whitespace-nowrap text-white shadow-[0_0.5rem_1rem_-0.5rem_rgb(41_76_104/0.6)] transition-colors hover:bg-forest-dark @[15rem]:order-none @[15rem]:w-auto @[15rem]:flex-1 @[20rem]:px-5 ${list ? '@[40rem]:max-w-[16rem]' : ''}`}
           >
             <span>
               <span className="@min-[15rem]:@max-[19rem]:sr-only">Request </span>Quote<span className="sr-only"> for {qty} {unit} of {product.name}</span>

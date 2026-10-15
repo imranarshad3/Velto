@@ -149,7 +149,7 @@ export default function AboutPage() {
               {mosaic.map(({ name, image }, i) => (
                 <li key={name} className={`group relative overflow-hidden rounded-[var(--radius-card)] bg-sand-deep shadow-[var(--shadow-card)] ${i % 2 ? 'mt-8 aspect-[4/5]' : 'aspect-[4/5]'}`}>
                   <Img image={image} alt={cms("field-25", "")} className="size-full object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-105" />
-                  <span className="absolute inset-x-0 bottom-0 bg-[linear-gradient(transparent,rgb(11_31_24/0.85))] px-3 pt-8 pb-3 text-[0.8125rem] font-semibold text-white">{name}</span>
+                  <span className="absolute inset-x-0 bottom-0 bg-[linear-gradient(transparent,rgb(21_43_64/0.85))] px-3 pt-8 pb-3 text-[0.8125rem] font-semibold text-white">{name}</span>
                 </li>
               ))}
             </ul>

@@ -76,7 +76,7 @@
 }
 
 @utility glass-dark {
-  background: rgb(11 31 24 / 0.55);
+  background: rgb(21 43 64 / 0.55);
   border: 1px solid rgb(255 255 255 / 0.12);
   backdrop-filter: blur(0.875rem) saturate(1.2);
 }

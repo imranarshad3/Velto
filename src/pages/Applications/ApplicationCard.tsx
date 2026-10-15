@@ -30,7 +30,7 @@ export default function ApplicationCard({ application, as: Heading = 'h3', long 
             className="size-full object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.04] motion-reduce:group-hover:scale-100"
           />
         )}
-        <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgb(11_31_24/0.55))]" />
+        <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgb(21_43_64/0.55))]" />
         <span className="glass absolute bottom-3 left-3 grid size-11 place-items-center rounded-2xl text-forest shadow-[var(--shadow-soft)]">
           <Icon aria-hidden="true" className="size-5" />
         </span>

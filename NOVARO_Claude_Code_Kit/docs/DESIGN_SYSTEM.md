@@ -1,11 +1,11 @@
 # VELTO visual design system
 
 ## Direction
-Premium architectural editorial commerce. Store brand NOVARO; ULTRA Chemicals products featured using **verified real product photos** once available. Soft ivory, forest green, graphite, sand and subtle bronze accents. Concept photos are not sellable catalog assets.
+Premium architectural editorial commerce. Store brand VELTO; ULTRA Chemicals products featured using **verified real product photos** once available. Slate blue, warm ivory, graphite and muted brass accents. The Slate & Brass palette selected on 2026-10-14 supersedes the original green palette; legacy token names remain for compatibility. Concept photos are not sellable catalog assets.
 
 ## Design tokens
-- Forest `#173C2D`, deep `#102A21`, graphite `#171C19`
-- Bronze `#A5532A`, light canvas `#F8F7F3`, sandstone `#EFE9E2`, border `#E5E1DB`, white `#FFFFFF`
+- Slate blue `#294C68`, deep navy `#152B40`, graphite `#202C36`
+- Brass `#876329`, light canvas `#F8F8F6`, warm ivory `#F4F2EC`, sandstone `#EAE7DF`, border `#DCE1E4`, white `#FFFFFF`
 - Typography: Manrope for UI, DM Serif Display for editorial headings (self-host or load efficiently; fallbacks)
 - Base `1rem`, small `0.875rem`, captions `0.75rem`; h1 `clamp(2.5rem, 5vw, 4.75rem)`, h2 `clamp(1.75rem, 3vw, 2.75rem)`
 - Container `min(calc(100% - 2rem), 84rem)`; gutters `clamp(1rem, 4vw, 4rem)`; section padding `clamp(3rem, 6vw, 6.5rem)`; radius `1rem`; buttons min `2.75rem`
@@ -21,6 +21,8 @@ Premium architectural editorial commerce. Store brand NOVARO; ULTRA Chemicals pr
 Accessible sticky navigation, search, wishlists, cart, dropdowns and quote CTAs. No false interactions; demo UX clearly labeled until backend is ready. Keep animations mostly CSS transitions with GSAP only where beneficial. Consistent skeleton/loading/error states. Respect `prefers-reduced-motion`.
 
 ## Premium system v2 (implemented 2026-10-13)
+
+The descriptions below document the original palette. Current color values are defined above and in `src/styles/tokens.css`; green-named tokens now resolve to slate blue.
 Source of truth: `src/styles/tokens.css`, `src/styles/global.css`, `src/components/ui/*`.
 
 **Tokens.** Colours add `forest-deep` (#0b1f18, dark bands/footer), `forest-mid` (button gradient), `copper-soft`, `gold` (#e3c58f accent on dark) / `gold-deep`, `cream` (#f6f1e9 headers), `danger-soft`, `success`/`success-soft`. Radii: `--radius-card` 1rem (cards), `--radius-panel` 1.5rem (feature panels). Elevation: `--shadow-soft` (resting cards), `--shadow-card`, `--shadow-lift` (hover), `--shadow-float` (feature panels, toasts), `--shadow-button`. Easing: `--ease-premium` cubic-bezier(0.2,0.7,0.2,1). No existing Tailwind scale was overridden.

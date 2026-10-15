@@ -53,9 +53,9 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
   const CartIcon = inCart ? Check : ShoppingBasket
 
   return (
-    <div className="relative overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)]">
+    <div className="@container relative overflow-hidden rounded-[var(--radius-panel)] border border-forest/15 bg-surface shadow-[var(--shadow-soft)]">
 
-      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b border-border bg-cream/60 px-[clamp(1.125rem,2.5vw,1.75rem)] pt-[clamp(1.125rem,2.5vw,1.5rem)] pb-4">
+      <div className="flex flex-col gap-3 border-b border-border px-[clamp(1.125rem,2.5vw,1.75rem)] pt-[clamp(1.125rem,2.5vw,1.5rem)] pb-5">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-[0.6875rem] font-semibold tracking-[0.12em] text-muted uppercase">
             Price
@@ -72,7 +72,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
             )}
           </p>
         </div>
-        <p className="max-w-[18rem] text-[0.8125rem] leading-snug text-muted">
+        <p className="max-w-[32rem] text-[0.8125rem] leading-relaxed text-muted">
           {price?.demo
             ? 'Illustrative DEMO price only. Confirmed pricing and availability are provided with your quote.'
             : price
@@ -82,7 +82,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
       </div>
 
       <div className="flex flex-col gap-5 p-[clamp(1.125rem,2.5vw,1.75rem)]">
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] min-[26rem]:grid-cols-[auto_minmax(0,1fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 @[24rem]:grid-cols-[auto_minmax(0,1fr)]">
           <div className="flex min-w-0 flex-col gap-1.5">
             <label htmlFor={`${id}-qty`} className={fieldLabel}>
               Quantity
@@ -105,7 +105,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
                   if (Number.isFinite(n) && n >= MIN_QTY) setQuantity(clampQty(n))
                 }}
                 onBlur={() => setQty(Number(draft) || MIN_QTY)}
-                className="min-h-11 w-full min-w-[3.5rem] flex-1 bg-transparent text-center text-[1.0625rem] font-bold text-ink tabular-nums focus:outline-none min-[26rem]:w-[4.5rem] min-[26rem]:flex-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
+                className="min-h-11 w-full min-w-[3.5rem] flex-1 bg-transparent text-center text-[1.0625rem] font-bold text-ink tabular-nums focus-visible:outline focus-visible:outline-forest @[24rem]:w-[4.5rem] @[24rem]:flex-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
               />
               <button type="button" className={stepButton} onClick={() => setQty(quantity + 1)} disabled={quantity >= MAX_QTY} aria-label="Increase quantity">
                 <Plus aria-hidden="true" className="size-4" />
@@ -131,11 +131,11 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
           </div>
         </div>
 
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2">
-          <ButtonLink to={`${quoteHref}&qty=${quantity}&unit=${unit}`} size="lg" className="w-full !rounded-full px-5 sm:order-last">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 @[28rem]:grid-cols-2">
+          <ButtonLink to={`${quoteHref}&qty=${quantity}&unit=${unit}`} size="lg" className="w-full px-5">
             Request Quote<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
           </ButtonLink>
-          <button type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full !rounded-full px-5')}>
+          <button type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full px-5')}>
             <CartIcon aria-hidden="true" className="size-[1.125rem]" />
             {inCart ? 'Update cart' : 'Add to cart'}
           </button>

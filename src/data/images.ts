@@ -1,8 +1,7 @@
 /**
- * Local image registry. Every file under public/images/ is an ILLUSTRATIVE CONCEPT CROP
- * (see NOVARO_Claude_Code_Kit/designs/homepage/M02_references/IMAGE_GUIDE.md), not official
- * product photography. Replace files in place with licensed photos before launch; keep filenames.
- * `*-crop` / `concept-pack-*` files are derived copies with mockup text, prices and stats removed.
+ * Local image registry. Storefront imagery is AI-generated editorial illustration,
+ * not verified project photography or official manufacturer packaging.
+ * See public/images/ASSET_PROVENANCE.md for the generation prompts and sources.
  */
 export interface ImageAsset {
   src: string
@@ -13,9 +12,9 @@ export interface ImageAsset {
 
 export const heroImage: ImageAsset = {
   src: '/images/hero/hero-architecture-crop.webp',
-  alt: 'Illustrative concept: modern concrete house with construction chemical packs on a stone ledge',
-  width: 1002,
-  height: 810,
+  alt: 'Illustrative concept: contemporary limestone and concrete villa beside a reflecting pool',
+  width: 1122,
+  height: 1402,
 }
 
 export const brandStoryImage: ImageAsset = {

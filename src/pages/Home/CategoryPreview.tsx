@@ -31,11 +31,12 @@ export default function CategoryPreview() {
           />
         </Reveal>
 
-        {/* Swipeable snap row on small screens, 4 columns from tablet, 8 on wide desktops. */}
-        <ul className="no-scrollbar mt-[var(--heading-gap)] -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-[var(--grid-gap)] overflow-x-auto px-[var(--page-gutter)] pt-1 pb-3 md:mx-0 md:grid md:grid-cols-4 md:gap-[var(--grid-gap-lg)] md:overflow-visible md:p-0 xl:grid-cols-8 xl:gap-3.5">
+        <p id="category-scroll-hint" className="mt-6 flex items-center gap-2 text-[0.8125rem] font-medium text-muted md:hidden">Scroll to explore categories <ArrowRight aria-hidden="true" className="size-4" /></p>
+        {/* Larger image tiles retain readable labels at desktop and mobile sizes. */}
+        <ul aria-label="Product categories" aria-describedby="category-scroll-hint" tabIndex={0} className="mt-4 -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-[var(--grid-gap)] overflow-x-auto px-[var(--page-gutter)] pt-1 pb-3 md:mx-0 md:mt-[var(--heading-gap)] md:grid md:grid-cols-4 md:overflow-visible md:p-0">
           {demoCategories.map((category, index) => (
-            <Reveal as="li" key={category.slug} delay={Math.min(index, 7) * 0.05} className="w-[44%] min-w-[9.5rem] shrink-0 snap-start sm:w-[30%] md:w-auto md:min-w-0">
-              <CategoryCard category={category} />
+            <Reveal as="li" key={category.slug} delay={Math.min(index, 7) * 0.05} className="w-[72%] min-w-[12rem] shrink-0 snap-start sm:w-[38%] md:w-auto md:min-w-0">
+              <CategoryCard category={category} presentation="editorial" />
             </Reveal>
           ))}
         </ul>

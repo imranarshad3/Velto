@@ -4,10 +4,12 @@ import HomePage from '../pages/Home/HomePage.tsx'
 import ProductsPage from '../pages/Products/ProductsPage.tsx'
 import ProductDetailPage from '../pages/ProductDetail/ProductDetailPage.tsx'
 import NotFoundPage from '../pages/NotFound/NotFoundPage.tsx'
+import RouteErrorPage from '../pages/Error/RouteErrorPage.tsx'
 
 export const router = createBrowserRouter([
   {
     element: <SiteLayout />,
+    errorElement: <RouteErrorPage />,
     // Shown while a lazily loaded page is fetched on first load.
     hydrateFallbackElement: <div aria-busy="true" aria-label="Loading" className="min-h-dvh bg-canvas" />,
     children: [

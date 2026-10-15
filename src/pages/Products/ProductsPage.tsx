@@ -95,7 +95,7 @@ export default function ProductsPage() {
                   onChange={(e) => update({ q: e.target.value }, { replace: true })}
                   placeholder="e.g. tile adhesive, roof waterproofing"
                   autoComplete="off"
-                  className="min-h-[3.25rem] w-full rounded-xl border border-border bg-canvas pr-12 pl-12 text-[1rem] transition-[border-color,background-color,box-shadow] duration-300 placeholder:text-muted/70 hover:border-ink/20 focus:border-forest focus:bg-surface focus:shadow-[0_0_0_0.25rem_rgb(23_60_45/0.08)] focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-copper [&::-webkit-search-cancel-button]:hidden"
+                  className="min-h-[3.25rem] w-full rounded-xl border border-border bg-canvas pr-12 pl-12 text-[1rem] transition-[border-color,background-color,box-shadow] duration-300 placeholder:text-muted/70 hover:border-ink/20 focus:border-forest focus:bg-surface focus:shadow-[0_0_0_0.25rem_rgb(41_76_104/0.08)] focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-copper [&::-webkit-search-cancel-button]:hidden"
                 />
                 {query.q && (
                   <button

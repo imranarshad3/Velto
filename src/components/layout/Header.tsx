@@ -30,12 +30,12 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b backdrop-blur-xl transition-[background-color,box-shadow,border-color] duration-300 border-white/[0.08] bg-nav ${scrolled ? 'shadow-[0_0.75rem_2rem_-1rem_rgb(11_31_24/0.6)]' : ''}`}
+      className={`sticky top-0 z-40 border-b backdrop-blur-xl transition-[background-color,box-shadow,border-color] duration-300 border-white/[0.08] bg-nav ${scrolled ? 'shadow-[0_0.75rem_2rem_-1rem_rgb(21_43_64/0.6)]' : ''}`}
     >
-      <div className="container-page flex min-h-[var(--header-height)] items-center gap-2 lg:gap-6">
+      <div className="container-page flex min-h-[var(--header-height)] items-center gap-2 xl:gap-5">
         <button
           type="button"
-          className={`${iconButton} -ml-2 lg:hidden`}
+          className={`${iconButton} -ml-2 shrink-0 xl:hidden`}
           aria-label="Open menu"
           aria-haspopup="dialog"
           aria-expanded={menuOpen}
@@ -47,7 +47,7 @@ export default function Header() {
 
         <Logo className="!text-emerald-muted [&>span>span:first-child]:text-white [&>span>span:last-child]:text-white/55" />
 
-        <nav aria-label="Main" className="mx-auto hidden lg:block">
+        <nav aria-label="Main" className="mx-auto hidden xl:block">
           <ul className="flex items-center gap-0.5 xl:gap-1.5">
             {primaryNav.map((item) => (
               <li key={item.to}>
@@ -65,7 +65,7 @@ export default function Header() {
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-0.5 sm:gap-1 lg:ml-0">
+        <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1 xl:ml-0">
           <Link to="/products" className={iconButton} aria-label="Search products">
             <Search aria-hidden="true" className="size-[1.375rem]" />
           </Link>

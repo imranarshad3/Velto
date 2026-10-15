@@ -34,7 +34,7 @@ const textures: Record<Category['texture'], CSSProperties> = {
   },
   tools: {
     background:
-      'radial-gradient(circle at 75% 30%, rgb(165 83 42 / 0.55) 0 18%, transparent 40%), linear-gradient(140deg, #4c514d, #262a27)',
+      'radial-gradient(circle at 75% 30%, rgb(135 99 41 / 0.55) 0 18%, transparent 40%), linear-gradient(140deg, #4c514d, #262a27)',
   },
 }
 
@@ -44,12 +44,25 @@ interface CategoryCardProps {
   /** Defaults to the products page filtered by this category. */
   to?: string
   active?: boolean
+  presentation?: 'overlay' | 'editorial'
 }
 
-export default function CategoryCard({ category, className = '', to, active = false }: CategoryCardProps) {
+export default function CategoryCard({ category, className = '', to, active = false, presentation = 'overlay' }: CategoryCardProps) {
   const Icon = category.icon
   const [imageFailed, setImageFailed] = useState(false)
   const image = imageFailed ? undefined : category.image
+
+  if (presentation === 'editorial') return (
+    <Link to={to ?? `/products?category=${category.slug}`} aria-current={active ? 'page' : undefined} className={`group flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-colors hover:border-forest/40 ${className}`}>
+      <div className="aspect-[16/10] overflow-hidden" style={image ? undefined : textures[category.texture]}>
+        {image && <img src={image.src} alt="" width={image.width} height={image.height} onError={() => setImageFailed(true)} loading="lazy" decoding="async" className="size-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none" />}
+      </div>
+      <span className="flex flex-1 items-center justify-between gap-3 p-4">
+        <span className="text-[0.9375rem] leading-snug font-bold text-forest">{category.name}</span>
+        <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-forest-soft text-forest transition-colors group-hover:bg-forest group-hover:text-white">→</span>
+      </span>
+    </Link>
+  )
 
   return (
     <Link
@@ -72,7 +85,7 @@ export default function CategoryCard({ category, className = '', to, active = fa
           />
         )}
       </div>
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(11_31_24/0)_30%,rgb(11_31_24/0.55)_62%,rgb(11_31_24/0.92)_100%)]" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(21_43_64/0)_30%,rgb(21_43_64/0.55)_62%,rgb(21_43_64/0.92)_100%)]" />
       <span aria-hidden="true" className="absolute top-2.5 left-2.5 grid size-9 place-items-center rounded-full glass-dark text-white">
         <Icon className="size-[1.125rem]" />
       </span>

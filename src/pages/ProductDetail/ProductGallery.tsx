@@ -75,24 +75,19 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
     'absolute top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-surface/95 text-ink shadow-[var(--shadow-card)] transition-colors hover:text-forest'
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row-reverse">
+    <div className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[calc(var(--header-height)+1.5rem)]">
       <div
         role="group"
         aria-roledescription="carousel"
         aria-label={`${productName} images`}
         tabIndex={count > 1 ? 0 : undefined}
         onKeyDown={onArrows}
-        className="relative grid aspect-square flex-1 place-items-center overflow-hidden rounded-[var(--radius-card)] bg-sand"
+        className="relative grid aspect-[5/4] place-items-center overflow-hidden rounded-[var(--radius-panel)] border border-border bg-[radial-gradient(ellipse_at_center,var(--color-surface),var(--color-sand))] lg:aspect-square"
       >
         <div key={slide.key} aria-live="polite" className="grid size-full animate-[fade-in_0.3s_ease-out] place-items-center">
           <SlideImage slide={slide} priority={index === 0} />
         </div>
-        <p
-          className={`absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium text-ink shadow-[0_0.125rem_0.5rem_rgb(23_28_25/0.08)] backdrop-blur-sm ${slide.image ? '' : 'sr-only'}`}
-        >
-          {slide.caption}
-          {count > 1 && <span className="sr-only">, image {index + 1} of {count}</span>}
-        </p>
+        <span aria-hidden="true" className="absolute top-4 left-4 rounded-full bg-surface/90 px-3 py-1 text-[0.75rem] font-semibold text-muted">{index + 1} / {count}</span>
         {count > 1 && (
           <>
             <button type="button" className={`${navButton} left-3`} onClick={() => go(-1)} aria-label="Previous image">
@@ -116,10 +111,12 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
         )}
       </div>
 
+      <p aria-live="polite" className="text-[0.8125rem] leading-relaxed text-muted">{slide.caption}</p>
+
       {count > 1 && (
-        <ul className="flex gap-3 lg:w-[clamp(4.5rem,7vw,5.5rem)] lg:flex-col" aria-label="Choose image">
+        <ul className="flex flex-wrap gap-3" aria-label="Choose image">
           {slides.map((s, i) => (
-            <li key={s.key} className="w-[clamp(4rem,20vw,5.5rem)] lg:w-full">
+            <li key={s.key} className="w-[clamp(4.5rem,20vw,6rem)]">
               <button
                 type="button"
                 onClick={() => setIndex(i)}
@@ -149,7 +146,7 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
         className="m-auto max-h-[92dvh] w-[min(94vw,56rem)] max-w-none overflow-hidden rounded-[var(--radius-card)] bg-white p-0 backdrop:bg-ink/80 open:animate-[fade-in_0.25s_ease-out]"
       >
         <div className="relative grid min-h-[min(70dvh,36rem)] place-items-center p-[clamp(3.5rem,8vw,5rem)]">
-          {lightbox && <SlideImage slide={slide} />}
+          {lightbox && <SlideImage key={slide.key} slide={slide} />}
           <button
             type="button"
             onClick={() => setLightbox(false)}
