@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { categoryImage } from './images.ts'
+import { categoryImage } from './images.js'
 import { Droplets, FlaskConical, Hammer, Layers, LayoutGrid, PaintRoller, SprayCan, Wrench } from 'lucide-react'
 
 /**
