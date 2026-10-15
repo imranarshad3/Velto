@@ -143,3 +143,8 @@
 - User-facing brand is now **VELTO** — tagline "Building Better Foundations"; new V mark in `Logo.tsx` and `public/favicon.svg`; title/meta in `index.html`; all UI/admin/CMS defaults updated.
 - Unchanged by design: env vars (`NOVARO_DEV_FAKE_AUTH`), localStorage keys and window events (`novaro:*`), package name, DB/storage identifiers, the `NOVARO_Claude_Code_Kit/` folder, ULTRA manufacturer branding.
 - Saved CMS content is not rewritten: one unpublished draft still mentions NOVARO; edit it in the Website Editor. Clerk email/app name must be changed in the Clerk dashboard.
+
+## Team invitation database repair (2026-10-15)
+- Fixed the live `admin_audit_log_entity_check`: invitation/member/resource audit entities were missing, rolling back Team invites and member removal. Added `supabase/migrations/20261023000100_fix_admin_audit_entities.sql` after the future-dated baseline migrations. Applied atomically to the configured live database; existing history and privileges preserved.
+- `tests/sql/admin-team-regression.sql` reproduces the old failure and verifies create/resend/accept/revoke/remove, wrong-email rejection, self-removal protection, audit records and role privileges. Passed on isolated PostgreSQL 17 and live database; all test rows rolled back, no emails sent. Team API tests: 7/7; diff check passed.
+- Local and production public catalog APIs matched all 18 database product IDs. Production database URL is secret-redacted by Vercel; direct production browser invitation/email delivery was not exercised. No application redeploy required for the database constraint repair.

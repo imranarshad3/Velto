@@ -71,7 +71,7 @@ export async function workspaceHandler(request: Request, store: DataStore, actor
       const data = leadSchema.parse(await readJson(request, 24000))
       if (data.assignedTo) { const assignee = await ws.role(data.assignedTo); if (assignee !== 'admin' && assignee !== 'sales') throw new HttpError(422, 'invalid_assignee', 'Assign a current sales team member or administrator.') }
       if (data.quoteReference && !(await store.adminGetQuote(data.quoteReference))) throw new HttpError(422, 'invalid_quote', 'Quote reference not found.')
-      return json({lead: await ws.saveLead(actor, id ?? null, data)}, id ? 200 : 201)
+      return json({lead: await ws.saveLead(actor, id ?? null, { ...data, assignedTo: data.assignedTo ?? null, followUp: data.followUp ?? null, quoteReference: data.quoteReference ?? null })}, id ? 200 : 201)
     }
   }
   return null

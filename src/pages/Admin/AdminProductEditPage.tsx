@@ -1,3 +1,5 @@
+import ProductPhotoAssistant, { type ProductPhoto } from './ProductPhotoAssistant.tsx'
+import { mergeDraft } from '../../features/catalog/aiProduct.ts'
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { CircleAlert, LoaderCircle } from 'lucide-react'
@@ -111,6 +113,8 @@ function ProductForm({ product }: { product?: AdminProduct }) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [pendingPhoto, setPendingPhoto] = useState<ProductPhoto | null>(null)
+  const [aiApplied, setAiApplied] = useState(false)
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }))
   // Media Library images are offered alongside bundled ones; dimensions are read so the storefront reserves aspect ratio.
   const [options, setOptions] = useState<ImageAsset[]>(() =>
@@ -162,6 +166,15 @@ function ProductForm({ product }: { product?: AdminProduct }) {
     try {
       const token = await getToken()
       if (!token) throw new QuoteApiError(401, 'sign_in_required', 'Please sign in again.')
+      if (pendingPhoto) {
+        const photo = pendingPhoto
+        const { media } = await workspaceApi.upload(token, { name: form.name || photo.name, alt: form.imageAlt || form.name, folder: 'Products', tags: [] }, photo.base64)
+        const image = { src: media.url, alt: form.imageAlt || form.name, width: photo.width, height: photo.height }
+        input.image = image
+        setOptions(prev => [...prev, image])
+        set('image', image.src)
+        setPendingPhoto(null)
+      }
       if (creating) await adminApi.createProduct(token, input)
       else await adminApi.updateProduct(token, product.slug, input)
       show(`${input.name} saved`)
@@ -210,6 +223,27 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         </p>
       )}
       <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
+        <h2 className="font-display text-[1.375rem] sm:col-span-2">Product photos & AI assistant</h2>
+        <ProductPhotoAssistant category={form.categorySlug} disabled={saving} onPhoto={setPendingPhoto} onDraft={(draft, replace) => { setForm(current => mergeDraft(current, draft, replace, creating, form)); setAiApplied(true) }} />
+        <Field id="pf-image" label="Image" error={errors.image} hint="Bundled images and Media Library uploads.">
+          {(a) => (
+            <select {...a} value={form.image} disabled={!!pendingPhoto} onChange={(e) => set('image', e.target.value)} className={inputClass}>
+              <option value="">No image (placeholder)</option>
+              {options.map((img) => (
+                <option key={img.src} value={img.src}>
+                  {img.src.startsWith('/images/') ? img.src.replace('/images/', '') : `Library · ${img.alt}`}
+                </option>
+              ))}
+            </select>
+          )}
+        </Field>
+        {text('imageAlt', 'Image alt text')}
+
+        {!pendingPhoto && form.image && <img src={form.image} alt={form.imageAlt || 'Selected product image'} className="max-h-48 w-full rounded-xl object-contain sm:col-span-2" />}
+        {pendingPhoto && <p className="text-sm text-muted sm:col-span-2">Your uploaded photo will replace the selected library image when you save.</p>}
+      </section>
+      {aiApplied && <p className="rounded-xl bg-forest-soft p-4 text-sm text-forest">This form contains AI suggestions. Check each field against your product label or supplier information before publishing.</p>}
+      <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Basics</h2>
         {text('name', 'Name', { required: true })}
         {text('slug', 'URL slug', { required: true, hint: creating ? 'Lowercase letters, numbers and hyphens. Cannot be changed later.' : 'Fixed after creation.', disabled: !creating })}
@@ -243,20 +277,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
       </section>
 
       <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
-        <h2 className="font-display text-[1.375rem] sm:col-span-2">Image, price & visibility</h2>
-        <Field id="pf-image" label="Image" error={errors.image} hint="Bundled images and Media Library uploads.">
-          {(a) => (
-            <select {...a} value={form.image} onChange={(e) => set('image', e.target.value)} className={inputClass}>
-              <option value="">No image (placeholder)</option>
-              {options.map((img) => (
-                <option key={img.src} value={img.src}>
-                  {img.src.startsWith('/images/') ? img.src.replace('/images/', '') : `Library · ${img.alt}`}
-                </option>
-              ))}
-            </select>
-          )}
-        </Field>
-        {text('imageAlt', 'Image alt text')}
+        <h2 className="font-display text-[1.375rem] sm:col-span-2">Price & visibility</h2>
         {text('priceAmount', 'Price amount', { hint: 'Shown only when the product is verified.' })}
         {text('priceCurrency', 'Currency (ISO code)', { hint: 'e.g. PKR' })}
         <label className="flex min-h-11 items-center gap-3 font-semibold">

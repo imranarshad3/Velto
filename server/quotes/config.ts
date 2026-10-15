@@ -1,3 +1,4 @@
+import { createProductGenerator, withProductFallback } from '../admin/aiProduct.js'
 import { catalog } from '../../src/data/catalog.js'
 import { createClerkVerifier, type AuthVerifier } from './auth.js'
 import { createClerkDirectory, withDevDirectory } from './directory.js'
@@ -68,6 +69,7 @@ export function getApiHandlers(env: NodeJS.ProcessEnv = process.env) {
   }
 
   handlers = createApiHandlers({
+    generateProduct: withProductFallback(createProductGenerator({ apiKey: env.GROQ_API_KEY, model: env.GROQ_VISION_MODEL }), env.OLLAMA_API_KEY ? createProductGenerator({ apiKey: env.OLLAMA_API_KEY, model: env.OLLAMA_VISION_MODEL, provider: 'ollama' }) : undefined),
     store,
     files: resolveFiles(env, store),
     knownProducts,

@@ -1,3 +1,4 @@
+import type { GenerateProduct } from '../admin/aiProduct.js'
 import {
   guestStatusSchema,
   quoteReferencePattern,
@@ -18,6 +19,7 @@ import type { ResourceCatalog } from '../../src/features/resources/types.js'
 import { createAdminHandler } from '../admin/handlers.js'
 
 export interface ApiHandlerDeps {
+  generateProduct?: GenerateProduct
   /** Null when the database is not configured: endpoints answer 503 instead of pretending to work. */
   store: DataStore | null
   verifyAuth: AuthVerifier
@@ -377,6 +379,8 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
 
   const admin = createAdminHandler({
     store: deps.store,
+    generateProduct: deps.generateProduct,
+    allowGeneration: async (id) => (await deps.store!.hitRateLimit(limitKey('ai-user', id), 600, 5)) && (await deps.store!.hitRateLimit(limitKey('ai-global', 'products'), 86400, 100)),
     requireUser,
     allow: (userId) => deps.store!.hitRateLimit(limitKey('admin-user', userId), WINDOW_SECONDS, LIMITS.adminPerUser),
     onCatalogChange: deps.onCatalogChange,

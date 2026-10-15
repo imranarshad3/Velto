@@ -1,3 +1,5 @@
+import { aiProductRequest } from '../../src/features/catalog/aiProduct.js'
+import type { GenerateProduct } from './aiProduct.js'
 import { canAccess, workspaceHandler } from '../workspace/handlers.js'
 import { messageStatusSchema, productInputSchema, quoteStatusUpdateSchema } from '../../src/features/catalog/productSchema.js'
 import { analyticsRanges, productStatuses, type AnalyticsRange, type ProductStatus } from '../../src/features/admin/types.js'
@@ -12,6 +14,8 @@ import { z } from 'zod'
 import { activitySince, buildProductAnalytics } from './analytics.js'
 
 interface AdminContext {
+  generateProduct?: GenerateProduct
+  allowGeneration?: (userId: string) => Promise<boolean>
   store: DataStore | null
   requireUser: (request: Request) => Promise<{ userId: string } | Response>
   allow: (userId: string) => Promise<boolean>
@@ -83,6 +87,14 @@ export function createAdminHandler(ctx: AdminContext) {
       if (!role || !canAccess(role, resource)) return apiError(403, 'forbidden', 'Your team role does not permit this action.')
       const workspaceResponse = await workspaceHandler(request, store, actor, role, resource, id, key)
       if (workspaceResponse) return workspaceResponse
+
+      if (resource === 'products' && id === 'ai-generate') {
+        if (method !== 'POST' || key) return apiError(405, 'method_not_allowed', 'Use POST for image analysis.')
+        if (!ctx.generateProduct) return apiError(503, 'ai_unconfigured', 'AI generation is not configured.')
+        if (!ctx.allowGeneration || !(await ctx.allowGeneration(actor))) return apiError(429, 'ai_rate_limited', 'AI request limit reached. Please wait before trying again.')
+        const input = aiProductRequest.parse(await readJson(request, 3_500_000))
+        return json({ draft: await ctx.generateProduct(input) })
+      }
 
       // Local-only upload sink (memory storage): the token is single-use and maps to one path.
       if (resource === 'uploads' && id && method === 'PUT' && ctx.files?.acceptUpload) {
