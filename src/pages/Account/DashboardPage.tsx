@@ -12,7 +12,7 @@ import QuoteCard from './QuoteCard.tsx'
 import RemoteState from './RemoteState.tsx'
 
 const quickActions = [
-  { to: '/quote', label: 'Request a quote', hint: 'Send product needs and project details', icon: ClipboardList },
+  { to: '/quote', label: 'Ask for a price', hint: 'Send product needs and project details', icon: ClipboardList },
   { to: '/products', label: 'Browse products', hint: 'Explore the full catalogue', icon: PackageSearch },
   { to: '/resources/coverage-calculator', label: 'Coverage calculator', hint: 'Estimate quantities before you request', icon: Calculator },
   { to: '/track', label: 'Track a guest request', hint: 'Use your reference and tracking code', icon: Search },
@@ -36,7 +36,7 @@ export default function DashboardPage() {
         crumbs={[]}
         actions={
           <ButtonLink to="/quote">
-            Request a quote <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+            Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
           </ButtonLink>
         }
       >

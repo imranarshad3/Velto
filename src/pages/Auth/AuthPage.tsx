@@ -114,7 +114,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
                   </div>
                   <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2">
                     <ButtonLink to="/quote">
-                      Request a quote <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                      Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                     </ButtonLink>
                     <ButtonLink to="/track" variant="secondary">
                       Track a request

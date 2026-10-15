@@ -2,20 +2,23 @@ import { useContentData } from '../../features/cms/context.ts'
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { ArrowRight, Heart, Menu, Search, ShoppingCart } from 'lucide-react'
-import { primaryNav as defaultPrimaryNav } from '../../data/navigation.ts'
+import { storefrontNav, primaryNav as defaultPrimaryNav } from '../../data/navigation.ts'
 import { useCart } from '../../features/cart/cartStore.ts'
 import { useWishlist } from '../../features/wishlist/wishlistStore.ts'
 import Logo from '../ui/Logo.tsx'
 import { buttonArrow, buttonClass } from '../ui/button.ts'
 import AccountControl from './AccountControl.tsx'
 import MobileNav from './MobileNav.tsx'
+import ProductSearch from './ProductSearch.tsx'
 
 const iconButton =
   'relative grid size-11 place-items-center rounded-full text-white/90 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white'
 
 export default function Header() {
-  const primaryNav = useContentData('site', 'Navigation.data', defaultPrimaryNav)
+  const primaryNav = storefrontNav(useContentData('site', 'Navigation.data', defaultPrimaryNav))
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const closeSearch = useCallback(() => setSearchOpen(false), [])
   const closeMenu = useCallback(() => setMenuOpen(false), [])
   const cartCount = useCart((s) => s.items.length)
   const wishlistCount = useWishlist((s) => s.slugs.length)
@@ -66,9 +69,9 @@ export default function Header() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1 xl:ml-0">
-          <Link to="/products" className={iconButton} aria-label="Search products">
+          <button type="button" onClick={() => setSearchOpen(true)} className={iconButton} aria-label="Search products" aria-haspopup="dialog" aria-expanded={searchOpen}>
             <Search aria-hidden="true" className="size-[1.375rem]" />
-          </Link>
+          </button>
           <Link to="/wishlist" className={`${iconButton} hidden sm:grid`} aria-label={`Wishlist, ${wishlistCount} saved`}>
             <Heart aria-hidden="true" className="size-[1.375rem]" />
             {wishlistCount > 0 && (
@@ -91,7 +94,7 @@ export default function Header() {
           {/* Visibility lives on the wrapper: buttonClass sets display, which would override a bare `hidden`. */}
           <div className="ml-2 hidden min-[90rem]:block">
             <Link to="/quote" className={buttonClass('accent', 'sm')}>
-              Request a Quote
+              Ask for Price
               <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </Link>
           </div>
@@ -102,6 +105,7 @@ export default function Header() {
       </div>
 
       <MobileNav open={menuOpen} onClose={closeMenu} />
+      <ProductSearch open={searchOpen} onClose={closeSearch} />
     </header>
   )
 }

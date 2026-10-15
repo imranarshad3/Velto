@@ -46,7 +46,7 @@ export default function AccountLayout() {
             <p className="mt-3 max-w-[30rem] leading-relaxed text-muted">You can request quotes as a guest and track them with your reference and tracking code.</p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <ButtonLink to="/quote">
-                Request a quote <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </ButtonLink>
               <ButtonLink to="/track" variant="secondary">
                 Track a request

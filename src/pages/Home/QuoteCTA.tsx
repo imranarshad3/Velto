@@ -26,7 +26,7 @@ export default function QuoteCTA() {
           <p className="mt-2 text-[0.875rem] leading-relaxed text-white/75">Have your surface type, approximate area and product requirements ready.</p>
           <div className="mt-6 flex flex-col gap-3">
             <ButtonLink to={cms("field-4", "/quote")} variant="light" size="lg">
-              {cms("field-5", "Request a Quote ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-5", "Ask for Price ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
             <ButtonLink to={cms("field-6", "/solutions")} variant="outline-light" size="lg">
               {cms("field-7", "Browse Solutions")}</ButtonLink>

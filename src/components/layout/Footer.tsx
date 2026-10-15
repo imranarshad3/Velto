@@ -27,7 +27,7 @@ export default function Footer() {
             {cms("field-3", "VELTO is a storefront for construction chemical solutions, featuring ULTRA Chemicals products.")}</p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link to={cms("field-4", "/quote")} className={buttonClass('light', 'md')}>
-              {cms("field-5", "Request a Quote")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-5", "Ask for Price")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </Link>
             <Link to={cms("field-6", "/contact")} className={buttonClass('outline-light', 'md')}>
               {cms("field-7", "Contact us")}</Link>

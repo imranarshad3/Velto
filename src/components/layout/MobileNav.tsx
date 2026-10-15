@@ -2,7 +2,7 @@ import { useContentData } from '../../features/cms/context.ts'
 import { useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { ArrowUpRight, Search, X } from 'lucide-react'
-import { primaryNav as defaultPrimaryNav, utilityNav } from '../../data/navigation.ts'
+import { storefrontNav, primaryNav as defaultPrimaryNav, utilityNav } from '../../data/navigation.ts'
 import AccountControl from './AccountControl.tsx'
 import Logo from '../ui/Logo.tsx'
 import { buttonClass } from '../ui/button.ts'
@@ -14,7 +14,7 @@ interface MobileNavProps {
 
 /** Off-canvas menu built on native <dialog>: focus trapping, Escape and inert background come from the browser. */
 export default function MobileNav({ open, onClose }: MobileNavProps) {
-  const primaryNav = useContentData('site', 'Navigation.data', defaultPrimaryNav)
+  const primaryNav = storefrontNav(useContentData('site', 'Navigation.data', defaultPrimaryNav))
   const dialogRef = useRef<HTMLDialogElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const { pathname } = useLocation()
@@ -98,7 +98,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
 
         <div className="flex shrink-0 flex-col gap-3 border-t border-border bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) onClose() }}>
           <Link to="/quote" className={buttonClass('primary', 'md', 'w-full')}>
-            Request a Quote
+            Ask for Price
           </Link>
           <AccountControl variant="menu" />
         </div>

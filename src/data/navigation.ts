@@ -6,8 +6,8 @@ export interface NavItem {
 export const primaryNav: NavItem[] = [
   { label: 'Home', to: '/' },
   { label: 'Products', to: '/products' },
-  { label: 'Solutions', to: '/solutions' },
-  { label: 'Applications', to: '/applications' },
+  { label: 'Find Products', to: '/solutions' },
+  { label: 'Shop by Area', to: '/applications' },
   { label: 'Resources', to: '/resources' },
   { label: 'About', to: '/about' },
 ]
@@ -22,7 +22,7 @@ export const utilityNav: NavItem[] = [
 export const announcements: string[] = [
   'Construction chemical solutions for every build',
   'Application guidance for builders, architects & contractors',
-  'Request a quote for project & bulk orders',
+  'Ask for a price for project & bulk orders',
 ]
 
 export interface FooterColumn {
@@ -43,8 +43,8 @@ export const footerColumns: FooterColumn[] = [
   {
     title: 'Explore',
     links: [
-      { label: 'Solutions', to: '/solutions' },
-      { label: 'Applications', to: '/applications' },
+      { label: 'Find Products', to: '/solutions' },
+      { label: 'Shop by Area', to: '/applications' },
       { label: 'Resources', to: '/resources' },
       { label: 'Coverage Calculator', to: '/resources/coverage-calculator' },
     ],
@@ -61,7 +61,7 @@ export const footerColumns: FooterColumn[] = [
     title: 'Support',
     links: [
       { label: 'FAQ', to: '/faq' },
-      { label: 'Request a Quote', to: '/quote' },
+      { label: 'Ask for Price', to: '/quote' },
       { label: 'Track a Request', to: '/track' },
     ],
   },
@@ -71,3 +71,6 @@ export const legalNav: NavItem[] = [
   { label: 'Privacy Policy', to: '/privacy' },
   { label: 'Terms of Use', to: '/terms' },
 ]
+
+/** Keep resource routes available, but hide their menu entry until launch. */
+export const storefrontNav = (items: NavItem[]) => items.filter(item => !item.to.startsWith('/resources')).map(item => ({ ...item, label: item.to === '/solutions' ? 'Find Products' : item.to === '/applications' ? 'Shop by Area' : item.label }))

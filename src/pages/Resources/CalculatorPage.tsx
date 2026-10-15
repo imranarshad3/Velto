@@ -226,7 +226,7 @@ export default function CalculatorPage() {
             </button>
           ) : (
             <ButtonLink to={selected ? `/quote?product=${selected.productSlug}` : '/quote'} variant="light" className="mt-5 w-full">
-              Request a quote
+              Ask for a price
             </ButtonLink>
           )}
         </aside>

@@ -18,7 +18,7 @@ export default function AccountQuotesPage() {
       <RemoteState state={state} reload={reload}>
         {(quotes) =>
           quotes.length === 0 ? (
-            <EmptyState icon={ClipboardList} title="No quote requests yet" actions={<ButtonLink to="/quote">Request a quote</ButtonLink>}>
+            <EmptyState icon={ClipboardList} title="No quote requests yet" actions={<ButtonLink to="/quote">Ask for a price</ButtonLink>}>
               Guest requests aren’t linked automatically; track those with your reference and tracking code.
             </EmptyState>
           ) : (

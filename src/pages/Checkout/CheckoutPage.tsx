@@ -84,7 +84,7 @@ export default function CheckoutPage() {
               <div className="mt-auto flex flex-col gap-3 pt-8">
                 {count > 0 ? (
                   <ButtonLink to="/quote?source=cart" variant="light" size="lg" className="w-full whitespace-normal text-center">
-                    Request a quote for your cart ({count}) <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                    Ask for a price for your cart ({count}) <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                   </ButtonLink>
                 ) : (
                   <ButtonLink to="/products" variant="light" size="lg" className="w-full">

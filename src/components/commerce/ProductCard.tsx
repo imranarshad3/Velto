@@ -42,7 +42,7 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
     const { add, update } = useCart.getState()
     const result = add(product.slug)
     if (result === 'full') {
-      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Request a quote for these first.`, { label: 'View cart', to: '/cart' })
+      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Ask for a price for these first.`, { label: 'View cart', to: '/cart' })
       return
     }
     update(product.slug, { quantity: 1, unit })

@@ -5,7 +5,7 @@ export type Area = 'interior' | 'exterior'
 /**
  * DEMO catalogue. Entries are generic product TYPES, not verified ULTRA SKUs:
  * no trade names, prices, stock, ratings, pack sizes or performance figures.
- * Only four entries have (illustrative) concept packshots; the rest render a neutral placeholder.
+ * Every entry has an illustrative VELTO concept packshot, not verified manufacturer photography.
  */
 export interface CatalogProduct {
   id: string
@@ -150,6 +150,12 @@ const demoPrices: Record<string, number> = {
 
 export const catalog: CatalogProduct[] = entries.map((entry) => ({
   ...entry,
+  image: {
+    src: `/images/products/${entry.id.replace(/^demo-/, '')}.webp`,
+    alt: `Illustrative VELTO concept: ${entry.name}`,
+    width: 1024,
+    height: 1024,
+  },
   slug: entry.id.replace(/^demo-/, ''),
   verified: false,
   ...(demoPrices[entry.id] && { demoPrice: { amount: demoPrices[entry.id], currency: 'PKR' } }),

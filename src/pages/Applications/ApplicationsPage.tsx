@@ -16,12 +16,12 @@ export default function ApplicationsPage() {
 
   return (
     <>
-      <title>{cms("field-1", "Applications — VELTO")}</title>
+      <title>{cms("field-1", "Shop by Area — VELTO")}</title>
       <meta name="description" content={cms("field-2", "Construction chemical solutions by application: bathrooms, kitchens, roofs, floors, pools and exterior walls.")} />
       <PageHeader
-        eyebrow={cms("field-3", "Applications")}
+        eyebrow={cms("field-3", "Shop by Area")}
         title={cms("field-4", "Solutions for every area")}
-        crumbs={[{ label: 'Home', to: '/' }, { label: 'Applications' }]}
+        crumbs={[{ label: 'Home', to: '/' }, { label: 'Shop by Area' }]}
         description={cms("field-5", "Start from the space you are building or repairing to see the typical sequence of work and the product types involved.")}
         aside={
           <div aria-hidden="true" className="grid w-[clamp(18rem,26vw,24rem)] grid-cols-2 grid-rows-2 gap-[var(--grid-gap)]">

@@ -43,14 +43,14 @@ export default function QuotePage() {
 
   return (
     <>
-      <title>Request a Quote — VELTO</title>
+      <title>Ask for Price — VELTO</title>
       <section aria-labelledby="quote-title" className="relative isolate overflow-hidden border-b border-border/70 bg-cream">
         <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 pt-2 pb-[clamp(2rem,4.5vw,3.5rem)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:items-center lg:gap-14">
           <div className="min-w-0">
-            <Breadcrumb items={[{ label: 'Home', to: '/' }, ...(fromCart ? [{ label: 'Cart', to: '/cart' }] : []), { label: 'Request a Quote' }]} />
+            <Breadcrumb items={[{ label: 'Home', to: '/' }, ...(fromCart ? [{ label: 'Cart', to: '/cart' }] : []), { label: 'Ask for Price' }]} />
             <p className="animate-rise mt-3 flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
               <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
-              Request a quote
+              Ask for a price
             </p>
             <h1 id="quote-title" className="animate-rise mt-3 font-display text-[clamp(2.375rem,1.6rem+2.9vw,3.875rem)] leading-[1.02] tracking-[-0.015em] text-ink [--delay:0.05s]">
               Let’s build something stronger.

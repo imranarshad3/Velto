@@ -37,10 +37,10 @@ export default function ProductsHero() {
           </p>
           <div className="animate-rise mt-6 flex flex-wrap gap-3" style={delay(0.24)}>
             <ButtonLink to="/quote" className="px-6">
-              Request a Quote <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              Ask for Price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
             <a href="#shop-application-title" className="inline-flex min-h-12 items-center px-2 text-[0.9375rem] font-semibold text-forest underline decoration-copper/50 underline-offset-[0.35em] hover:decoration-copper">
-              Shop by application
+              Shop by area
             </a>
           </div>
         </div>

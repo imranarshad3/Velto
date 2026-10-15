@@ -227,7 +227,7 @@ export default function CartPage() {
                   </div>
                   <div className="p-6">
                     <ButtonLink to="/quote?source=cart" size="lg" className="w-full whitespace-normal text-center">
-                      Request a quote for these items <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                      Ask for a price for these items <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                     </ButtonLink>
                     {canCheckout ? (
                       <ButtonLink to="/checkout" variant="secondary" className="mt-3 w-full">

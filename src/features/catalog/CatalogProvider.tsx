@@ -3,11 +3,14 @@ import { catalog as bundled, type CatalogProduct } from '../../data/catalog.ts'
 import { CatalogContext, type CatalogState } from './catalogContext.ts'
 
 const bundledDemoPrices = new Map(bundled.flatMap((p) => (p.demoPrice ? [[p.slug, p.demoPrice] as const] : [])))
+const bundledImages = new Map(bundled.map((p) => [p.slug, p.image]))
 
 /** Seeded DEMO rows keep their labelled, display-only DEMO price until a verified price is set by an admin. */
 const withDemoPrice = (product: CatalogProduct): CatalogProduct => {
   const demoPrice = !product.verified && !product.price ? bundledDemoPrices.get(product.slug) : undefined
-  return demoPrice ? { ...product, demoPrice } : product
+  const legacyImage = !product.image || /^\/images\/products\/concept-pack-0[1-4]\.webp$/.test(product.image.src)
+  const image = !product.verified && legacyImage ? bundledImages.get(product.slug) ?? product.image : product.image
+  return { ...product, image, ...(demoPrice ? { demoPrice } : {}) }
 }
 
 /**

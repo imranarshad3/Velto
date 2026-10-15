@@ -13,7 +13,7 @@ import { QuoteApiError, sendContactMessage } from '../../features/quotes/api.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 
 const shortcuts = [
-  { icon: ClipboardList, title: 'Need prices or availability?', text: 'A quote request is the fastest route.', to: '/quote', cta: 'Request a quote' },
+  { icon: ClipboardList, title: 'Need prices or availability?', text: 'A quote request is the fastest route.', to: '/quote', cta: 'Ask for a price' },
   { icon: Search, title: 'Following up a request?', text: 'Check its status with your reference.', to: '/track', cta: 'Track a request' },
   { icon: LifeBuoy, title: 'Quick question?', text: 'Many answers are already in our FAQ.', to: '/faq', cta: 'Read the FAQ' },
 ]

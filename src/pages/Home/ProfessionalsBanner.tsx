@@ -40,7 +40,7 @@ export default function ProfessionalsBanner() {
                 {cms("field-5", "Explore Solutions ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </ButtonLink>
               <ButtonLink to={cms("field-6", "/quote")} variant="outline-light">
-                {cms("field-7", "Request a Quote")}</ButtonLink>
+                {cms("field-7", "Ask for Price")}</ButtonLink>
             </div>
           </div>
 

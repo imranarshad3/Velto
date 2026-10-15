@@ -18,19 +18,19 @@ const paths = [
   { icon: Compass, title: 'Start from the job', text: 'Pick the area you are working on to see the typical sequence and products.', to: '/applications', cta: 'Browse applications' },
   { icon: LayoutGrid, title: 'Start from the product', text: 'Browse by category, search and filter the full catalogue.', to: '/products', cta: 'Browse products' },
   { icon: BookOpen, title: 'Check the details', text: 'Technical documents, FAQs and a coverage calculator.', to: '/resources', cta: 'Open resources' },
-  { icon: ClipboardList, title: 'Get a quote', text: 'Send the products and quantities you need, or describe the project.', to: '/quote', cta: 'Request a quote' },
+  { icon: ClipboardList, title: 'Get a quote', text: 'Send the products and quantities you need, or describe the project.', to: '/quote', cta: 'Ask for a price' },
 ]
 
 export default function SolutionsPage() {
   const cms = useContent('solutions', 'SolutionsPage')
   return (
     <>
-      <title>{cms("field-1", "Solutions — VELTO")}</title>
+      <title>{cms("field-1", "Find Products — VELTO")}</title>
       <meta name="description" content={cms("field-2", "Find the right construction chemical solution by application or product category, then request a quote.")} />
       <PageHeader
-        eyebrow={cms("field-3", "Solutions")}
+        eyebrow={cms("field-3", "Find Products")}
         title={cms("field-4", "The right product for every part of the build")}
-        crumbs={[{ label: 'Home', to: '/' }, { label: 'Solutions' }]}
+        crumbs={[{ label: 'Home', to: '/' }, { label: 'Find Products' }]}
         description={cms("field-5", "Tiling, waterproofing, repair, flooring and surface protection — organised so you can go from problem to product quickly.")}
         actions={
           <>

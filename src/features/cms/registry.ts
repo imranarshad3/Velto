@@ -363,8 +363,8 @@ export const pageDefinitions: PageDefinition[] = [
           },
           {
             "key": "ProfessionalsBanner.field-7",
-            "label": "Request a Quote",
-            "value": "Request a Quote",
+            "label": "Ask for Price",
+            "value": "Ask for Price",
             "kind": "text"
           },
           {
@@ -495,8 +495,8 @@ export const pageDefinitions: PageDefinition[] = [
           },
           {
             "key": "QuoteCTA.field-5",
-            "label": "Request a Quote",
-            "value": "Request a Quote ",
+            "label": "Ask for Price",
+            "value": "Ask for Price ",
             "kind": "text"
           },
           {
@@ -1211,8 +1211,8 @@ export const pageDefinitions: PageDefinition[] = [
           },
           {
             "key": "Footer.field-5",
-            "label": "Request a Quote",
-            "value": "Request a Quote",
+            "label": "Ask for Price",
+            "value": "Ask for Price",
             "kind": "text"
           },
           {

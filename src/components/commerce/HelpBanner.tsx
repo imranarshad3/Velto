@@ -25,7 +25,7 @@ export default function HelpBanner() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/quote" className={buttonClass('light', 'lg')}>
-                Request a Quote <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                Ask for Price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </Link>
               <Link to="/resources" className={buttonClass('outline-light', 'lg')}>
                 Technical Resources

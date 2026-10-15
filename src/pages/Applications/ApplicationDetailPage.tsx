@@ -35,12 +35,12 @@ export default function ApplicationDetailPage() {
 
   return (
     <>
-      <title>{`${application.name} — Applications — VELTO`}</title>
+      <title>{`${application.name} — Shop by Area — VELTO`}</title>
       <meta name="description" content={detail.intro} />
       <section aria-labelledby="application-title" className="relative isolate overflow-hidden border-b border-border/70 bg-cream">
         <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-10 pt-2 pb-[clamp(2.5rem,5vw,4.5rem)] md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center lg:gap-16">
           <div className="min-w-0">
-            <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Applications', to: '/applications' }, { label: application.name }]} />
+            <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Shop by Area', to: '/applications' }, { label: application.name }]} />
             <p className="animate-rise mt-4 flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
               <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
               Application
@@ -75,7 +75,7 @@ export default function ApplicationDetailPage() {
                 Shop {application.name.toLowerCase()} products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </ButtonLink>
               <ButtonLink to="/quote" variant="secondary" size="lg">
-                Request a quote
+                Ask for a price
               </ButtonLink>
             </div>
           </div>

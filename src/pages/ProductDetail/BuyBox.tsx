@@ -37,7 +37,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
     const { add, update } = useCart.getState()
     const result = add(product.slug)
     if (result === 'full') {
-      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Request a quote for these first.`, { label: 'View cart', to: '/cart' })
+      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Ask for a price for these first.`, { label: 'View cart', to: '/cart' })
       return
     }
     update(product.slug, { quantity, unit })
@@ -76,8 +76,8 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
           {price?.demo
             ? 'Illustrative DEMO price only. Confirmed pricing and availability are provided with your quote.'
             : price
-              ? 'Request a quote to confirm availability and delivery.'
-              : 'Request a quote for pricing, pack options and availability.'}
+              ? 'Ask for a price to confirm availability and delivery.'
+              : 'Ask for a price for pricing, pack options and availability.'}
         </p>
       </div>
 
@@ -133,7 +133,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
 
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 @[28rem]:grid-cols-2">
           <ButtonLink to={`${quoteHref}&qty=${quantity}&unit=${unit}`} size="lg" className="w-full px-5">
-            Request Quote<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+            Ask for Price<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
           </ButtonLink>
           <button type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full px-5')}>
             <CartIcon aria-hidden="true" className="size-[1.125rem]" />

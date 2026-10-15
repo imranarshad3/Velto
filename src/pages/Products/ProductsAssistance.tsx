@@ -11,7 +11,7 @@ export default function ProductsAssistance() {
       <section aria-labelledby="shop-application-title" className="relative isolate scroll-mt-[var(--header-height)] overflow-hidden border-t border-sand-deep/60 bg-sand py-[var(--section-gap)]">
         <div className="container-page min-[90rem]:container-wide">
           <Reveal>
-            <SectionHeading id="shop-application-title" eyebrow="By application" title="Shop by Application" description="See products suited to the area you are working on." />
+            <SectionHeading id="shop-application-title" eyebrow="By application" title="Shop by Area" description="See products suited to the area you are working on." />
           </Reveal>
           <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
             {applications.map((application, i) => (

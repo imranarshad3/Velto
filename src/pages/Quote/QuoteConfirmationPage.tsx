@@ -14,7 +14,7 @@ export default function QuoteConfirmationPage() {
     <div className="container-page py-[clamp(1rem,3vw,2rem)] pb-[var(--section-gap)]">
       <title>Quote Request Received — VELTO</title>
       <meta name="robots" content="noindex" />
-      <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Request a Quote', to: '/quote' }, { label: 'Confirmation' }]} />
+      <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Ask for Price', to: '/quote' }, { label: 'Confirmation' }]} />
       <div className="mx-auto mt-4 max-w-[48rem]">
         {result ? (
           <QuoteSuccess result={result} signedIn={auth.signedIn} />
@@ -31,7 +31,7 @@ export default function QuoteConfirmationPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink to="/track">Track a request</ButtonLink>
               <ButtonLink to="/quote" variant="secondary">
-                Request a quote
+                Ask for a price
               </ButtonLink>
             </div>
           </section>
