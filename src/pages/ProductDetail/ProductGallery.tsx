@@ -20,7 +20,7 @@ interface ProductGalleryProps {
  * Packshots are small concept crops (≈236 px), so they are capped at ~1.6× their natural size on a sand stage
  * (multiply blends their light backdrop away). Photographs fill the frame.
  */
-const packshot = 'h-auto max-h-full w-[min(68%,23.5rem)] object-contain mix-blend-multiply'
+const packshot = 'h-full w-full max-h-full object-contain'
 const photo = 'absolute inset-0 size-full object-cover'
 
 function SlideImage({ slide, priority }: { slide: GallerySlide; priority?: boolean }) {
@@ -125,7 +125,7 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
                 className={`relative grid aspect-square w-full place-items-center overflow-hidden rounded-xl border-2 bg-sand transition-[border-color,opacity] ${i === index ? 'border-forest' : 'border-transparent opacity-75 hover:opacity-100'}`}
               >
                 {s.image ? (
-                  <img src={s.image.src} alt="" width={s.image.width} height={s.image.height} loading="lazy" decoding="async" className={s.fill ? 'absolute inset-0 size-full object-cover' : 'size-[80%] object-contain mix-blend-multiply'} />
+                  <img src={s.image.src} alt="" width={s.image.width} height={s.image.height} loading="lazy" decoding="async" className={s.fill ? 'absolute inset-0 size-full object-cover' : 'size-full object-contain'} />
                 ) : (
                   <ImageOff aria-hidden="true" className="size-6 text-muted" />
                 )}

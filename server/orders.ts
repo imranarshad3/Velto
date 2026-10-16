@@ -89,6 +89,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         const parsed = z.object({ id: z.string().uuid(), status: z.enum(['placed', 'confirmed', 'shipped', 'delivered', 'cancelled']) }).strict().safeParse(await readJson(request, 2048))
         if (!parsed.success) return apiError(422, 'invalid', 'Choose a valid order status.')
         const { data, error } = await db.rpc('update_cod_order', { p_actor: auth.userId, p_id: parsed.data.id, p_status: parsed.data.status })
+        if (error?.message.includes('cancelled_order_closed')) return apiError(409, 'order_closed', 'Cancelled orders cannot be reopened. Create a new order instead.')
         if (error) throw new Error('orders_update')
         return data ? json({ ok: true }) : apiError(404, 'not_found', 'Order not found.')
       }
@@ -103,7 +104,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         const p = parsed.data
         const { data, error } = await db.rpc('place_cod_order', { p_user: auth.userId, p_key: p.requestKey, p_customer: p.customer, p_items: p.items, p_expected: p.expectedTotal })
         if (error) {
-          if (/price_changed|product_unavailable/.test(error.message)) return apiError(409, 'cart_changed', 'A price or product changed. Refresh your cart before ordering.')
+          if (/price_changed|product_unavailable|insufficient_stock/.test(error.message)) return apiError(409, 'cart_changed', 'A price, product or available quantity changed. Refresh your cart before ordering.')
           if (/order_limit/.test(error.message)) return apiError(429, 'order_limit', 'Daily order limit reached. Please contact us.')
           throw new Error('orders_create')
         }

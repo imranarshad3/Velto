@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import type { CatalogQuery, Facet } from '../../features/catalog/catalogQuery.ts'
-import { facetCounts, facetOptions } from '../../features/catalog/catalogQuery.ts'
+import { facetCounts, facetOptions, productCategories } from '../../features/catalog/catalogQuery.ts'
 
 interface FilterPanelProps {
   idPrefix: string
@@ -28,7 +28,7 @@ export default function FilterPanel({ idPrefix, products, query, onToggle }: Fil
               {legend}
             </legend>
             <ul className="flex flex-col gap-0.5">
-              {facetOptions[facet].map((option) => {
+              {(facet === 'categories' ? productCategories(products) : facetOptions[facet]).map((option) => {
                 const id = `${idPrefix}-${facet}-${option.value}`
                 const count = counts.get(option.value) ?? 0
                 const checked = query[facet].includes(option.value)

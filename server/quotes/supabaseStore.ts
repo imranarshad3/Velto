@@ -64,6 +64,9 @@ interface ProductRow {
   slug: string
   name: string
   category_slug: string
+  category_name: string | null
+  images: AdminProduct['images'] | null
+  stock_quantity: number | null
   usage: string
   description: string | null
   applications: string[]
@@ -89,6 +92,9 @@ const toProduct = (r: ProductRow): AdminProduct => ({
   slug: r.slug,
   name: r.name,
   categorySlug: r.category_slug,
+  categoryName: r.category_name ?? undefined,
+  images: r.images ?? [],
+  stockQuantity: r.stock_quantity ?? null,
   usage: r.usage,
   description: r.description ?? undefined,
   applications: r.applications,
@@ -111,6 +117,9 @@ const toProduct = (r: ProductRow): AdminProduct => ({
 const productPayload = (d: ProductData) => ({
   name: d.name,
   category_slug: d.categorySlug,
+  category_name: d.categoryName ?? null,
+  images: d.images,
+  stock_quantity: d.stockQuantity,
   usage: d.usage,
   description: d.description ?? null,
   applications: d.applications,

@@ -131,10 +131,10 @@ describe('Supabase store (PostgREST)', { skip: !url || !jwtSecret }, () => {
     assert.equal(published.every((p) => !p.verified), true)
 
     const data = {
-      slug: 'int-primer', name: 'Integration Primer', categorySlug: 'surface-treatments' as const, usage: 'For integration testing only.',
+      slug: 'int-primer', name: 'Integration Primer', categorySlug: 'surface-treatments' as const, images: [], stockQuantity: 10, usage: 'For integration testing only.',
       applications: ['exterior-walls' as const], areas: ['exterior' as const], benefits: ['One'], specifications: [{ label: 'Colour', value: 'Clear' }],
       packSizes: ['20 kg'], documents: [{ title: 'TDS', url: 'https://example.com/tds.pdf', fileType: 'pdf' }], faq: [],
-      image: { src: '/images/products/concept-pack-01.webp', alt: 'x', width: 236, height: 224 }, price: { amount: 1234.5, currency: 'PKR' },
+      image: { src: '/images/products/concept-pack-01.webp', alt: 'x', width: 236, height: 224 }, price: { amount: 1234.5, currency: 'PKR' as const },
       verified: false, published: false, sortOrder: 99,
     }
     await store.saveProduct('user_int_admin', 'int-primer', data, true).catch(() => {})
@@ -142,7 +142,7 @@ describe('Supabase store (PostgREST)', { skip: !url || !jwtSecret }, () => {
     assert.equal(await store.saveProduct('user_int_admin', 'int-primer', { ...data, verified: true, published: true }, false), 'ok')
     assert.equal(await store.saveProduct('user_int_admin', 'nope-nope', data, false), 'not_found')
     const saved = (await store.listProducts({ includeUnpublished: false })).find((p) => p.slug === 'int-primer')
-    assert.deepEqual(saved?.price, { amount: 1234.5, currency: 'PKR' })
+    assert.deepEqual(saved?.price, { amount: 1234.5, currency: 'PKR' as const })
     assert.deepEqual(saved?.documents, data.documents)
     assert.deepEqual(saved?.packSizes, ['20 kg'])
 

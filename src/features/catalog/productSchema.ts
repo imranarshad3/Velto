@@ -11,10 +11,23 @@ export const areaSlugs = ['interior', 'exterior'] as const
 const blank = (v: unknown) => (v === '' || v === null ? undefined : v)
 const line = (max: number) => z.string().trim().min(1).max(max)
 
+export const productImageSchema = z.object({
+        src: z
+          .string()
+          .regex(
+            /^(\/images\/[a-z0-9/_-]+\.(webp|jpe?g|png)|https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/website-media\/[0-9a-f-]{36}\.webp)$/,
+            'Use a bundled /images/ path or a Media Library image',
+          ),
+        alt: line(200),
+        width: z.number().int().min(1).max(6000),
+        height: z.number().int().min(1).max(6000),
+      })
+
 export const productInputSchema = z.object({
   slug: z.string().trim().regex(/^[a-z0-9-]{1,80}$/, 'Use lowercase letters, numbers and hyphens'),
   name: z.string().trim().min(2, 'Enter a name').max(120),
-  categorySlug: z.enum(categorySlugs, { error: 'Choose a category' }),
+  categorySlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(80),
+  categoryName: z.string().trim().min(2).max(80).optional(),
   usage: z.string().trim().min(5, 'Enter a short usage line').max(200),
   description: z.preprocess(blank, z.string().trim().max(4000).optional()),
   applications: z.array(z.enum(applicationSlugs)).max(applicationSlugs.length).default([]),
@@ -35,25 +48,12 @@ export const productInputSchema = z.object({
     .max(12)
     .default([]),
   faq: z.array(z.object({ question: line(200), answer: line(1000) })).max(12).default([]),
-  image: z.preprocess(
-    blank,
-    z
-      .object({
-        src: z
-          .string()
-          .regex(
-            /^(\/images\/[a-z0-9/_-]+\.(webp|jpe?g|png)|https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/website-media\/[0-9a-f-]{36}\.webp)$/,
-            'Use a bundled /images/ path or a Media Library image',
-          ),
-        alt: line(200),
-        width: z.number().int().min(1).max(6000),
-        height: z.number().int().min(1).max(6000),
-      })
-      .optional(),
-  ),
+  image: z.preprocess(blank, productImageSchema.optional()),
+  images: z.array(productImageSchema).max(8).default([]),
+  stockQuantity: z.number().int().min(0).max(10000000).nullable().default(null),
   price: z.preprocess(
     blank,
-    z.object({ amount: z.number().positive().max(1_000_000_000), currency: z.string().regex(/^[A-Z]{3}$/, 'Use a 3-letter currency code') }).optional(),
+    z.object({ amount: z.number().positive('Enter a price greater than zero').max(1_000_000_000), currency: z.literal('PKR') }),
   ),
   verified: z.boolean().default(false),
   published: z.boolean().default(true),

@@ -13,6 +13,9 @@ export interface CatalogProduct {
   slug: string
   name: string
   categorySlug: string
+  categoryName?: string
+  images?: ImageAsset[]
+  stockQuantity?: number | null
   usage: string
   applications: string[]
   areas: Area[]

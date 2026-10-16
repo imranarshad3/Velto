@@ -150,7 +150,7 @@ export function createAdminHandler(ctx: AdminContext) {
           const create = !id
           const slug = create ? parsed.data.slug : id
           if (!/^[a-z0-9-]{1,80}$/.test(slug)) return apiError(404, 'not_found', 'Product not found.')
-          const result = await store.saveProduct(actor, slug, { ...parsed.data, slug }, create)
+          const result = await store.saveProduct(actor, slug, { ...parsed.data, slug, verified: true, ...(create ? { published: true } : {}) }, create)
           if (result === 'conflict') return validationError([{ path: ['slug'], message: 'A product with this slug already exists' }])
           if (result === 'not_found') return apiError(404, 'not_found', 'Product not found.')
           ctx.onCatalogChange?.()

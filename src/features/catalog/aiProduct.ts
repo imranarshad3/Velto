@@ -1,17 +1,18 @@
 import { z } from 'zod'
-import { applicationSlugs, areaSlugs, categorySlugs } from './productSchema.js'
+import { applicationSlugs, areaSlugs } from './productSchema.js'
 
 export const aiProductRequest = z.object({
   images: z.array(z.string().min(20).max(2_800_000).regex(/^[A-Za-z0-9+/]+={0,2}$/)).min(1).max(2),
   context: z.string().trim().max(1500).default(''),
-  category: z.enum(categorySlugs).optional(),
+  category: z.string().max(80).optional(),
 }).strict()
 
 // No operational, publication, verification, price, stock, ownership or URL fields.
 export const aiProductDraftSchema = z.object({
   name: z.string().max(120),
   slug: z.string().max(80).regex(/^[a-z0-9-]*$/),
-  categorySlug: z.enum(categorySlugs).nullable(),
+  categorySlug: z.string().max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).nullable(),
+  categoryName: z.string().max(80).optional(),
   usage: z.string().max(200),
   description: z.string().max(4000),
   applications: z.array(z.enum(applicationSlugs)).max(6),
@@ -32,7 +33,7 @@ export type AiProductRequest = z.infer<typeof aiProductRequest>
 
 export function draftFormFields(d: AiProductDraft) {
   return {
-    name: d.name, slug: d.slug, categorySlug: d.categorySlug ?? '', usage: d.usage,
+    name: d.name, slug: d.slug, categorySlug: d.categorySlug ?? '', categoryName: d.categoryName ?? '', usage: d.usage,
     description: d.description, applications: d.applications, areas: d.areas,
     benefits: d.benefits.join('\n'), specifications: d.specifications.map(s => `${s.label}: ${s.value}`).join('\n'),
     packSizes: d.packSizes.join('\n'), coverage: d.coverage,

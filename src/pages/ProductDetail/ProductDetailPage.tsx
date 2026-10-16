@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
   const { slug } = useParams()
   const { products, find, status } = useCatalog()
   const product = find(slug)
-  const category = demoCategories.find((c) => c.slug === product?.categorySlug)
+  const category = demoCategories.find((c) => c.slug === product?.categorySlug) ?? (product ? { slug: product.categorySlug, name: product.categoryName || product.categorySlug.replaceAll('-', ' '), image: undefined } : undefined)
   const related = useMemo(() => (product ? relatedProducts(product, products) : []), [product, products])
   useProductViewTracking(product?.slug)
   const [resources] = useResources()
@@ -126,7 +126,7 @@ export default function ProductDetailPage() {
   if (!product) return <NotFound />
 
   const productApplications = applications.filter((a) => product.applications.includes(a.slug))
-  const slides: GallerySlide[] = [
+  const slides: GallerySlide[] = product.images?.length ? product.images.map((image, i) => ({ key: image.src, caption: `${product.name} · image ${i + 1}`, image })) : [
     { key: 'pack', caption: product.image ? 'Illustrative concept packshot' : 'Product image coming soon', image: product.image },
     ...(category?.image
       ? [{ key: 'context', caption: `${category.name}: illustrative application photo`, image: category.image, fill: true }]

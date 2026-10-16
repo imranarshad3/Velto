@@ -42,7 +42,7 @@ const isSortKey = (value: string | null): value is SortKey => sortOptions.some((
 
 const list = (params: URLSearchParams, key: string, facet: Facet) => {
   const allowed = new Set(facetOptions[facet].map((o) => o.value))
-  return (params.get(key) ?? '').split(',').filter((v) => allowed.has(v))
+  return (params.get(key) ?? '').split(',').filter((v) => facet === 'categories' ? /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v) && v.length <= 80 : allowed.has(v))
 }
 
 export function parseQuery(params: URLSearchParams): CatalogQuery {
@@ -81,7 +81,7 @@ function matchesSearch(product: CatalogProduct, q: string) {
   const haystack = [
     product.name,
     product.usage,
-    categoryName.get(product.categorySlug),
+    product.categoryName ?? categoryName.get(product.categorySlug),
     ...product.applications.map((a) => applicationName.get(a)),
   ]
     .join(' ')
@@ -140,3 +140,10 @@ export function facetCounts(products: CatalogProduct[], query: CatalogQuery, fac
 
 export const activeFilterCount = (query: CatalogQuery) =>
   query.categories.length + query.applications.length + query.areas.length
+
+/** Include saved custom categories without changing global filter state. */
+export function productCategories(products: CatalogProduct[]) {
+  const entries = new Map(demoCategories.map(c => [c.slug, { value: c.slug, label: c.name }]))
+  for (const p of products) if (!entries.has(p.categorySlug)) entries.set(p.categorySlug, { value: p.categorySlug, label: p.categoryName || p.categorySlug.replaceAll('-', ' ') })
+  return [...entries.values()]
+}

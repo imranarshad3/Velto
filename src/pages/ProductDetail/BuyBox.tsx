@@ -19,6 +19,8 @@ const stepButton =
 export default function BuyBox({ product }: { product: CatalogProduct; quoteHref: string }) {
   const id = useId()
   const price = cardPrice(product)
+  const soldOut = product.stockQuantity === 0
+  const limit = Math.min(999, product.stockQuantity ?? 999)
   const cartItem = useCart((s) => s.items.find((i) => i.slug === product.slug))
   const show = useToasts((s) => s.show)
   const [quantity, setQuantity] = useState<number>(() => cartItem?.quantity ? clampQty(cartItem.quantity) : MIN_QTY)
@@ -26,7 +28,7 @@ export default function BuyBox({ product }: { product: CatalogProduct; quoteHref
   const unit = 'units' as const
 
   const setQty = (n: number) => {
-    const next = clampQty(n)
+    const next = Math.min(Math.max(1, limit), clampQty(n))
     setQuantity(next)
     setDraft(String(next))
   }
@@ -94,7 +96,7 @@ export default function BuyBox({ product }: { product: CatalogProduct; quoteHref
                 type="number"
                 inputMode="numeric"
                 min={MIN_QTY}
-                max={MAX_QTY}
+                max={Math.max(1, limit)}
                 step={1}
                 value={draft}
                 onChange={(e) => {
@@ -105,7 +107,7 @@ export default function BuyBox({ product }: { product: CatalogProduct; quoteHref
                 onBlur={() => setQty(Number(draft) || MIN_QTY)}
                 className="min-h-11 w-full min-w-[3.5rem] flex-1 bg-transparent text-center text-[1.0625rem] font-bold text-ink tabular-nums focus-visible:outline focus-visible:outline-forest @[24rem]:w-[4.5rem] @[24rem]:flex-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
               />
-              <button type="button" className={stepButton} onClick={() => setQty(quantity + 1)} disabled={quantity >= MAX_QTY} aria-label="Increase quantity">
+              <button type="button" className={stepButton} onClick={() => setQty(quantity + 1)} disabled={soldOut || quantity >= limit} aria-label="Increase quantity">
                 <Plus aria-hidden="true" className="size-4" />
               </button>
             </div>
@@ -114,10 +116,10 @@ export default function BuyBox({ product }: { product: CatalogProduct; quoteHref
         </div>
 
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 @[28rem]:grid-cols-2">
-          <ButtonLink to={`/checkout?product=${product.slug}&qty=${quantity}`} size="lg" className="w-full px-5">
+          {soldOut ? <p className="self-center font-semibold text-muted">Sold out</p> : <ButtonLink to={`/checkout?product=${product.slug}&qty=${quantity}`} size="lg" className="w-full px-5">
             Buy now<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
-          </ButtonLink>
-          <button type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full px-5')}>
+          </ButtonLink>}
+          <button disabled={soldOut} type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full px-5')}>
             <CartIcon aria-hidden="true" className="size-[1.125rem]" />
             {inCart ? 'Update cart' : 'Add to cart'}
           </button>

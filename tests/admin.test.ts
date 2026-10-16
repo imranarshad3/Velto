@@ -135,7 +135,7 @@ describe('admin products and public catalogue', () => {
     assert.equal(invalidated, 1)
     let listed = (await catalogJson()).products.find((p: { slug: string }) => p.slug === 'verified-primer')
     assert.ok(listed)
-    assert.equal(listed.price, undefined, 'unverified price hidden')
+    assert.deepEqual(listed.price, { amount: 1500, currency: 'PKR' }, 'admin save confirms selling price')
 
     res = await call('PATCH', 'products/verified-primer', 'admin', { ...product, verified: true })
     assert.equal(res.status, 200)
@@ -158,7 +158,7 @@ describe('admin products and public catalogue', () => {
       { image: { ...product.image, src: 'https://evil.example/x.png' } },
       { image: { ...product.image, src: '/images/../../etc/passwd' } },
       { documents: [{ title: 'x', url: 'javascript:alert(1)', fileType: 'pdf' }] },
-      { categorySlug: 'weapons' },
+      { categorySlug: 'Invalid Category!' },
       { applications: ['moon'] },
       { price: { amount: -5, currency: 'PKR' } },
       { slug: 'Bad Slug' },

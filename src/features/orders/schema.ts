@@ -6,4 +6,4 @@ export const orderInput = z.object({
  expectedTotal:z.number().positive().max(999999999),paymentMethod:z.literal('cod'),
 }).strict()
 export type OrderInput = z.infer<typeof orderInput>
-export interface Order {id:string;reference:string;customer:OrderInput['customer'];items:{slug:string;name:string;quantity:number;unitPrice:number}[];subtotal:number;delivery:number;total:number;currency:string;status:string;created_at:string}
+export interface Order {id:string;reference:string;customer:OrderInput['customer'];items:{slug:string;name:string;quantity:number;unitPrice:number;image?:{src:string;alt?:string;width?:number;height?:number}|null}[];subtotal:number;delivery:number;total:number;currency:string;status:string;created_at:string}

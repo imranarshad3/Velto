@@ -1,6 +1,6 @@
 import ProductPhotoAssistant, { type ProductPhoto } from './ProductPhotoAssistant.tsx'
 import { mergeDraft } from '../../features/catalog/aiProduct.ts'
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { CircleAlert, LoaderCircle } from 'lucide-react'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
@@ -35,6 +35,8 @@ interface FormState {
   slug: string
   name: string
   categorySlug: string
+  categoryName: string
+  stockQuantity: string
   usage: string
   description: string
   applications: string[]
@@ -58,6 +60,8 @@ const toForm = (p?: AdminProduct): FormState => ({
   slug: p?.slug ?? '',
   name: p?.name ?? '',
   categorySlug: p?.categorySlug ?? '',
+  categoryName: p?.categoryName ?? '',
+  stockQuantity: p?.stockQuantity == null ? '' : String(p.stockQuantity),
   usage: p?.usage ?? '',
   description: p?.description ?? '',
   applications: p?.applications ?? [],
@@ -71,8 +75,8 @@ const toForm = (p?: AdminProduct): FormState => ({
   image: p?.image?.src ?? '',
   imageAlt: p?.image?.alt ?? '',
   priceAmount: p?.price ? String(p.price.amount) : '',
-  priceCurrency: p?.price?.currency ?? '',
-  verified: p?.verified ?? false,
+  priceCurrency: 'PKR',
+  verified: p?.verified ?? true,
   published: p?.published ?? true,
   sortOrder: String(p?.sortOrder ?? 0),
 })
@@ -82,7 +86,9 @@ const toInput = (f: FormState, options: ImageAsset[] = imageOptions): ProductInp
   return {
     slug: f.slug,
     name: f.name,
-    categorySlug: f.categorySlug as ProductInput['categorySlug'],
+    categorySlug: f.categorySlug,
+    categoryName: f.categoryName || undefined,
+    stockQuantity: f.stockQuantity.trim() ? Number(f.stockQuantity) : null,
     usage: f.usage,
     description: f.description,
     applications: f.applications as ProductInput['applications'],
@@ -97,8 +103,8 @@ const toInput = (f: FormState, options: ImageAsset[] = imageOptions): ProductInp
     documents: pairs(f.documents, '|').map(([title = '', url = '', fileType = '']) => ({ title, url, fileType })),
     faq: pairs(f.faq, '|').map(([question = '', answer = '']) => ({ question, answer })),
     image: image ? { ...image, alt: f.imageAlt.trim() || image.alt } : undefined,
-    price: f.priceAmount || f.priceCurrency ? { amount: Number(f.priceAmount), currency: f.priceCurrency.trim().toUpperCase() } : undefined,
-    verified: f.verified,
+    price: { amount: Number(f.priceAmount), currency: 'PKR' },
+    verified: true,
     published: f.published,
     sortOrder: Number(f.sortOrder) || 0,
   }
@@ -113,7 +119,16 @@ function ProductForm({ product }: { product?: AdminProduct }) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
-  const [pendingPhoto, setPendingPhoto] = useState<ProductPhoto | null>(null)
+  const [pendingPhotos, setPendingPhotos] = useState<ProductPhoto[]>([])
+  const [gallery, setGallery] = useState<ImageAsset[]>(product?.images?.length ? product.images : product?.image ? [product.image] : [])
+  const uploaded = useRef(new Map<string, ImageAsset>())
+  const [photoVersion, setPhotoVersion] = useState(0)
+  const [categories, setCategories] = useState<{ slug: string; name: string }[]>(() => categorySlugs.map(slug => ({ slug, name: demoCategories.find(c => c.slug === slug)?.name ?? slug })))
+  const [newCategory, setNewCategory] = useState(false)
+  useEffect(() => { let active = true; void getToken().then(t => t ? adminApi.products(t) : null).then(r => {
+    if (active && r) setCategories(current => [...new Map([...current, ...r.products.map(p => ({ slug: p.categorySlug, name: p.categoryName || demoCategories.find(c => c.slug === p.categorySlug)?.name || p.categorySlug.replaceAll('-', ' ') }))].map(c => [c.slug, c])).values()])
+  }).catch(() => {}); return () => { active = false } }, [getToken])
+  const [photoBusy, setPhotoBusy] = useState(false)
   const [aiApplied, setAiApplied] = useState(false)
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }))
   // Media Library images are offered alongside bundled ones; dimensions are read so the storefront reserves aspect ratio.
@@ -150,30 +165,45 @@ function ProductForm({ product }: { product?: AdminProduct }) {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
+    if (saving || photoBusy) return
     setFormError(null)
-    const input = toInput(form, options)
-    const parsed = productInputSchema.safeParse(input)
+    const candidate = { ...toInput(form, options), images: gallery, published: creating ? true : form.published }
+    if (!form.stockQuantity.trim()) {
+      setErrors({ stockQuantity: 'Enter available stock (0 for sold out).' }); setFormError('Enter the available quantity.'); document.getElementById('pf-stockQuantity')?.focus(); return
+    }
+    const parsed = productInputSchema.safeParse(candidate)
     if (!parsed.success) {
       const next: Record<string, string> = {}
       for (const issue of parsed.error.issues) next[String(issue.path[0])] ??= issue.message
       setErrors(next)
       setFormError('Please correct the highlighted fields.')
-      document.getElementById(`pf-${Object.keys(next)[0]}`)?.focus()
+      document.getElementById(`pf-${Object.keys(next)[0] === 'price' ? 'priceAmount' : Object.keys(next)[0] === 'categorySlug' ? 'categorySelect' : Object.keys(next)[0]}`)?.focus()
       return
     }
+    const input = parsed.data
     setErrors({})
     setSaving(true)
     try {
       const token = await getToken()
       if (!token) throw new QuoteApiError(401, 'sign_in_required', 'Please sign in again.')
-      if (pendingPhoto) {
-        const photo = pendingPhoto
-        const { media } = await workspaceApi.upload(token, { name: form.name || photo.name, alt: form.imageAlt || form.name, folder: 'Products', tags: [] }, photo.base64)
-        const image = { src: media.url, alt: form.imageAlt || form.name, width: photo.width, height: photo.height }
-        input.image = image
-        setOptions(prev => [...prev, image])
-        set('image', image.src)
-        setPendingPhoto(null)
+      if (pendingPhotos.length) {
+        const images: ImageAsset[] = []
+        for (const photo of pendingPhotos) {
+          let image = uploaded.current.get(photo.base64)
+          if (!image) {
+            const { media } = await workspaceApi.upload(token, { name: form.name || photo.name, alt: form.imageAlt || form.name, folder: 'Products', tags: [] }, photo.base64)
+            image = { src: media.url, alt: form.imageAlt || form.name, width: photo.width, height: photo.height }
+            uploaded.current.set(photo.base64, image)
+          }
+          images.push(image)
+        }
+        input.images = images; input.image = images[0]
+        setGallery(images); setOptions(prev => [...prev, ...images.filter(img => !prev.some(p => p.src === img.src))]); set('image', images[0].src)
+        setPendingPhotos([]); setPhotoVersion(v => v + 1)
+      } else {
+        const selected = input.image
+        input.images = selected ? [selected, ...gallery.filter(img => img.src !== selected.src)].slice(0, 8) : gallery
+        input.image = input.images[0]
       }
       if (creating) await adminApi.createProduct(token, input)
       else await adminApi.updateProduct(token, product.slug, input)
@@ -196,7 +226,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         opts.rows ? (
           <textarea {...a} rows={opts.rows} value={form[key] as string} onChange={(e) => set(key, e.target.value as never)} className={`${inputClass} py-3`} />
         ) : (
-          <input {...a} value={form[key] as string} disabled={opts.disabled} onChange={(e) => set(key, e.target.value as never)} className={`${inputClass} disabled:bg-sand/60`} />
+          <input {...a} type={key === 'stockQuantity' || key === 'priceAmount' ? 'number' : 'text'} min={key === 'stockQuantity' ? 0 : key === 'priceAmount' ? 0.01 : undefined} step={key === 'stockQuantity' ? 1 : key === 'priceAmount' ? 0.01 : undefined} value={form[key] as string} disabled={opts.disabled} onChange={(e) => set(key, e.target.value as never)} className={`${inputClass} disabled:bg-sand/60`} />
         )
       }
     </Field>
@@ -224,10 +254,10 @@ function ProductForm({ product }: { product?: AdminProduct }) {
       )}
       <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Product photos & AI assistant</h2>
-        <ProductPhotoAssistant category={form.categorySlug} disabled={saving} onPhoto={setPendingPhoto} onDraft={(draft, replace) => { setForm(current => mergeDraft(current, draft, replace, creating, form)); setAiApplied(true) }} />
+        <ProductPhotoAssistant category={form.categorySlug} disabled={saving} key={photoVersion} onBusy={setPhotoBusy} onPhotos={setPendingPhotos} onDraft={(draft, replace) => { setForm(current => mergeDraft(current, draft, replace, creating, form)); if (draft.categorySlug && !categories.some(c => c.slug === draft.categorySlug)) { setCategories(c => [...c, { slug: draft.categorySlug!, name: draft.categoryName || draft.categorySlug! }]); } setAiApplied(true) }} />
         <Field id="pf-image" label="Image" error={errors.image} hint="Bundled images and Media Library uploads.">
           {(a) => (
-            <select {...a} value={form.image} disabled={!!pendingPhoto} onChange={(e) => set('image', e.target.value)} className={inputClass}>
+            <select {...a} value={form.image} disabled={pendingPhotos.length > 0} onChange={(e) => set('image', e.target.value)} className={inputClass}>
               <option value="">No image (placeholder)</option>
               {options.map((img) => (
                 <option key={img.src} value={img.src}>
@@ -239,29 +269,35 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         </Field>
         {text('imageAlt', 'Image alt text')}
 
-        {!pendingPhoto && form.image && <img src={form.image} alt={form.imageAlt || 'Selected product image'} className="max-h-48 w-full rounded-xl object-contain sm:col-span-2" />}
-        {pendingPhoto && <p className="text-sm text-muted sm:col-span-2">Your uploaded photo will replace the selected library image when you save.</p>}
+        {!pendingPhotos.length && gallery.length > 1 && <div className="flex flex-wrap gap-3 sm:col-span-2">{gallery.map(img => <div key={img.src} className="w-28"><img src={img.src} alt={img.alt} className="aspect-square w-full rounded-xl object-contain" /><button type="button" className="min-h-11 text-sm text-danger" onClick={() => { const next = gallery.filter(i => i.src !== img.src); setGallery(next); if (form.image === img.src) set('image', next[0]?.src ?? '') }}>Remove image</button></div>)}</div>}
+        {!pendingPhotos.length && form.image && <img src={form.image} alt={form.imageAlt || 'Selected product image'} className="max-h-48 w-full rounded-xl object-contain sm:col-span-2" />}
+        {pendingPhotos.length > 0 && <p className="text-sm text-muted sm:col-span-2">These uploaded images will replace the current gallery when you save.</p>}
       </section>
       {aiApplied && <p className="rounded-xl bg-forest-soft p-4 text-sm text-forest">This form contains AI suggestions. Check each field against your product label or supplier information before publishing.</p>}
       <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Basics</h2>
         {text('name', 'Name', { required: true })}
         {text('slug', 'URL slug', { required: true, hint: creating ? 'Lowercase letters, numbers and hyphens. Cannot be changed later.' : 'Fixed after creation.', disabled: !creating })}
-        <Field id="pf-categorySlug" label="Category" required error={errors.categorySlug}>
+        <Field id="pf-categorySelect" label="Category" required error={errors.categorySlug}>
           {(a) => (
-            <select {...a} value={form.categorySlug} onChange={(e) => set('categorySlug', e.target.value)} className={inputClass}>
+            <select {...a} value={form.categorySlug} onChange={(e) => { set('categorySlug', e.target.value); set('categoryName', categories.find(c => c.slug === e.target.value)?.name ?? '') }} className={inputClass}>
               <option value="">Choose…</option>
-              {categorySlugs.map((c) => (
-                <option key={c} value={c}>
-                  {demoCategories.find((d) => d.slug === c)?.name ?? c}
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
                 </option>
               ))}
             </select>
           )}
         </Field>
-        {text('sortOrder', 'Sort order', { hint: 'Lower numbers appear first.' })}
+        {text('stockQuantity', 'Available quantity', { required: true, hint: 'Units available to buy. Enter 0 for sold out.' })}
+        <div className="sm:col-span-2">
+          <button type="button" className="min-h-11 font-semibold text-forest" onClick={() => setNewCategory(v => !v)}>{newCategory ? 'Close category editor' : '+ Create a category'}</button>
+          <p className="text-sm text-muted">Generate with AI above to suggest a category from your photos. New categories are created when you save the product.</p>
+          {newCategory && <div className="mt-3 grid gap-3 sm:grid-cols-2">{text('categoryName', 'Category name', { required: true })}{text('categorySlug', 'Category URL slug', { required: true, hint: 'Lowercase words separated by hyphens.' })}</div>}
+        </div>
         <div className="sm:col-span-2">{text('usage', 'Short usage line', { required: true })}</div>
-        <div className="sm:col-span-2">{text('description', 'Description', { rows: 4, hint: 'Manufacturer-verified wording only.' })}</div>
+        <div className="sm:col-span-2">{text('description', 'Description', { rows: 4, hint: 'Use accurate details from your product or supplier.' })}</div>
         {checks('applications', 'Applications', applicationSlugs, (v) => appName.get(v) ?? v)}
         {checks('areas', 'Use areas', areaSlugs, (v) => (v === 'interior' ? 'Interior' : 'Exterior'))}
       </section>
@@ -272,27 +308,25 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         {text('specifications', 'Specifications', { rows: 4, hint: 'One per line as “Label: Value”.' })}
         {text('packSizes', 'Pack sizes', { rows: 3, hint: 'One per line, e.g. “20 kg bag”.' })}
         {text('coverage', 'Coverage', { rows: 3 })}
+        {/* Documents editor disconnected for now; data and serialization are preserved.
         <div className="sm:col-span-2">{text('documents', 'Documents', { rows: 3, hint: 'One per line as “Title | https://… | pdf”.' })}</div>
+        */}
         <div className="sm:col-span-2">{text('faq', 'FAQ', { rows: 3, hint: 'One per line as “Question | Answer”.' })}</div>
       </section>
 
       <section className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
         <h2 className="font-display text-[1.375rem] sm:col-span-2">Price & visibility</h2>
-        {text('priceAmount', 'Price amount', { hint: 'Shown only when the product is verified.' })}
-        {text('priceCurrency', 'Currency (ISO code)', { hint: 'e.g. PKR' })}
-        <label className="flex min-h-11 items-center gap-3 font-semibold">
-          <input type="checkbox" checked={form.verified} onChange={(e) => set('verified', e.target.checked)} className="size-[1.125rem] accent-forest" /> Verified by the manufacturer
-        </label>
-        <label className="flex min-h-11 items-center gap-3 font-semibold">
-          <input type="checkbox" checked={form.published} onChange={(e) => set('published', e.target.checked)} className="size-[1.125rem] accent-forest" /> Published in the store
-        </label>
+        {text('priceAmount', 'Selling price (PKR)', { required: true, hint: 'Price per unit. Delivery is calculated separately.' })}
+        <p className="self-center text-sm text-muted">All selling prices are in Pakistani Rupees (PKR). Saving confirms the price for direct purchase; it does not claim manufacturer certification.</p>
+        {creating ? <p className="text-sm font-semibold text-forest sm:col-span-2">New products are published when you click Create product.</p> : <label className="flex min-h-11 items-center gap-3 font-semibold"><input type="checkbox" checked={form.published} onChange={e => set('published', e.target.checked)} className="size-5 accent-forest" />Published in the store</label>}
+
       </section>
 
       <div className="flex flex-wrap justify-end gap-3">
         <button type="button" onClick={() => navigate('/admin/products')} className="inline-flex min-h-12 items-center rounded-lg border border-ink/15 bg-surface px-5 font-semibold">
           Cancel
         </button>
-        <button type="submit" disabled={saving} className={buttonClass('primary', 'lg')}>
+        <button type="submit" disabled={saving || photoBusy} className={buttonClass('primary', 'lg')}>
           {saving && <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />} {creating ? 'Create product' : 'Save product'}
         </button>
       </div>

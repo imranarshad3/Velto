@@ -22,7 +22,7 @@ export default function CheckoutPage(){
  const qty=Math.min(999,Math.max(1,Math.floor(Number(params.get('qty'))||1)))
  const selected=direct?[{slug:direct,quantity:qty}]:cart
  const lines=selected.map(i=>({product:find(i.slug),slug:i.slug,quantity:i.quantity??1}))
- const valid=lines.length>0&&lines.every(l=>l.product?.verified&&l.product.price?.currency==='PKR'&&l.product.price.amount>0&&Number.isInteger(l.quantity)&&l.quantity>=1&&l.quantity<=999)
+ const valid=lines.length>0&&lines.every(l=>l.product?.verified&&l.product.price?.currency==='PKR'&&l.product.price.amount>0&&Number.isInteger(l.quantity)&&l.quantity>=1&&l.quantity<=999&&(l.product.stockQuantity == null || l.quantity<=l.product.stockQuantity))
  const total=lines.reduce((sum,l)=>sum+(l.product?.price?.amount??0)*l.quantity,0)+300
  const [order,setOrder]=useState<Order|null>(null)
  const [error,setError]=useState('')
