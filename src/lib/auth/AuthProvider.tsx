@@ -44,6 +44,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider
       publishableKey={clerkPublishableKey}
+      localization={{
+        signIn: { start: { title: 'Sign in', subtitle: 'Welcome back to VELTO' } },
+        signUp: { start: { title: 'Create account', subtitle: 'Join VELTO to get started' } },
+      }}
       afterSignOutUrl="/"
       signInUrl="/sign-in"
       signUpUrl="/sign-up"

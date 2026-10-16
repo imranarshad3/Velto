@@ -1,5 +1,5 @@
 import { SignIn, SignUp } from '@clerk/react'
-import { Link, Navigate } from 'react-router'
+import { Link, Navigate, useSearchParams } from 'react-router'
 import { ArrowRight, ClipboardList, Heart, KeyRound, Repeat, ShieldCheck } from 'lucide-react'
 import Img from '../../components/ui/Img.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
@@ -9,14 +9,15 @@ import { clerkAppearance } from '../../lib/auth/clerkAppearance.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 
 const benefits = [
-  { icon: ClipboardList, text: 'Track every quote request in one place' },
+  { icon: ClipboardList, text: 'Follow your orders from checkout to delivery' },
   { icon: Heart, text: 'Keep your wishlist across devices' },
-  { icon: Repeat, text: 'Faster repeat requests with saved details' },
+  { icon: Repeat, text: 'Keep orders and project consultations together' },
 ]
 
 /** Clerk widget tuned to sit flush inside VELTO's form card (shared base stays in lib/auth). */
 const authAppearance = {
   ...clerkAppearance,
+  options: { unsafe_disableDevelopmentModeWarnings: true },
   variables: {
     ...clerkAppearance.variables,
     colorTextSecondary: '#5c625e',
@@ -27,33 +28,38 @@ const authAppearance = {
   },
   elements: {
     ...clerkAppearance.elements,
-    rootBox: 'w-full',
-    cardBox: 'w-full max-w-none shadow-none border-0 rounded-none',
-    card: 'w-full max-w-none shadow-none border-0 bg-transparent px-0 py-0',
+    rootBox: { width: '100%', minWidth: 0 },
+    cardBox: { width: '100%', maxWidth: '100%', minWidth: 0, boxShadow: 'none', border: 0, borderRadius: 0 },
+    card: { width: '100%', minWidth: 0, maxWidth: '100%', boxShadow: 'none', border: 0, background: 'transparent', padding: 0 },
     headerTitle: 'font-display text-[1.5rem] font-normal text-ink',
     formButtonPrimary: 'min-h-11 rounded-xl text-[0.9375rem] font-semibold normal-case shadow-[var(--shadow-button)]',
     formFieldInput: 'min-h-11 rounded-xl',
     socialButtonsBlockButton: 'min-h-11 rounded-xl',
-    footer: 'bg-transparent',
+    footer: { background: 'transparent', padding: '1rem 0 0' },
+    footerAction: { display: 'none' },
     footerActionLink: 'font-semibold text-forest',
   },
 }
 
 export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const auth = useAppAuth()
+  const [params] = useSearchParams()
+  const requested = params.get('redirect_url') ?? ''
+  const returnTo = /^\/(checkout|cart|account)(?:[/?]|$)/.test(requested) && !requested.includes('\\') ? requested : '/account'
+  const redirectQuery = `?redirect_url=${encodeURIComponent(returnTo)}`
   const signIn = mode === 'sign-in'
   const title = signIn ? 'Sign in to VELTO' : 'Create your VELTO account'
 
-  if (auth.signedIn) return <Navigate to="/account" replace />
+  if (auth.signedIn) return <Navigate to={returnTo} replace />
 
   return (
     <div className="relative isolate overflow-hidden bg-cream">
       <title>{`${signIn ? 'Sign In' : 'Create Account'} — VELTO`}</title>
 
-      <div className="container-page py-[clamp(1.5rem,5vw,4.5rem)]">
-        <div className="animate-rise mx-auto grid max-w-[68rem] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div className="mx-auto max-w-[72rem] px-3 py-4 sm:px-6 sm:py-8 lg:py-12">
+        <div className="animate-rise mx-auto grid max-w-[32rem] lg:max-w-[68rem] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           {/* Brand panel */}
-          <section aria-labelledby="auth-brand-title" className="relative isolate overflow-hidden bg-forest-deep text-white">
+          <section aria-labelledby="auth-brand-title" className="relative isolate hidden overflow-hidden bg-forest-deep text-white lg:block">
             <Img image={professionalImage} priority alt="" className="absolute inset-0 -z-20 size-full object-cover object-[center_30%] opacity-35" />
             <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-forest-deep via-forest-deep/85 to-forest-deep/40" />
 
@@ -64,7 +70,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
                   VELTO account
                 </p>
                 <h2 id="auth-brand-title" className="mt-3 font-display text-[clamp(1.625rem,1.2rem+1.6vw,2.5rem)] leading-[1.08]">
-                  Your project requests, <span className="text-gold">kept in one place.</span>
+                  Your next project, <span className="text-gold">starts here.</span>
                 </h2>
               </div>
               <ul className="grid grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-[minmax(0,1fr)]">
@@ -79,27 +85,28 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
               </ul>
               <p className="hidden items-center gap-2 text-[0.8125rem] text-white/70 lg:flex">
                 <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-gold" />
-                Guest quote requests stay available without an account.
+                Your orders, saved products and project consultations, together.
               </p>
             </div>
           </section>
 
           {/* Form panel */}
-          <div className="flex flex-col justify-center p-[clamp(1.5rem,4.5vw,3.5rem)]">
+          <div className="flex min-w-0 flex-col justify-center px-4 py-6 sm:p-8 lg:p-10">
             <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
               <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
               {signIn ? 'Welcome back' : 'New account'}
             </p>
-            <h1 id="auth-title" className="mt-2 font-display text-[clamp(2rem,1.55rem+1.8vw,2.75rem)] leading-[1.05] tracking-[-0.01em] text-ink">
+            <h1 id="auth-title" className="mt-2 font-display text-[clamp(1.75rem,1.35rem+1.5vw,2.5rem)] leading-[1.05] tracking-[-0.01em] text-ink">
               {title}
             </h1>
 
-            <div className="mt-6">
+            <p className="mt-3 text-sm leading-relaxed text-muted">{signIn ? 'Sign in to checkout, track orders and save your favourites.' : 'Shop with ease and keep your orders in one place.'}</p>
+            <div className="mt-6 min-w-0">
               {auth.mode === 'clerk' ? (
                 signIn ? (
-                  <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" fallbackRedirectUrl="/account" appearance={authAppearance} />
+                  <SignIn routing="path" path="/sign-in" signUpUrl={`/sign-up${redirectQuery}`} forceRedirectUrl={returnTo} appearance={authAppearance} />
                 ) : (
-                  <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" fallbackRedirectUrl="/account" appearance={authAppearance} />
+                  <SignUp routing="path" path="/sign-up" signInUrl={`/sign-in${redirectQuery}`} forceRedirectUrl={returnTo} appearance={authAppearance} />
                 )
               ) : (
                 <div className="rounded-[var(--radius-card)] border border-border bg-canvas p-[clamp(1.25rem,3vw,1.75rem)]">
@@ -126,7 +133,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
 
             <p className="mt-6 border-t border-border pt-4 text-[0.9375rem] text-muted">
               {signIn ? 'New to VELTO? ' : 'Already have an account? '}
-              <Link to={signIn ? '/sign-up' : '/sign-in'} className="inline-flex min-h-11 items-center font-semibold text-forest underline decoration-copper/50 underline-offset-4 hover:decoration-copper">
+              <Link to={(signIn ? '/sign-up' : '/sign-in') + redirectQuery} className="inline-flex min-h-11 items-center font-semibold text-forest underline decoration-copper/50 underline-offset-4 hover:decoration-copper">
                 {signIn ? 'Create an account' : 'Sign in'}
               </Link>
             </p>

@@ -2,6 +2,8 @@ const baseHeaders = {
   'content-type': 'application/json; charset=utf-8',
   'cache-control': 'no-store',
   'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY',
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
 }
 
 export function json(body: unknown, status = 200, headers: Record<string, string> = {}): Response {

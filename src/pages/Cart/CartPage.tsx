@@ -141,7 +141,7 @@ export default function CartPage() {
                         <div className="col-span-2 flex flex-wrap items-end gap-3 border-t border-border pt-4 xl:col-span-1 xl:flex-nowrap xl:border-0 xl:pt-0">
                           <div className="flex min-w-0 flex-col gap-1.5">
                             <label htmlFor={`${id}-qty`} className="text-[0.75rem] font-semibold text-muted">
-                              Quantity <span className="font-normal">(optional)</span>
+                              Quantity
                             </label>
                             <div className="flex h-12 items-center overflow-hidden rounded-xl border border-border bg-surface shadow-[inset_0_0.0625rem_0.125rem_rgb(32_44_54/0.04)] focus-within:border-forest">
                               <button type="button" onClick={() => setQuantity(p.slug, qty && qty > 1 ? Math.ceil(qty) - 1 : undefined)} disabled={!qty} className={stepperButton} aria-label={`Decrease quantity of ${p.name}`}>

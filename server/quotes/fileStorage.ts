@@ -45,7 +45,8 @@ export function createSupabaseFileStorage(db: SupabaseClient): FileStorage {
       return file && meta ? { size: Number(meta.size ?? 0), contentType: meta.mimetype ?? '' } : null
     },
     async downloadUrl(path, fileName) {
-      const { data, error } = await bucket().createSignedUrl(path, 60, { download: fileName })
+      const safeName = fileName.replace(/[^\w.-]+/g, '_')
+      const { data, error } = await bucket().createSignedUrl(path, 60, { download: safeName })
       if (error || !data) throw new Error(`storage download url failed (${error?.message ?? 'unknown'})`)
       return data.signedUrl
     },

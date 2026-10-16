@@ -48,7 +48,7 @@ const notConfigured = () => apiError(503, 'not_configured', 'The quote service i
 const rateLimited = () =>
   apiError(429, 'rate_limited', 'Too many requests. Please wait a few minutes and try again.', {}, { 'retry-after': String(WINDOW_SECONDS) })
 /** Only a genuinely expired token is reported as an expired session; other failures get their own codes. */
-const sessionInvalid = (reason?: AuthFailureReason) => {
+export const sessionInvalid = (reason?: AuthFailureReason) => {
   if (reason === 'unconfigured' || reason === 'unavailable')
     return apiError(503, 'auth_unavailable', 'We can’t verify sign-ins right now. Please try again in a few minutes.')
   if (reason === 'rejected')
@@ -92,7 +92,10 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
 
   const originAllowed = (request: Request) => {
     const origin = request.headers.get('origin')
-    return !origin || deps.allowedOrigins.length === 0 || deps.allowedOrigins.includes(origin)
+    if (!origin) return true
+    const self = requestOrigin(request)
+    if (self && origin === self) return true
+    return deps.allowedOrigins.includes(origin)
   }
 
   async function submit(request: Request): Promise<Response> {
@@ -365,12 +368,13 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
       const doc = await deps.store.getResource(id)
       if (!doc?.published) return notFound()
       const local = deps.files.read?.(doc.storagePath)
+      const safeName = doc.fileName.replace(/[^\w.-]+/g, '_')
       if (local) {
         return new Response(local.body, {
-          headers: { 'content-type': 'application/pdf', 'content-disposition': `attachment; filename="${doc.fileName.replace(/[^\w.-]+/g, '_')}"`, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' },
+          headers: { 'content-type': 'application/pdf', 'content-disposition': `attachment; filename="${safeName}"`, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' },
         })
       }
-      return new Response(null, { status: 302, headers: { location: await deps.files.downloadUrl(doc.storagePath, doc.fileName), 'cache-control': 'no-store' } })
+      return new Response(null, { status: 302, headers: { location: await deps.files.downloadUrl(doc.storagePath, safeName), 'cache-control': 'no-store' } })
     } catch (error) {
       if (error instanceof HttpError) return apiError(error.status, error.code, error.message)
       return serverError('download', error)

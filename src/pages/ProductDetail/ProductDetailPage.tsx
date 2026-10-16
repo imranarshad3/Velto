@@ -221,7 +221,7 @@ export default function ProductDetailPage() {
               {/* Service links: real site features only, no product claims. */}
               <ul className="mt-5 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-border bg-border sm:grid-cols-3">
                 {[
-                  { icon: ClipboardList, title: 'Quote pricing', text: 'Confirmed per project', to: quoteHref },
+                  { icon: ClipboardList, title: 'Cash on Delivery', text: 'Rs. 300 delivery per order', to: '/checkout?product='+product.slug },
                   { icon: Calculator, title: 'Calculator', text: 'Estimate packs needed', to: `/resources/coverage-calculator${coverage ? `?product=${product.slug}` : ''}` },
                   { icon: FileText, title: 'Data sheets', text: 'Guides & documents', to: '/resources/documents' },
                 ].map(({ icon: ItemIcon, title, text, to }) => (

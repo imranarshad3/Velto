@@ -9,6 +9,7 @@ function resolveApiFile(pathname: string): string | null {
   const parts = pathname.replace(/^\/+|\/+$/g, '').split('/')
   if (parts[0] !== 'api' || parts.some((p) => !/^[A-Za-z0-9_.-]+$/.test(p) || p.startsWith('.'))) return null
   // Mirrors the vercel.json rewrite: every /api/admin/* path is served by api/admin.ts.
+  if (parts[1] === 'orders') return '/api/admin.ts'
   if (parts[1] === 'admin') return '/api/admin.ts'
   const rel = parts.join('/')
   for (const candidate of [`${rel}.ts`, `${rel}/index.ts`]) if (existsSync(resolve(candidate))) return `/${candidate}`

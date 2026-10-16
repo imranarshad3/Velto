@@ -177,6 +177,12 @@ describe('POST /api/quotes', () => {
     assert.equal((await submit(valid, { headers: { origin: 'https://novaro.example' } })).status, 201)
   })
 
+  it('blocks disallowed browser origins even when allowedOrigins is unconfigured', async () => {
+    setup({ allowedOrigins: [] })
+    assert.equal((await submit(valid, { headers: { origin: 'https://evil.example' } })).status, 403)
+    assert.equal((await submit(valid, { headers: { origin: 'https://novaro.example' } })).status, 201)
+  })
+
   it('requires the human check when configured', async () => {
     setup({ humanCheck: async (token) => token === 'pass' })
     assert.equal((await submit(valid)).status, 400)
