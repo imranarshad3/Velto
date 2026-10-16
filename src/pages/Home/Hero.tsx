@@ -22,7 +22,7 @@ export default function Hero() {
   return (
     <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-cream">
 
-      <div className="container-page grid gap-8 py-[clamp(2.5rem,5vw,5rem)] lg:grid-cols-[minmax(0,46fr)_minmax(0,54fr)] lg:items-center lg:gap-10">
+      <div className="container-page grid gap-[clamp(1.75rem,5vw,3rem)] py-[clamp(2rem,5vw,5rem)] sm:gap-8 lg:grid-cols-[minmax(0,46fr)_minmax(0,54fr)] lg:items-center lg:gap-10">
         <div className="relative z-10 min-w-0">
           <p
             className="animate-rise inline-flex items-center gap-2.5 text-[0.75rem] font-bold tracking-[0.12em] text-forest uppercase"
@@ -35,7 +35,7 @@ export default function Hero() {
 
           <h1
             id="hero-title"
-            className="animate-rise mt-6 font-display text-[clamp(2.5rem,1.5rem+3.6vw,4.75rem)] leading-[1.06] tracking-[-0.025em] text-ink"
+            className="animate-rise mt-5 font-display text-[clamp(2.5rem,1.5rem+3.6vw,4.75rem)] leading-[1.04] tracking-[-0.025em] text-ink sm:mt-6 sm:leading-[1.06]"
             style={delay(0.08)}
           >
             <span className="block">{cms("field-2", "Stronger Spaces.")}</span>
@@ -45,13 +45,13 @@ export default function Hero() {
           </h1>
 
           <p
-            className="animate-rise mt-6 max-w-[29rem] text-[clamp(1rem,0.95rem+0.35vw,1.1875rem)] leading-relaxed text-muted"
+            className="animate-rise mt-5 max-w-[29rem] text-[clamp(1rem,0.95rem+0.35vw,1.1875rem)] leading-relaxed text-muted sm:mt-6"
             style={delay(0.16)}
           >
             {cms("field-5", "Construction chemical solutions for every build — from homes to large infrastructure projects.")}</p>
           <p className="sr-only">{cms("field-6", "Imagery on this page is illustrative and not official product photography.")}</p>
 
-          <div className="animate-rise mt-8 flex flex-wrap gap-3" style={delay(0.24)}>
+          <div className="animate-rise mt-6 flex flex-col gap-3 min-[30rem]:flex-row min-[30rem]:flex-wrap sm:mt-8" style={delay(0.24)}>
             <ButtonLink to={cms("field-7", "/products")} variant="primary" size="lg" className="max-sm:w-full">
               {cms("field-8", "Shop Products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>

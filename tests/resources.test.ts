@@ -21,7 +21,7 @@ let store: ReturnType<typeof createMemoryStore>
 let api: ReturnType<typeof createApiHandlers>
 
 beforeEach(() => {
-  store = createMemoryStore({ products: catalog.slice(0, 4), admins: ['user_admin'] })
+  store = createMemoryStore({ products: catalog.slice(0, 4).map((p) => ({ ...p, verified: false })), admins: ['user_admin'] })
   api = createApiHandlers({ store, files: createMemoryFileStorage(), verifyAuth, hashSecret: 'resources-test-secret-at-least-32-chars!!', knownProducts: async () => new Set(), allowedOrigins: [] })
 })
 

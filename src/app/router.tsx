@@ -58,6 +58,7 @@ export const router = createBrowserRouter([
           { path: 'categories', lazy: async () => ({ Component: (await import('../pages/Admin/AdminWebsitePage.tsx')).default }) },
           { path: 'pipeline', lazy: async () => ({ Component: (await import('../pages/Admin/AdminPipelinePage.tsx')).default }) },
           { path: 'settings', lazy: async () => ({ Component: (await import('../pages/Admin/AdminSettingsPage.tsx')).default }) },
+          { path: 'orders', lazy: async () => ({ Component: (await import('../pages/Admin/AdminOrdersPage.tsx')).default }) },
           { path: 'analytics', lazy: async () => ({ Component: (await import('../pages/Admin/AdminAnalyticsPage.tsx')).default }) },
           { path: 'quotes', lazy: async () => ({ Component: (await import('../pages/Admin/AdminQuotesPage.tsx')).default }) },
           { path: 'quotes/:reference', lazy: async () => ({ Component: (await import('../pages/Admin/AdminQuoteDetailPage.tsx')).default }) },

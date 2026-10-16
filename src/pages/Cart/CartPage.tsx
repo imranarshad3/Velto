@@ -1,27 +1,24 @@
 import { Link } from 'react-router'
-import { ArrowRight, ClipboardCheck, ImageOff, Info, Lock, MessagesSquare, Minus, Plus, Send, ShoppingBasket, Trash } from 'lucide-react'
+import { ArrowRight, ClipboardCheck, ImageOff, Info, MessagesSquare, Minus, Plus, Send, ShoppingBasket, Trash } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import EmptyState from '../../components/ui/EmptyState.tsx'
 import Img from '../../components/ui/Img.tsx'
 import PageHeader from '../../components/ui/PageHeader.tsx'
 import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
-import { inputClass } from '../../components/ui/form/Field.tsx'
 import { productPath } from '../../data/catalog.ts'
 import { demoCategories } from '../../data/demoCategories.ts'
 import { useCart } from '../../features/cart/cartStore.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { cardPrice } from '../../features/catalog/price.ts'
-import { checkoutAvailable } from '../../features/cart/checkout.ts'
-import { quantityUnits, type QuantityUnit } from '../../features/quotes/schema.ts'
 
 const categoryName = new Map(demoCategories.map((c) => [c.slug, c.name]))
 
-const MAX_QTY = 1_000_000
+const MAX_QTY = 999
 
 const steps = [
-  { icon: Send, title: 'Send one request', text: 'Your whole basket goes to our team as a single quote request.' },
-  { icon: MessagesSquare, title: 'We review it', text: 'We check suitability, pack sizes and availability for your project.' },
-  { icon: ClipboardCheck, title: 'Receive your quote', text: 'Pricing and delivery are confirmed with you directly.' },
+  { icon: Send, title: 'Checkout', text: 'Enter your delivery address and review your order.' },
+  { icon: MessagesSquare, title: 'Order confirmation', text: 'Your order appears in your account and our orders dashboard.' },
+  { icon: ClipboardCheck, title: 'Pay on delivery', text: 'Pay the displayed total when your order arrives.' },
 ]
 
 const stepperButton =
@@ -37,20 +34,21 @@ export default function CartPage() {
   const lines = items.map((item) => ({ item, product: find(item.slug) }))
   const available = lines.filter((l) => l.product)
   const unavailable = lines.filter((l) => !l.product)
-  const canCheckout = checkoutAvailable(available.map((l) => l.product!))
+  const subtotal = available.reduce((sum,l) => sum+(l.product?.price?.amount??0)*(l.item.quantity??1),0)
+  const money = (n:number) => new Intl.NumberFormat('en-PK',{style:'currency',currency:'PKR'}).format(n)
   const withQuantity = available.filter((l) => l.item.quantity).length
 
   const setQuantity = (slug: string, value: number | undefined) =>
-    update(slug, { quantity: value !== undefined && Number.isFinite(value) && value > 0 ? Math.min(value, MAX_QTY) : undefined })
+    update(slug, { quantity: value !== undefined && Number.isFinite(value) && value > 0 ? Math.min(Math.round(value), MAX_QTY) : undefined })
 
   return (
     <>
       <title>Cart — VELTO</title>
       <PageHeader
-        eyebrow="Quote basket"
+        eyebrow="Shopping cart"
         title="Your Cart"
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Cart' }]}
-        description="Collect the products you need, then send them as one quote request. Pricing and availability are confirmed in your quote."
+        description="Review your items and continue to checkout. Pay with Cash on Delivery."
       />
       <div className="bg-canvas">
         <div className="container-page py-[var(--content-pad)] pb-[var(--section-gap)]">
@@ -69,7 +67,7 @@ export default function CartPage() {
                 </>
               }
             >
-              Add products from the catalogue to request one combined quote.
+              Add products from the catalogue to start your order.
             </EmptyState>
           ) : (
             <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start xl:gap-12">
@@ -103,7 +101,7 @@ export default function CartPage() {
                     const p = product!
                     const id = `cart-${p.slug}`
                     const price = cardPrice(p)
-                    const qty = item.quantity
+                    const qty = item.quantity ?? 1
                     return (
                       <li
                         key={p.slug}
@@ -113,10 +111,10 @@ export default function CartPage() {
                           to={productPath(p)}
                           tabIndex={-1}
                           aria-hidden="true"
-                          className="relative grid aspect-square place-items-center overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_35%,var(--color-surface),var(--color-cream)_75%)] p-2 ring-1 ring-border ring-inset"
+                          className="relative grid aspect-square w-full self-start place-items-center overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_35%,var(--color-surface),var(--color-cream)_75%)] p-2 ring-1 ring-border ring-inset"
                         >
                           {p.image ? (
-                            <Img image={p.image} alt="" className="max-h-full w-auto object-contain transition-transform duration-500 ease-[var(--ease-premium)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+                            <Img image={p.image} alt="" className="h-full w-full min-w-0 object-contain transition-transform duration-500 ease-[var(--ease-premium)] group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
                           ) : (
                             <ImageOff aria-hidden="true" className="size-6 text-muted/70" />
                           )}
@@ -133,7 +131,7 @@ export default function CartPage() {
                               {price.demo && (
                                 <span className="rounded-full bg-copper-soft px-2 py-0.5 text-[0.6875rem] font-bold tracking-[0.08em] text-copper-hover uppercase">DEMO price</span>
                               )}
-                              <span className="text-[0.8125rem] text-muted">Final pricing in your quote</span>
+                              <span className="text-[0.8125rem] text-muted">Per item</span>
                             </p>
                           ) : (
                             <p className="mt-2 text-[0.8125rem] font-semibold text-muted">Pricing on request</p>
@@ -165,24 +163,6 @@ export default function CartPage() {
                               </button>
                             </div>
                           </div>
-                          <div className="flex min-w-0 flex-1 flex-col gap-1.5 xl:flex-none">
-                            <label htmlFor={`${id}-unit`} className="text-[0.75rem] font-semibold text-muted">
-                              Unit
-                            </label>
-                            <select
-                              id={`${id}-unit`}
-                              value={item.unit ?? ''}
-                              onChange={(e) => update(p.slug, { unit: (e.target.value || undefined) as QuantityUnit | undefined })}
-                              className={`${inputClass} min-w-[7rem] xl:w-[8rem]`}
-                            >
-                              <option value="">Unit</option>
-                              {quantityUnits.map((u) => (
-                                <option key={u} value={u}>
-                                  {u[0].toUpperCase() + u.slice(1)}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
                           <button
                             type="button"
                             onClick={() => remove(p.slug)}
@@ -199,14 +179,14 @@ export default function CartPage() {
 
                 <p className="mt-5 flex items-start gap-2 text-[0.8125rem] text-muted">
                   <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-                  <span>DEMO prices are illustrative catalogue figures for review only. Your quote confirms real pricing, pack sizes and availability.</span>
+                  <span>Delivery is Rs. 300 per order. Review your full total before placing your order.</span>
                 </p>
               </section>
 
               <aside aria-labelledby="cart-summary-title" className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-height)+1.5rem)]">
                 <section className="overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)]">
                   <div className="relative isolate overflow-hidden bg-forest-deep px-6 py-6 text-white">
-                    <p className="text-[0.6875rem] font-bold tracking-[0.2em] text-gold uppercase">Quote-based ordering</p>
+                    <p className="text-[0.6875rem] font-bold tracking-[0.2em] text-gold uppercase">Cash on Delivery</p>
                     <h2 id="cart-summary-title" className="mt-1.5 font-display text-[1.75rem] leading-tight">
                       Summary
                     </h2>
@@ -220,30 +200,16 @@ export default function CartPage() {
                         <dd className="mt-0.5 font-display text-[1.75rem] leading-none tabular-nums">{withQuantity}</dd>
                       </div>
                       <div className="col-span-2 flex items-center justify-between gap-3 border-t border-white/12 pt-3 text-[0.9375rem]">
-                        <dt className="text-white/70">Pricing</dt>
-                        <dd className="font-semibold">On request</dd>
+                        <dt className="text-white/70">Subtotal</dt>
+                        <dd className="font-semibold">{money(subtotal)}</dd>
                       </div>
                     </dl>
                   </div>
                   <div className="p-6">
-                    <ButtonLink to="/quote?source=cart" size="lg" className="w-full whitespace-normal text-center">
-                      Ask for a price for these items <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
-                    </ButtonLink>
-                    {canCheckout ? (
-                      <ButtonLink to="/checkout" variant="secondary" className="mt-3 w-full">
-                        Checkout
-                      </ButtonLink>
-                    ) : (
-                      <p className="mt-4 flex gap-2.5 rounded-xl bg-canvas p-3 text-[0.8125rem] leading-relaxed text-muted">
-                        <Lock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-forest" />
-                        <span>
-                          Online checkout opens once verified prices and secure payments are available.{' '}
-                          <Link to="/checkout" className="font-semibold text-forest underline underline-offset-2">
-                            Learn more
-                          </Link>
-                        </span>
-                      </p>
-                    )}
+                    <p className="mb-4 flex justify-between"><span>Delivery</span><strong>{money(300)}</strong></p>
+                    <p className="mb-5 flex justify-between text-lg"><span>Total</span><strong>{money(subtotal+300)}</strong></p>
+                    <ButtonLink to="/checkout" size="lg" className="w-full whitespace-normal text-center">Proceed to checkout <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} /></ButtonLink>
+                    <p className="mt-4 text-sm text-muted">Planning a large project? <Link to="/quote" className="underline">Request a project consultation</Link>.</p>
 
                     <h3 className="mt-6 text-[0.75rem] font-bold tracking-[0.16em] text-muted uppercase">How it works</h3>
                     <ol className="mt-3 flex flex-col gap-3.5">

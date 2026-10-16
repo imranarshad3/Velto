@@ -433,8 +433,8 @@ export default function ProductDetailPage() {
 
           {!product.verified && (
             <DemoNotice>
-              DEMO listing: a generic product type, not a verified ULTRA product. Images are illustrative concepts or
-              placeholders, not official product photographs.
+              DEMO listing for storefront testing. Product names, prices and packaging are illustrative concepts,
+              not verified manufacturer data or official product photographs.
             </DemoNotice>
           )}
         </div>

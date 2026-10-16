@@ -26,7 +26,7 @@ export default function CatalogProvider({ children }: { children: ReactNode }) {
     fetch('/api/catalog', { signal: controller.signal })
       .then((r) => (r.ok ? r.json() : null))
       .then((body: { products?: CatalogProduct[] } | null) => {
-        if (Array.isArray(body?.products) && body.products.length) setLive(body.products.map(withDemoPrice))
+        if (Array.isArray(body?.products)) setLive(body.products.map(withDemoPrice))
       })
       .catch(() => {})
       .finally(() => !controller.signal.aborted && setSettled(true))

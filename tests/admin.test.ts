@@ -81,7 +81,7 @@ describe('admin authorisation', () => {
       assert.equal((await call(method, path, 'expired', body)).status, 401, `invalid ${method} ${path}`)
       assert.equal((await call(method, path, 'cust', body)).status, 403, `customer ${method} ${path}`)
     }
-    assert.equal(store.products.find((p) => p.slug === 'tile-adhesive')?.name, 'Tile Adhesive', 'unchanged')
+    assert.equal(store.products.find((p) => p.slug === 'tile-adhesive')?.name, catalog[0].name, 'unchanged')
   })
 
   it('reports admin status only from the server-side membership', async () => {
@@ -185,7 +185,7 @@ describe('admin customers, messages and overview', () => {
     const overview = await (await call('GET', 'overview', 'admin')).json()
     assert.equal(overview.quotesByStatus.submitted, 1)
     assert.equal(overview.newMessages, 0)
-    assert.equal(overview.products, 5)
+    assert.equal(overview.products, catalog.slice(0, 5).length)
     assert.equal(overview.customers, 1)
     assert.equal(overview.recentAudit[0].action, 'message.update')
   })

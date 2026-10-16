@@ -94,7 +94,7 @@ export default function Header() {
           {/* Visibility lives on the wrapper: buttonClass sets display, which would override a bare `hidden`. */}
           <div className="ml-2 hidden min-[90rem]:block">
             <Link to="/quote" className={buttonClass('accent', 'sm')}>
-              Ask for Price
+              Project consultation
               <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </Link>
           </div>

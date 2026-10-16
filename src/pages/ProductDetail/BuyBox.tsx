@@ -5,27 +5,25 @@ import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import { MAX_CART_ITEMS, useCart } from '../../features/cart/cartStore.ts'
 import { cardPrice } from '../../features/catalog/price.ts'
-import { quantityUnits, type QuantityUnit } from '../../features/quotes/units.ts'
 import { useToasts } from '../../features/ui/toastStore.ts'
 
 const MIN_QTY = 1
 const MAX_QTY = 9999
 const clampQty = (n: number) => Math.min(MAX_QTY, Math.max(MIN_QTY, Math.round(n)))
-const unitLabel = (u: string) => u[0].toUpperCase() + u.slice(1)
 
 const fieldLabel = 'text-[0.6875rem] font-bold tracking-[0.14em] text-muted uppercase'
 const stepButton =
   'grid size-11 shrink-0 place-items-center rounded-lg text-ink transition-colors hover:bg-forest-soft hover:text-forest disabled:pointer-events-none disabled:opacity-35'
 
 /** Price, quantity and cart/quote actions. Adds to the existing quote basket with the chosen quantity and unit. */
-export default function BuyBox({ product, quoteHref }: { product: CatalogProduct; quoteHref: string }) {
+export default function BuyBox({ product }: { product: CatalogProduct; quoteHref: string }) {
   const id = useId()
   const price = cardPrice(product)
   const cartItem = useCart((s) => s.items.find((i) => i.slug === product.slug))
   const show = useToasts((s) => s.show)
   const [quantity, setQuantity] = useState<number>(() => cartItem?.quantity ? clampQty(cartItem.quantity) : MIN_QTY)
   const [draft, setDraft] = useState(String(quantity))
-  const [unit, setUnit] = useState<QuantityUnit>(() => cartItem?.unit ?? 'units')
+  const unit = 'units' as const
 
   const setQty = (n: number) => {
     const next = clampQty(n)
@@ -37,7 +35,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
     const { add, update } = useCart.getState()
     const result = add(product.slug)
     if (result === 'full') {
-      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Ask for a price for these first.`, { label: 'View cart', to: '/cart' })
+      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Complete your current cart first.`, { label: 'View cart', to: '/cart' })
       return
     }
     update(product.slug, { quantity, unit })
@@ -76,7 +74,7 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
           {price?.demo
             ? 'Illustrative DEMO price only. Confirmed pricing and availability are provided with your quote.'
             : price
-              ? 'Ask for a price to confirm availability and delivery.'
+              ? 'Delivery is Rs. 300 per order. Pay with Cash on Delivery.'
               : 'Ask for a price for pricing, pack options and availability.'}
         </p>
       </div>
@@ -112,28 +110,12 @@ export default function BuyBox({ product, quoteHref }: { product: CatalogProduct
               </button>
             </div>
           </div>
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <label htmlFor={`${id}-unit`} className={fieldLabel}>
-              Unit
-            </label>
-            <select
-              id={`${id}-unit`}
-              value={unit}
-              onChange={(e) => setUnit(e.target.value as QuantityUnit)}
-              className="min-h-12 w-full cursor-pointer rounded-xl border border-border bg-canvas px-3.5 text-[0.9375rem] font-semibold text-ink transition-colors hover:border-ink/20 focus:border-forest"
-            >
-              {quantityUnits.map((u) => (
-                <option key={u} value={u}>
-                  {unitLabel(u)}
-                </option>
-              ))}
-            </select>
-          </div>
+
         </div>
 
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 @[28rem]:grid-cols-2">
-          <ButtonLink to={`${quoteHref}&qty=${quantity}&unit=${unit}`} size="lg" className="w-full px-5">
-            Ask for Price<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+          <ButtonLink to={`/checkout?product=${product.slug}&qty=${quantity}`} size="lg" className="w-full px-5">
+            Buy now<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
           </ButtonLink>
           <button type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full px-5')}>
             <CartIcon aria-hidden="true" className="size-[1.125rem]" />

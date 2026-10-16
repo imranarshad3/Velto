@@ -1,11 +1,13 @@
 import { useContentData } from '../../features/cms/context.ts'
 import { useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
-import { ArrowUpRight, Search, X } from 'lucide-react'
+import { ArrowUpRight, Heart, Search, ShoppingCart, X } from 'lucide-react'
 import { storefrontNav, primaryNav as defaultPrimaryNav, utilityNav } from '../../data/navigation.ts'
 import AccountControl from './AccountControl.tsx'
 import Logo from '../ui/Logo.tsx'
 import { buttonClass } from '../ui/button.ts'
+import { useCart } from '../../features/cart/cartStore.ts'
+import { useWishlist } from '../../features/wishlist/wishlistStore.ts'
 
 interface MobileNavProps {
   open: boolean
@@ -18,6 +20,8 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const { pathname } = useLocation()
+  const cartCount = useCart((state) => state.items.length)
+  const wishlistCount = useWishlist((state) => state.slugs.length)
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -66,6 +70,20 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           <Link to="/products" className="mb-6 flex min-h-12 items-center gap-3 rounded-xl border border-border bg-surface px-4 text-[0.9375rem] text-muted hover:border-forest">
             <Search aria-hidden="true" className="size-5" /> Find a product
           </Link>
+          <ul aria-label="Your shopping" className="mb-7 grid grid-cols-2 gap-3">
+            <li>
+              <Link to="/wishlist" className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface px-3.5 text-[0.875rem] font-semibold text-ink shadow-[var(--shadow-soft)] transition-colors hover:border-forest/40 hover:bg-forest-soft/40">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-copper-soft text-copper"><Heart aria-hidden="true" className="size-[1.125rem]" /></span>
+                <span className="min-w-0">Wishlist<span className="mt-0.5 block text-[0.75rem] font-medium text-muted">{wishlistCount} saved</span></span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/cart" className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface px-3.5 text-[0.875rem] font-semibold text-ink shadow-[var(--shadow-soft)] transition-colors hover:border-forest/40 hover:bg-forest-soft/40">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-forest-soft text-forest"><ShoppingCart aria-hidden="true" className="size-[1.125rem]" /></span>
+                <span className="min-w-0">Your cart<span className="mt-0.5 block text-[0.75rem] font-medium text-muted">{cartCount} {cartCount === 1 ? 'item' : 'items'}</span></span>
+              </Link>
+            </li>
+          </ul>
           <p className="mb-3 px-4 text-[0.6875rem] font-bold tracking-[0.16em] text-muted uppercase">Explore VELTO</p>
           <ul className="flex flex-col gap-1">
             {primaryNav.map((item) => (
@@ -98,7 +116,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
 
         <div className="flex shrink-0 flex-col gap-3 border-t border-border bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) onClose() }}>
           <Link to="/quote" className={buttonClass('primary', 'md', 'w-full')}>
-            Ask for Price
+            Project consultation
           </Link>
           <AccountControl variant="menu" />
         </div>

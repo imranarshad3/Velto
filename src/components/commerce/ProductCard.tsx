@@ -42,7 +42,7 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
     const { add, update } = useCart.getState()
     const result = add(product.slug)
     if (result === 'full') {
-      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Ask for a price for these first.`, { label: 'View cart', to: '/cart' })
+      show(`Your cart holds up to ${MAX_CART_ITEMS} products. Complete your current cart first.`, { label: 'View cart', to: '/cart' })
       return
     }
     update(product.slug, { quantity: 1, unit })
@@ -105,11 +105,11 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
 
         <div className={`relative z-10 mt-auto flex flex-wrap items-center gap-2 pt-4 @[15rem]:flex-nowrap ${list ? '@[40rem]:justify-end' : ''}`}>
           <Link
-            to={`/quote?product=${product.slug}&qty=${qty}&unit=${unit}`}
+            to={`/checkout?product=${product.slug}&qty=${qty}`}
             className={`order-last inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-forest px-4 text-[0.9375rem] font-semibold whitespace-nowrap text-white shadow-[0_0.5rem_1rem_-0.5rem_rgb(41_76_104/0.6)] transition-colors hover:bg-forest-dark @[15rem]:order-none @[15rem]:w-auto @[15rem]:flex-1 @[20rem]:px-5 ${list ? '@[40rem]:max-w-[16rem]' : ''}`}
           >
             <span>
-              <span className="@min-[15rem]:@max-[19rem]:sr-only">Request </span>Quote<span className="sr-only"> for {qty} {unit} of {product.name}</span>
+              Buy now<span className="sr-only"> for {qty} {unit} of {product.name}</span>
             </span>
             <ArrowRight aria-hidden="true" className="size-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
           </Link>

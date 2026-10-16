@@ -1,104 +1,50 @@
-import { ArrowRight, ClipboardCheck, CreditCard, FileCheck2, Lock, MessagesSquare, Send, ShieldCheck } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { useSearchParams } from 'react-router'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import PageHeader from '../../components/ui/PageHeader.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
+import { buttonClass } from '../../components/ui/button.ts'
+import { inputClass } from '../../components/ui/form/Field.tsx'
 import { useCart } from '../../features/cart/cartStore.ts'
+import { useCatalog } from '../../features/catalog/catalogContext.ts'
+import { useAppAuth } from '../../lib/auth/context.ts'
+import { call } from '../../features/quotes/api.ts'
+import { orderInput, type OrderInput, type Order } from '../../features/orders/schema.ts'
 
-const requirements = [
-  { icon: FileCheck2, title: 'Verified catalogue and prices', text: 'Product names, pack sizes and prices confirmed by the manufacturer and store.' },
-  { icon: CreditCard, title: 'Payment provider', text: 'A payment gateway for your region, with server-verified payment confirmations.' },
-  { icon: ShieldCheck, title: 'Server-side order checks', text: 'Totals, tax and delivery calculated on the server, never trusted from the browser.' },
-]
-
-const steps = [
-  { icon: Send, title: 'Send your cart as a quote request', text: 'One request covers every product in your cart.' },
-  { icon: MessagesSquare, title: 'We review it', text: 'Our team checks products, quantities and availability.' },
-  { icon: ClipboardCheck, title: 'We confirm directly', text: 'Pricing, availability and delivery are confirmed with you.' },
-]
-
-/** Checkout is intentionally blocked until verified pricing and payments exist; no fake payment forms. */
-export default function CheckoutPage() {
-  const count = useCart((s) => s.items.length)
-
-  return (
-    <>
-      <title>Checkout — VELTO</title>
-      <meta name="robots" content="noindex" />
-      <PageHeader eyebrow="Secure ordering" title="Checkout" crumbs={[{ label: 'Home', to: '/' }, { label: 'Cart', to: '/cart' }, { label: 'Checkout' }]} />
-      <div className="bg-canvas">
-        <div className="container-page py-[var(--content-pad)] pb-[var(--section-gap)]">
-          <section
-            aria-labelledby="checkout-status-title"
-            className="mx-auto grid max-w-[64rem] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]"
-          >
-            <div className="p-[clamp(1.5rem,4vw,3rem)]">
-              <span className="relative grid size-16 place-items-center rounded-full bg-cream ring-1 ring-sand-deep">
-                <span className="grid size-11 place-items-center rounded-full bg-copper-soft text-copper">
-                  <Lock aria-hidden="true" className="size-5" />
-                </span>
-              </span>
-              <h2 id="checkout-status-title" className="mt-5 font-display text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)] leading-[1.08]">
-                Online checkout isn’t available yet
-              </h2>
-              <p className="mt-3 leading-relaxed text-muted">
-                We don’t take online payments until prices are verified and payments can be processed securely. Until then, send your
-                cart as a quote request and we’ll confirm pricing, availability and delivery directly.
-              </p>
-
-              <h3 className="mt-8 text-[0.75rem] font-bold tracking-[0.16em] text-muted uppercase">Checkout opens once we have</h3>
-              <ul className="mt-4 flex flex-col gap-3">
-                {requirements.map(({ icon: Icon, title, text }) => (
-                  <li key={title} className="flex gap-4 rounded-[var(--radius-card)] border border-border bg-canvas/70 p-4">
-                    <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-2xl bg-forest-soft text-forest">
-                      <Icon className="size-5" />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block font-semibold text-ink">{title}</span>
-                      <span className="mt-0.5 block text-[0.875rem] text-muted">{text}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="relative isolate flex flex-col overflow-hidden bg-forest-deep p-[clamp(1.5rem,4vw,3rem)] text-white">
-              <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
-                <span aria-hidden="true" className="h-px w-8 bg-gold/60" />
-                Available now
-              </p>
-              <h3 className="mt-3 font-display text-[clamp(1.5rem,1.3rem+0.8vw,2rem)] leading-tight">What happens instead</h3>
-              <ol className="mt-6 flex flex-col gap-5">
-                {steps.map(({ icon: Icon, title, text }, i) => (
-                  <li key={title} className="flex gap-4">
-                    <span aria-hidden="true" className="relative grid size-11 shrink-0 place-items-center rounded-2xl bg-white/10 text-gold ring-1 ring-white/15">
-                      <Icon className="size-5" />
-                      <span className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-gold text-[0.6875rem] font-bold text-forest-deep">{i + 1}</span>
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block font-semibold">{title}</span>
-                      <span className="mt-0.5 block text-[0.875rem] text-white/75">{text}</span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <div className="mt-auto flex flex-col gap-3 pt-8">
-                {count > 0 ? (
-                  <ButtonLink to="/quote?source=cart" variant="light" size="lg" className="w-full whitespace-normal text-center">
-                    Ask for a price for your cart ({count}) <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
-                  </ButtonLink>
-                ) : (
-                  <ButtonLink to="/products" variant="light" size="lg" className="w-full">
-                    Browse products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
-                  </ButtonLink>
-                )}
-                <ButtonLink to="/cart" variant="outline-light" className="w-full">
-                  Back to cart
-                </ButtonLink>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-    </>
-  )
+const money=(n:number)=>new Intl.NumberFormat('en-PK',{style:'currency',currency:'PKR',maximumFractionDigits:2}).format(n)
+export default function CheckoutPage(){
+ const [params]=useSearchParams()
+ const auth=useAppAuth()
+ const {find,status}=useCatalog()
+ const cart=useCart(s=>s.items)
+ const direct=params.get('product')
+ const qty=Math.min(999,Math.max(1,Math.floor(Number(params.get('qty'))||1)))
+ const selected=direct?[{slug:direct,quantity:qty}]:cart
+ const lines=selected.map(i=>({product:find(i.slug),slug:i.slug,quantity:i.quantity??1}))
+ const valid=lines.length>0&&lines.every(l=>l.product?.verified&&l.product.price?.currency==='PKR'&&l.product.price.amount>0&&Number.isInteger(l.quantity)&&l.quantity>=1&&l.quantity<=999)
+ const total=lines.reduce((sum,l)=>sum+(l.product?.price?.amount??0)*l.quantity,0)+300
+ const requestKey=useRef(crypto.randomUUID())
+ const [order,setOrder]=useState<Order|null>(null)
+ const [error,setError]=useState('')
+ const {register,handleSubmit,formState:{errors,isSubmitting}}=useForm<OrderInput['customer']>({resolver:zodResolver(orderInput.shape.customer),defaultValues:{country:'Pakistan',name:auth.user?.name??'',email:auth.user?.email??''}})
+ const submit=handleSubmit(async customer=>{
+  setError('')
+  try{
+   const token=await auth.getToken({skipCache:true});if(!token)throw Error('Please sign in again.')
+   const result=await call<{order:Order}>('/api/orders',{method:'POST',body:JSON.stringify({requestKey:requestKey.current,customer,items:lines.map(l=>({slug:l.slug,quantity:l.quantity})),expectedTotal:total,paymentMethod:'cod'})},token)
+   setOrder(result.order)
+   if(!direct)for(const l of lines){const current=useCart.getState().items.find(i=>i.slug===l.slug);if((current?.quantity??1)===l.quantity)useCart.getState().remove(l.slug)}
+  }catch(e){setError(e instanceof Error?e.message:'Could not place your order. Please retry.')}
+ })
+ return <><title>Checkout — VELTO</title><PageHeader eyebrow="Cash on delivery" title="Checkout" crumbs={[{label:'Cart',to:'/cart'},{label:'Checkout'}]}/><main className="container-page py-10">
+ {order?<section className="surface-card mx-auto max-w-2xl p-6" role="status"><h2 className="font-display text-3xl">Thank you. Your order is placed.</h2><p className="mt-4">Order <strong>{order.reference}</strong></p><p className="mt-2">Pay {money(Number(order.total))} on delivery.</p><p className="mt-2">Delivery address: {order.customer.address}, {order.customer.city}</p><ButtonLink to="/account/orders" className="mt-6">View my orders</ButtonLink></section>:
+ !auth.loaded||status==='loading'?<p role="status">Loading checkout…</p>:
+ !auth.signedIn?<section className="surface-card mx-auto max-w-xl p-6"><h2 className="font-display text-2xl">Sign in to complete your purchase</h2><p className="my-4">Your cart is saved. Track your order from your account after checkout.</p><ButtonLink to={`/sign-in?redirect_url=${encodeURIComponent('/checkout'+(direct?'?'+params.toString():''))}`}>Sign in to buy</ButtonLink></section>:
+ !valid?<section className="surface-card p-6"><h2 className="font-display text-2xl">Check your cart</h2><p className="my-4">Choose available products with confirmed prices and quantities from 1 to 999.</p><ButtonLink to="/cart">Back to cart</ButtonLink></section>:
+ <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]"><form onSubmit={submit} className="surface-card p-5 sm:p-8"><h2 className="font-display text-2xl">Delivery details</h2><div className="mt-6 grid gap-5 sm:grid-cols-2">
+ {([['name','Full name','name'],['email','Email','email'],['phone','Phone number','tel'],['address','Street address','street-address'],['city','City','address-level2']] as const).map(([key,label,auto])=><div key={key} className={key==='address'?'sm:col-span-2':''}><label htmlFor={`order-${key}`} className="mb-2 block font-semibold">{label}</label><input id={`order-${key}`} {...register(key)} autoComplete={auto} type={key==='email'?'email':key==='phone'?'tel':'text'} className={inputClass} aria-invalid={!!errors[key]}/>{errors[key]&&<p role="alert" className="mt-1 text-sm text-danger">{errors[key]?.message}</p>}</div>)}
+ </div><p className="mt-5 text-sm text-muted">Country: Pakistan</p><h3 className="mt-8 font-semibold">Payment method</h3><label className="mt-3 flex min-h-12 items-center gap-3 rounded-xl border border-forest bg-forest-soft p-4"><input type="radio" checked readOnly name="payment"/>Cash on Delivery — pay when your order arrives</label><p className="mt-3 text-sm text-muted">Online payment is not available yet.</p>{error&&<p role="alert" className="mt-5 text-danger">{error}</p>}<button disabled={isSubmitting} className={buttonClass('primary','lg','mt-6 w-full')}>{isSubmitting?'Placing your order…':`Place order · ${money(total)}`}</button></form>
+ <aside className="surface-card h-fit p-6"><h2 className="font-display text-2xl">Order summary</h2><ul className="my-5 space-y-4">{lines.map(l=><li key={l.slug} className="flex gap-3">{l.product?.image&&<img src={l.product.image.src} alt="" className="size-16 shrink-0 rounded-lg bg-cream object-contain p-1"/>}<span className="min-w-0 flex-1">{l.product?.name}<small className="block text-muted">Quantity: {l.quantity}</small><strong>{money(l.product!.price!.amount*l.quantity)}</strong></span></li>)}</ul><dl className="space-y-3 border-t border-border pt-4"><div className="flex justify-between"><dt>Products</dt><dd>{money(total-300)}</dd></div><div className="flex justify-between"><dt>Delivery</dt><dd>{money(300)}</dd></div><div className="flex justify-between font-bold"><dt>Pay on delivery</dt><dd>{money(total)}</dd></div></dl></aside></div>}
+ </main></>
 }
