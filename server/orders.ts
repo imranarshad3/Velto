@@ -8,7 +8,39 @@ import { sessionInvalid } from './quotes/handlers.js'
 import { orderInput } from '../src/features/orders/schema.js'
 
 const WINDOW_SECONDS = 600
-const ORDER_LIMITS = { ordersPerUser: 30, ordersPerIp: 60, getPerUser: 300 }
+const ORDER_LIMITS = { ordersPerUser: 30, ordersPerIp: 60, getPerUser: 300, trackPerIp: 60 }
+
+function maskAddress(addr?: string): string {
+  if (!addr) return ''
+  const parts = addr.split(',')
+  if (parts.length > 1) {
+    return `••••, ${parts[parts.length - 1].trim()}`
+  }
+  return addr.length > 8 ? `${addr.slice(0, 4)}••••` : '••••'
+}
+
+function maskPhone(phone?: string): string {
+  if (!phone) return ''
+  const digits = phone.replace(/\D/g, '')
+  if (digits.length < 4) return '••••'
+  return `•••••••${digits.slice(-4)}`
+}
+
+function maskEmail(email?: string): string {
+  if (!email || !email.includes('@')) return '••••'
+  const [local, domain] = email.split('@')
+  return `${local.slice(0, 2)}••••@${domain}`
+}
+
+function computeEstimatedDelivery(createdAt: string, status: string): { earliest: string; latest: string; label: string } {
+  const created = new Date(createdAt)
+  const earliest = new Date(created.getTime() + 2 * 24 * 60 * 60 * 1000)
+  const latest = new Date(created.getTime() + 4 * 24 * 60 * 60 * 1000)
+  const format = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+  if (status === 'delivered') return { earliest: earliest.toISOString(), latest: latest.toISOString(), label: 'Delivered' }
+  if (status === 'cancelled') return { earliest: '', latest: '', label: 'Order Cancelled' }
+  return { earliest: earliest.toISOString(), latest: latest.toISOString(), label: `${format(earliest)} – ${format(latest)}` }
+}
 
 export interface OrdersHandlerDeps {
   db?: SupabaseClient
@@ -37,8 +69,10 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         }),
       )
       const auth = await verify(bearerToken(request), url.origin)
-      if (auth.kind === 'guest') return apiError(401, 'sign_in_required', 'Please sign in to manage your orders.')
       if (auth.kind === 'invalid') return sessionInvalid(auth.reason)
+
+      const isTrack = url.pathname.endsWith('/track') || url.searchParams.has('track') || url.searchParams.has('reference') || url.searchParams.get('action') === 'track'
+      if (!isTrack && auth.kind === 'guest') return apiError(401, 'sign_in_required', 'Please sign in to manage your orders.')
 
       let db = deps.db
       if (!db) {
@@ -73,7 +107,90 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         isAdminUser = true
       }
 
+      async function handleTrackLookup(reference: string, contact?: string) {
+        if (!reference || reference.length < 3 || reference.length > 64) {
+          return apiError(422, 'invalid', 'Enter a valid order reference.')
+        }
+
+        const notFound = () => apiError(404, 'not_found', 'No order found matching this reference and contact information.')
+
+        const { data: order, error } = await db
+          .from('orders')
+          .select('id,reference,clerk_user_id,customer,items,subtotal,delivery,total,currency,payment_method,status,status_history,created_at')
+          .ilike('reference', reference)
+          .maybeSingle()
+
+        if (error || !order) return notFound()
+
+        let isOwnerOrAdmin = false
+        if (auth.kind === 'user') {
+          if (order.clerk_user_id === auth.userId) {
+            isOwnerOrAdmin = true
+          } else {
+            const { data: member } = await db.from('admin_members').select('clerk_user_id').eq('clerk_user_id', auth.userId).maybeSingle()
+            if (member) isOwnerOrAdmin = true
+          }
+        }
+
+        if (!isOwnerOrAdmin) {
+          if (!contact) {
+            return apiError(422, 'contact_required', 'Please provide the email address or phone number used at checkout to track this order.')
+          }
+          const cleanedContact = contact.trim().toLowerCase()
+          const customerEmail = (order.customer?.email ?? '').trim().toLowerCase()
+          const customerPhoneDigits = (order.customer?.phone ?? '').replace(/\D/g, '')
+          const contactDigits = cleanedContact.replace(/\D/g, '')
+
+          const emailMatches = Boolean(customerEmail && customerEmail === cleanedContact)
+          const phoneMatches = Boolean(
+            contactDigits.length >= 7 &&
+            customerPhoneDigits.length >= 7 &&
+            (customerPhoneDigits.endsWith(contactDigits) || contactDigits.endsWith(customerPhoneDigits))
+          )
+
+          if (!emailMatches && !phoneMatches) {
+            return notFound()
+          }
+        }
+
+        return json({
+          order: {
+            id: order.id,
+            reference: order.reference,
+            status: order.status,
+            status_history: order.status_history ?? [],
+            created_at: order.created_at,
+            currency: order.currency ?? 'PKR',
+            subtotal: order.subtotal,
+            delivery: order.delivery ?? 300,
+            total: order.total,
+            payment_method: order.payment_method ?? 'cod',
+            customer: {
+              name: order.customer.name,
+              city: order.customer.city,
+              country: order.customer.country,
+              address: isOwnerOrAdmin ? order.customer.address : maskAddress(order.customer.address),
+              phone: isOwnerOrAdmin ? order.customer.phone : maskPhone(order.customer.phone),
+              email: isOwnerOrAdmin ? order.customer.email : maskEmail(order.customer.email),
+            },
+            items: order.items,
+            isOwner: isOwnerOrAdmin,
+            estimatedDelivery: computeEstimatedDelivery(order.created_at, order.status),
+          },
+        })
+      }
+
       if (request.method === 'GET') {
+        const trackRef = url.searchParams.get('reference')?.trim()
+        if (trackRef) {
+          if (!(await rateLimit('orders-track-ip', ip, ORDER_LIMITS.trackPerIp))) {
+            return apiError(429, 'rate_limited', 'Too many tracking requests. Please wait a few minutes and try again.')
+          }
+          const contact = url.searchParams.get('contact')?.trim()
+          return handleTrackLookup(trackRef, contact)
+        }
+
+        if (auth.kind === 'guest') return apiError(401, 'sign_in_required', 'Please sign in to manage your orders.')
         if (!(await rateLimit('orders-get-user', auth.userId, ORDER_LIMITS.getPerUser))) {
           return apiError(429, 'rate_limited', 'Too many requests. Please wait a few minutes and try again.')
         }
@@ -95,11 +212,27 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
       }
 
       if (request.method === 'POST') {
+        const isTrackPost = url.pathname.endsWith('/track') || url.searchParams.get('action') === 'track'
+        const body = await readJson(request, 16000)
+
+        if (isTrackPost || (body && typeof body === 'object' && ('reference' in body) && !('items' in body))) {
+          if (!(await rateLimit('orders-track-ip', ip, ORDER_LIMITS.trackPerIp))) {
+            return apiError(429, 'rate_limited', 'Too many tracking requests. Please wait a few minutes and try again.')
+          }
+          const parsedTrack = z.object({
+            reference: z.string().trim().min(3).max(64),
+            contact: z.string().trim().min(3).max(200).optional(),
+          }).safeParse(body)
+          if (!parsedTrack.success) return apiError(422, 'invalid', 'Enter a valid order reference.')
+          return handleTrackLookup(parsedTrack.data.reference, parsedTrack.data.contact)
+        }
+
+        if (auth.kind === 'guest') return apiError(401, 'sign_in_required', 'Please sign in to manage your orders.')
         if (isAdminUser) return apiError(400, 'invalid', 'Order placement is for customers only.')
         if (!(await rateLimit('orders-post-ip', ip, ORDER_LIMITS.ordersPerIp)) || !(await rateLimit('orders-post-user', auth.userId, ORDER_LIMITS.ordersPerUser))) {
           return apiError(429, 'rate_limited', 'Too many requests. Please wait a few minutes and try again.')
         }
-        const parsed = orderInput.safeParse(await readJson(request, 16000))
+        const parsed = orderInput.safeParse(body)
         if (!parsed.success) return apiError(422, 'invalid', 'Check your delivery details and quantities.')
         const p = parsed.data
         const { data, error } = await db.rpc('place_cod_order', { p_user: auth.userId, p_key: p.requestKey, p_customer: p.customer, p_items: p.items, p_expected: p.expectedTotal })

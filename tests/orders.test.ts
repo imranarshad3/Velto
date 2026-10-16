@@ -69,7 +69,20 @@ function createMockDb(options: {
           filterVal = val
           return chain
         },
+        ilike: (col: string, val: string) => {
+          filterCol = col
+          filterVal = val
+          return chain
+        },
         maybeSingle: async () => {
+          if (table === 'orders') {
+            const found = orders.find((o) => {
+              if (filterCol === 'reference') return o.reference.toLowerCase() === filterVal?.toLowerCase()
+              if (filterCol === 'id') return o.id === filterVal
+              return false
+            })
+            return { data: found ?? null, error: null }
+          }
           if (table === 'admin_members') {
             const has = admins.has(filterVal ?? '')
             return { data: has ? { clerk_user_id: filterVal } : null, error: null }
@@ -292,5 +305,100 @@ describe('Orders API security & authorization', () => {
     assert.equal(res.status, 422)
     const body = await res.json()
     assert.equal(body.error, 'invalid')
+  })
+
+  it('allows authenticated customer to track own order by reference without contact', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const res = await handler(
+      new Request(`${SITE}/api/orders?reference=VEL-0000000000000001`, {
+        method: 'GET',
+        headers: { authorization: 'Bearer token-cust-A' },
+      }),
+    )
+    assert.equal(res.status, 200)
+    const body = await res.json()
+    assert.equal(body.order.reference, 'VEL-0000000000000001')
+    assert.equal(body.order.isOwner, true)
+    assert.equal(body.order.customer.email, 'cust_a@example.com')
+    assert.ok(body.order.estimatedDelivery.label)
+  })
+
+  it('allows guest client to track order with valid reference and matching email', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const res = await handler(
+      new Request(`${SITE}/api/orders/track`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: 'VEL-0000000000000001', contact: 'CUST_A@example.com' }),
+      }),
+    )
+    assert.equal(res.status, 200)
+    const body = await res.json()
+    assert.equal(body.order.reference, 'VEL-0000000000000001')
+    assert.equal(body.order.isOwner, false)
+    assert.ok(body.order.customer.email.includes('••••'))
+    assert.ok(body.order.customer.phone.includes('••••'))
+  })
+
+  it('allows guest client to track order with matching phone digits', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const res = await handler(
+      new Request(`${SITE}/api/orders/track`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: 'VEL-0000000000000002', contact: '0300-222-2222' }),
+      }),
+    )
+    assert.equal(res.status, 200)
+    const body = await res.json()
+    assert.equal(body.order.reference, 'VEL-0000000000000002')
+    assert.equal(body.order.status, 'shipped')
+  })
+
+  it('rejects guest tracking with wrong contact info (prevents enumeration)', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const res = await handler(
+      new Request(`${SITE}/api/orders/track`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: 'VEL-0000000000000001', contact: 'wrong@example.com' }),
+      }),
+    )
+    assert.equal(res.status, 404)
+    const body = await res.json()
+    assert.equal(body.error, 'not_found')
+  })
+
+  it('requires contact verification for guest tracking without contact', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const res = await handler(
+      new Request(`${SITE}/api/orders/track`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: 'VEL-0000000000000001' }),
+      }),
+    )
+    assert.equal(res.status, 422)
+    const body = await res.json()
+    assert.equal(body.error, 'contact_required')
+  })
+
+  it('enforces rate limits on tracking requests', async () => {
+    const handler = createOrdersHandler({
+      db: createMockDb({ rateLimitAllowed: false }),
+      verifyAuth,
+      allowedOrigins: [SITE],
+      hashSecret: 'test-hash-secret-at-least-32-characters-long!!',
+    })
+    const res = await handler(
+      new Request(`${SITE}/api/orders/track`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: 'VEL-0000000000000001', contact: 'cust_a@example.com' }),
+      }),
+    )
+    assert.equal(res.status, 429)
+    const body = await res.json()
+    assert.equal(body.error, 'rate_limited')
   })
 })

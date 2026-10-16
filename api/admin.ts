@@ -2,7 +2,11 @@ import { createOrdersHandler } from '../server/orders.js'
 import { getApiHandlers } from '../server/quotes/config.js'
 
 const orders = createOrdersHandler()
-const handle = (request: Request) => (new URL(request.url).pathname === '/api/orders' || new URL(request.url).searchParams.get('path') === 'checkout-orders') ? orders(request) : getApiHandlers().admin(request)
+const handle = (request: Request) => {
+  const url = new URL(request.url)
+  const isOrders = url.pathname === '/api/orders' || url.pathname.startsWith('/api/orders/') || url.searchParams.get('path') === 'checkout-orders' || url.searchParams.get('path')?.startsWith('checkout-orders')
+  return isOrders ? orders(request) : getApiHandlers().admin(request)
+}
 
 /**
  * /api/admin/* (rewritten to /api/admin?path=... in vercel.json). One function for all admin routes;
