@@ -42,8 +42,8 @@ export default function AdminQuotesPage() {
   return (
     <>
       <title>Quotes — Admin — VELTO</title>
-      <AdminHeading title="Quote requests" crumbs={[{ label: 'Quotes' }]}>
-        Requests from the quote form. Open one to update its status, message the customer or add internal notes.
+      <AdminHeading title="Project consultations" crumbs={[{ label: 'Quotes' }]}>
+        Project consultation requests. Open one to update its status, message the customer or add internal notes.
       </AdminHeading>
       <Toolbar>
         <FilterTabs label="Filter by status" value={status} onChange={(s) => set({ status: s })} options={[{ value: '', label: 'All' }, ...quoteStatuses.map((s) => ({ value: s as string, label: quoteStatusLabels[s] }))]} />
@@ -76,7 +76,7 @@ export default function AdminQuotesPage() {
 
               <div className="surface-card hidden overflow-clip md:block">
                 <table className="w-full table-fixed border-separate border-spacing-0 text-[0.9375rem]">
-                  <caption className="sr-only">Quote requests</caption>
+                  <caption className="sr-only">Project consultations</caption>
                   <thead>
                     <tr>
                       <th scope="col" className={`${th} w-[11.5rem]`}>

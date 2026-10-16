@@ -56,6 +56,7 @@ function createMockDb(options: {
   // oxlint-disable-next-line typescript/no-explicit-any
   const client: any = {
     from: (table: string) => {
+      const filters: Record<string,string> = {}
       let filterCol: string | null = null
       let filterVal: string | null = null
 
@@ -67,6 +68,7 @@ function createMockDb(options: {
         eq: (col: string, val: string) => {
           filterCol = col
           filterVal = val
+          filters[col] = val
           return chain
         },
         ilike: (col: string, val: string) => {
@@ -95,7 +97,7 @@ function createMockDb(options: {
         },
         then: (resolve: (val: unknown) => void) => {
           if (table === 'orders') {
-            const result = filterCol === 'clerk_user_id' ? orders.filter((o) => o.clerk_user_id === filterVal) : orders
+            const result = orders.filter(o => (!filters.clerk_user_id || o.clerk_user_id === filters.clerk_user_id) && (!filters.id || o.id === filters.id))
             resolve({ data: result, error: null })
           } else {
             resolve({ data: [], error: null })
@@ -401,4 +403,17 @@ describe('Orders API security & authorization', () => {
     const body = await res.json()
     assert.equal(body.error, 'rate_limited')
   })
+})
+
+describe('single order detail access', () => {
+ it('returns exactly the requested order for admin, and preserves customer isolation', async () => {
+  const handler=createOrdersHandler({db:createMockDb(),verifyAuth,allowedOrigins:[SITE]})
+  const id=testOrders[1].id
+  const admin=await handler(new Request(`${SITE}/api/orders?admin=1&id=${id}`,{headers:{authorization:'Bearer token-admin'}}))
+  assert.equal(admin.status,200)
+  assert.deepEqual((await admin.json()).orders.map((o: {id:string})=>o.id),[id])
+  const customer=await handler(new Request(`${SITE}/api/orders?id=${id}`,{headers:{authorization:'Bearer token-cust-A'}}))
+  assert.equal(customer.status,200)
+  assert.equal((await customer.json()).orders.length,0)
+ })
 })

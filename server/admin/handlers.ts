@@ -275,6 +275,7 @@ export function createAdminHandler(ctx: AdminContext) {
         if (id === 'members' && key && method === 'DELETE') {
           if (!clerkUserIdPattern.test(key)) return apiError(404, 'not_found', 'Admin not found.')
           const result = await store.removeAdmin(actor, key)
+          if (result === 'protected') return apiError(403, 'protected_superadmin', 'Protected Superadmins cannot be removed.')
           if (result === 'self') return apiError(409, 'cannot_remove_self', 'You can’t remove your own admin access.')
           if (result === 'last_admin') return apiError(409, 'last_admin', 'At least one admin must remain.')
           return result === 'ok' ? json({ ok: true }) : apiError(404, 'not_found', 'Admin not found.')

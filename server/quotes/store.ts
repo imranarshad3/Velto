@@ -68,7 +68,7 @@ export interface DataStore {
   acceptAdminInvite(clerkUserId: string, verifiedEmails: string[]): Promise<boolean>
   createAdminInvite(actor: string, email: string): Promise<string>
   revokeAdminInvite(actor: string, id: string): Promise<boolean>
-  removeAdmin(actor: string, clerkUserId: string): Promise<'ok' | 'not_found' | 'self' | 'last_admin'>
+  removeAdmin(actor: string, clerkUserId: string): Promise<'ok' | 'not_found' | 'self' | 'last_admin' | 'protected'>
   listAdminTeam(): Promise<{ members: AdminMemberRow[]; invites: AdminInvite[] }>
   saveProduct(actor: string, slug: string, data: ProductData, create: boolean): Promise<'ok' | 'not_found' | 'conflict'>
   setProductStatus(actor: string, slug: string, status: ProductStatus): Promise<boolean>

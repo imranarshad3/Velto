@@ -126,6 +126,7 @@ export interface AdminInvite {
 }
 
 export interface AdminMemberRow {
+  superAdmin?: boolean
   clerkUserId: string
   /** Email the member was invited with, if any. */
   note: string | null

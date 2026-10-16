@@ -13,8 +13,9 @@ export function createSupabaseWorkspace(db: SupabaseClient): WorkspaceStore {
   const bucket = db.storage.from('website-media')
   return {
     async role(userId) {
-      const member = await db.from('admin_members').select('clerk_user_id').eq('clerk_user_id', userId).maybeSingle(); check(member.error)
+      const member = await db.from('admin_members').select('clerk_user_id, super_admin').eq('clerk_user_id', userId).maybeSingle(); check(member.error)
       if (!member.data) return null
+      if (member.data.super_admin) return 'admin'
       const result = await db.from('workspace_roles').select('role').eq('clerk_user_id', userId).maybeSingle()
       // Existing administrators retain access until the optional migration is approved.
       if (result.error && ['42P01','PGRST205'].includes(result.error.code)) return 'admin'

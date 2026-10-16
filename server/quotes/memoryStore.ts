@@ -43,7 +43,7 @@ export const productFromData = (data: ProductData, updatedAt = new Date().toISOS
 })
 
 /** In-memory store for unit tests and opt-in local development only. Never used in production. */
-export function createMemoryStore(options: { products?: CatalogProduct[]; admins?: string[]; now?: () => number } = {}) {
+export function createMemoryStore(options: { products?: CatalogProduct[]; admins?: string[]; superAdmins?: string[]; now?: () => number } = {}) {
   const clock = options.now ?? Date.now
   const rows: Row[] = []
   const hits = new Map<string, number>()
@@ -54,7 +54,7 @@ export function createMemoryStore(options: { products?: CatalogProduct[]; admins
   const resources: StoredResource[] = []
   const coverage = new Map<string, ProductCoverage>()
   const viewDedup = new Set<string>()
-  const admins = new Map((options.admins ?? []).map((id) => [id, { note: null as string | null, createdAt: new Date().toISOString() }]))
+  const admins = new Map((options.admins ?? []).map((id) => [id, { superAdmin: options.superAdmins?.includes(id) ?? false, note: null as string | null, createdAt: new Date().toISOString() }]))
   type Invite = AdminInvite & { acceptedAt: string | null; revokedAt: string | null }
   const invites: Invite[] = []
   const isOpen = (i: Invite) => !i.acceptedAt && !i.revokedAt
@@ -143,7 +143,7 @@ export function createMemoryStore(options: { products?: CatalogProduct[]; admins
       const emails = new Set(verifiedEmails.map((e) => e.toLowerCase()))
       const invite = invites.find((i) => isOpen(i) && emails.has(i.email) && Date.parse(i.expiresAt) > clock())
       if (!invite) return false
-      if (!admins.has(clerkUserId)) admins.set(clerkUserId, { note: invite.email, createdAt: new Date().toISOString() })
+      if (!admins.has(clerkUserId)) admins.set(clerkUserId, { superAdmin: false, note: invite.email, createdAt: new Date().toISOString() })
       invite.acceptedAt = new Date().toISOString()
       log(clerkUserId, 'admin.invite.accept', 'admin_invitation', invite.id)
       return true
@@ -165,6 +165,7 @@ export function createMemoryStore(options: { products?: CatalogProduct[]; admins
       return true
     },
     async removeAdmin(actor, clerkUserId) {
+      if (admins.get(clerkUserId)?.superAdmin) return 'protected'
       if (actor === clerkUserId) return 'self'
       if (!admins.has(clerkUserId)) return 'not_found'
       if (admins.size <= 1) return 'last_admin'

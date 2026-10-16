@@ -14,7 +14,7 @@ export default function QuoteStatus({ status }: { status: Status }) {
       >
         {quoteStatusLabels[status]}
       </span>
-      {status !== 'closed' && (
+      {status !== 'closed' && status !== 'cancelled' && (
         <ol className="flex items-center gap-2" aria-label="Progress">
           {flow.map((step, i) => {
             const done = i <= current

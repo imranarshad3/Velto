@@ -116,7 +116,7 @@ export default function AdminTeamPage() {
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.5vw,1.75rem)] xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="flex flex-col gap-[clamp(1.25rem,2.5vw,1.75rem)]">
-          <Panel id="invite-title" title="Invite an admin" description="They’ll have full admin access, the same as you.">
+          <Panel id="invite-title" title="Invite an admin" description="They’ll have admin access without protected Superadmin status.">
             <form onSubmit={onSubmit} noValidate>
               <label htmlFor="invite-email" className="block text-[0.875rem] font-semibold text-ink">
                 Email address
@@ -201,13 +201,14 @@ export default function AdminTeamPage() {
                         <div className="min-w-0 flex-1">
                           <p className="flex flex-wrap items-center gap-2 font-semibold text-ink">
                             <span className="truncate capitalize">{label}</span>
-                            {m.you && <Badge tone="green">You</Badge>}
+                            {m.superAdmin && <Badge tone="green">Protected Superadmin</Badge>}
+                        {m.you && <Badge tone="green">You</Badge>}
                           </p>
                           <p className="truncate text-[0.8125rem] text-muted">
                             {m.email && m.email !== label ? `${m.email} · ` : ''}Admin since {dateFmt.format(new Date(m.createdAt))}
                           </p>
                         </div>
-                        {!m.you && team.members.length > 1 && (
+                        {!m.you && !m.superAdmin && team.members.length > 1 && (
                           <button
                             type="button"
                             onClick={() => {

@@ -64,7 +64,7 @@ export type ProductInput = z.input<typeof productInputSchema>
 export type ProductData = z.output<typeof productInputSchema>
 
 export const quoteStatusUpdateSchema = z.object({
-  status: z.enum(['submitted', 'reviewing', 'quoted', 'closed']),
+  status: z.enum(['submitted', 'reviewing', 'quoted', 'closed', 'cancelled']),
   /** Shown to the customer in their quote history. */
   note: z.preprocess(blank, z.string().trim().max(1000).optional()),
   /** Staff-only. */

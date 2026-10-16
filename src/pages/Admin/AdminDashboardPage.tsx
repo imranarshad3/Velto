@@ -19,6 +19,7 @@ const statusColor: Record<QuoteStatus, string> = {
   reviewing: 'bg-emerald-muted',
   quoted: 'bg-forest',
   closed: 'bg-ink/25',
+  cancelled: 'bg-ink/25',
 }
 
 /** Link an audit entry to its record when we know where that lives. */

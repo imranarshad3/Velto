@@ -1,5 +1,6 @@
+import { Link } from 'react-router'
 import { useState } from 'react'
-import { ArrowUpRight, Check, ChevronDown, ClipboardList, Clock3, Package, RefreshCw, Search, Truck, X } from 'lucide-react'
+import { ArrowUpRight, Check, ClipboardList, Clock3, Package, RefreshCw, Search, Truck, X } from 'lucide-react'
 import type { Order } from './schema.ts'
 import { orderMoney, orderStatuses, statusLabels, visibleOrders } from './orderView.ts'
 import { inputClass } from '../../components/ui/form/Field.tsx'
@@ -14,7 +15,7 @@ const statusStyle: Record<string, string> = {
 }
 const date = (value: string) => new Intl.DateTimeFormat('en-PK', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Karachi' }).format(new Date(value))
 
-function StatusEditor({ order, busy, update }: { order: Order; busy: boolean; update: (id: string, status: string) => Promise<void> }) {
+export function StatusEditor({ order, busy, update }: { order: Order; busy: boolean; update: (id: string, status: string) => Promise<void> }) {
   const [status, setStatus] = useState(order.status)
   if (order.status === 'cancelled') return <p className="rounded-xl bg-sand p-4 text-sm text-muted">This order is cancelled and closed. Reserved stock has been released.</p>
   return <div className="rounded-2xl border border-forest/15 bg-forest-soft/40 p-4">
@@ -33,10 +34,10 @@ function StatusEditor({ order, busy, update }: { order: Order; busy: boolean; up
 function OrderCard({ order, busy, update }: { order: Order; busy: boolean; update: (id: string, status: string) => Promise<void> }) {
   const units = order.items.reduce((sum, item) => sum + item.quantity, 0)
   return <li className="min-w-0">
-    <details className="group overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)] open:border-forest/25">
-      <summary className="flex cursor-pointer list-none flex-col gap-4 p-4 transition-colors hover:bg-canvas/60 focus-visible:outline-2 focus-visible:outline-offset-[-0.25rem] focus-visible:outline-forest sm:p-5 [&::-webkit-details-marker]:hidden">
+    <article className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+      <div className="flex flex-col gap-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-forest-soft text-forest"><Package aria-hidden="true" className="size-5" /></span><div className="min-w-0"><h2 className="break-all text-sm font-bold tracking-wide text-ink">{order.reference}</h2><time dateTime={order.created_at} className="mt-1 block text-xs text-muted">{date(order.created_at)}</time></div></div>
+          <div className="flex min-w-0 items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-xl bg-forest-soft text-forest"><Package aria-hidden="true" className="size-5" /></span><div className="min-w-0"><h2 className="break-all text-sm font-bold tracking-wide text-ink"><Link className="inline-flex min-h-11 items-center underline underline-offset-4 focus-visible:outline-2" to={`/admin/orders/${order.id}`}>{order.reference}</Link></h2><time dateTime={order.created_at} className="mt-1 block text-xs text-muted">{date(order.created_at)}</time></div></div>
           <span className={`rounded-full px-3 py-1.5 text-xs font-bold ring-1 ring-inset ${statusStyle[order.status] ?? statusStyle.placed}`}>{statusLabels[order.status] ?? order.status}</span>
         </div>
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-3 sm:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_auto]">
@@ -44,9 +45,13 @@ function OrderCard({ order, busy, update }: { order: Order; busy: boolean; updat
           <p className="hidden truncate text-sm text-muted sm:block">{order.items[0]?.name}{order.items.length > 1 ? ` +${order.items.length - 1} more` : ''}</p>
           <div className="text-right"><p className="font-bold tabular-nums">{orderMoney(order.total)}</p><p className="mt-1 text-xs text-muted">Cash on Delivery</p></div>
         </div>
-        <div className="flex items-center justify-between border-t border-border/70 pt-3 text-xs font-semibold text-forest"><span className="group-open:hidden">View items, delivery & status</span><span className="hidden group-open:inline">Hide order details</span><ChevronDown aria-hidden="true" className="size-4 transition-transform group-open:rotate-180" /></div>
-      </summary>
-      <div className="grid min-w-0 gap-6 border-t border-border bg-canvas/35 p-4 sm:p-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <StatusEditor key={`${order.id}-${order.status}`} order={order} busy={busy} update={update} />
+      </div>
+    </article>
+  </li>
+}
+
+export function OrderDetails({ order, busy, update }: { order: Order; busy: boolean; update: (id: string, status: string) => Promise<void> }) { return (<><div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-5"><div><h2 className="break-all font-semibold">{order.reference}</h2><p className="mt-1 text-sm text-muted">{date(order.created_at)} · Cash on Delivery</p></div><span className={`rounded-full px-3 py-2 text-sm font-semibold ${statusStyle[order.status]}`}>{statusLabels[order.status]}</span></div><div className="grid min-w-0 gap-6 border-t border-border bg-canvas/35 p-4 sm:p-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <section aria-label={`Items in ${order.reference}`} className="min-w-0">
           <h3 className="text-xs font-bold uppercase tracking-widest text-muted">Order items</h3>
           <ul className="mt-4 divide-y divide-border">{order.items.map(item => <li key={item.slug} className="flex min-w-0 gap-3 py-3 first:pt-0">
@@ -59,10 +64,7 @@ function OrderCard({ order, busy, update }: { order: Order; busy: boolean; updat
           <div><h3 className="text-xs font-bold uppercase tracking-widest text-muted">Customer & delivery</h3><p className="mt-4 font-semibold">{order.customer.name}</p><address className="mt-2 break-words text-sm not-italic leading-relaxed text-muted">{order.customer.address}<br />{order.customer.city}, {order.customer.country}</address><div className="mt-2 flex flex-col items-start"><a href={`tel:${order.customer.phone.replace(/[^+0-9]/g, '')}`} className="inline-flex min-h-11 items-center gap-2 break-all text-sm font-semibold text-forest underline underline-offset-4">{order.customer.phone}<ArrowUpRight aria-hidden="true" className="size-3.5 shrink-0" /></a><a href={`mailto:${order.customer.email}`} className="inline-flex min-h-11 items-center break-all text-sm text-forest underline underline-offset-4">{order.customer.email}</a></div></div>
           <StatusEditor key={`${order.id}-${order.status}`} order={order} busy={busy} update={update} />
         </section>
-      </div>
-    </details>
-  </li>
-}
+      </div></>) }
 
 export default function AdminOrderWorkspace({ orders, busy, update, reload }: { orders: Order[]; busy: string | null; update: (id: string, status: string) => Promise<void>; reload: () => void }) {
   const [search, setSearch] = useState('')

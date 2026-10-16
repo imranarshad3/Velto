@@ -95,6 +95,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
       let isAdminUser = false
 
       if (adminRequested || isPatch) {
+        if (auth.kind !== 'user') return apiError(401, 'sign_in_required', 'Please sign in.')
         const { data: member, error } = await db.from('admin_members').select('clerk_user_id').eq('clerk_user_id', auth.userId).maybeSingle()
         if (error || !member) return apiError(403, 'forbidden', 'Admin access required.')
 
@@ -107,6 +108,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         isAdminUser = true
       }
 
+      const trackDb = db
       async function handleTrackLookup(reference: string, contact?: string) {
         if (!reference || reference.length < 3 || reference.length > 64) {
           return apiError(422, 'invalid', 'Enter a valid order reference.')
@@ -114,7 +116,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
 
         const notFound = () => apiError(404, 'not_found', 'No order found matching this reference and contact information.')
 
-        const { data: order, error } = await db
+        const { data: order, error } = await trackDb
           .from('orders')
           .select('id,reference,clerk_user_id,customer,items,subtotal,delivery,total,currency,payment_method,status,status_history,created_at')
           .ilike('reference', reference)
@@ -127,7 +129,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
           if (order.clerk_user_id === auth.userId) {
             isOwnerOrAdmin = true
           } else {
-            const { data: member } = await db.from('admin_members').select('clerk_user_id').eq('clerk_user_id', auth.userId).maybeSingle()
+            const { data: member } = await trackDb.from('admin_members').select('clerk_user_id').eq('clerk_user_id', auth.userId).maybeSingle()
             if (member) isOwnerOrAdmin = true
           }
         }
@@ -138,14 +140,15 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
           }
           const cleanedContact = contact.trim().toLowerCase()
           const customerEmail = (order.customer?.email ?? '').trim().toLowerCase()
-          const customerPhoneDigits = (order.customer?.phone ?? '').replace(/\D/g, '')
-          const contactDigits = cleanedContact.replace(/\D/g, '')
+          const normalizePhone = (value: string) => value.replace(/\D/g, '').replace(/^0092/, '92').replace(/^0(?=3\d{9}$)/, '92')
+          const customerPhoneDigits = normalizePhone(order.customer?.phone ?? '')
+          const contactDigits = normalizePhone(cleanedContact)
 
           const emailMatches = Boolean(customerEmail && customerEmail === cleanedContact)
           const phoneMatches = Boolean(
             contactDigits.length >= 7 &&
             customerPhoneDigits.length >= 7 &&
-            (customerPhoneDigits.endsWith(contactDigits) || contactDigits.endsWith(customerPhoneDigits))
+            customerPhoneDigits === contactDigits
           )
 
           if (!emailMatches && !phoneMatches) {
@@ -196,13 +199,18 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         }
         let query = db.from('orders').select('id,reference,customer,items,subtotal,delivery,total,currency,status,created_at').order('created_at', { ascending: false }).limit(100)
         if (!isAdminUser) query = query.eq('clerk_user_id', auth.userId)
+        const orderId = url.searchParams.get('id')
+        if (orderId) {
+          if (!z.string().uuid().safeParse(orderId).success) return apiError(422, 'invalid', 'Invalid order reference.')
+          query = query.eq('id', orderId)
+        }
         const { data, error } = await query
         if (error) throw new Error('orders_read')
         return json({ orders: data })
       }
 
       if (request.method === 'PATCH') {
-        if (!isAdminUser) return apiError(403, 'forbidden', 'Admin access required.')
+        if (!isAdminUser || auth.kind !== 'user') return apiError(403, 'forbidden', 'Admin access required.')
         const parsed = z.object({ id: z.string().uuid(), status: z.enum(['placed', 'confirmed', 'shipped', 'delivered', 'cancelled']) }).strict().safeParse(await readJson(request, 2048))
         if (!parsed.success) return apiError(422, 'invalid', 'Choose a valid order status.')
         const { data, error } = await db.rpc('update_cod_order', { p_actor: auth.userId, p_id: parsed.data.id, p_status: parsed.data.status })

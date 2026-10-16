@@ -334,18 +334,18 @@ export function createSupabaseStore(url: string, secretKey: string): DataStore {
     async removeAdmin(actor, clerkUserId) {
       const { data, error } = await db.rpc('admin_remove_member', { p_actor: actor, p_user: clerkUserId })
       if (error) fail('remove admin', error)
-      return data === 'ok' || data === 'self' || data === 'last_admin' ? data : 'not_found'
+      return data === 'ok' || data === 'self' || data === 'last_admin' || data === 'protected' ? data : 'not_found'
     },
 
     async listAdminTeam() {
       const [members, invites] = await Promise.all([
-        db.from('admin_members').select('clerk_user_id, note, created_at').order('created_at'),
+        db.from('admin_members').select('clerk_user_id, note, created_at, super_admin').order('created_at'),
         db.from('admin_invitations').select('id, email, invited_by, created_at, expires_at').is('accepted_at', null).is('revoked_at', null).order('created_at', { ascending: false }).limit(50),
       ])
       if (members.error) fail('admin members', members.error)
       if (invites.error) fail('admin invites', invites.error)
       return {
-        members: (members.data as { clerk_user_id: string; note: string | null; created_at: string }[]).map((m) => ({ clerkUserId: m.clerk_user_id, note: m.note, createdAt: m.created_at })),
+        members: (members.data as { clerk_user_id: string; note: string | null; created_at: string; super_admin: boolean }[]).map((m) => ({ superAdmin: m.super_admin, clerkUserId: m.clerk_user_id, note: m.note, createdAt: m.created_at })),
         invites: (invites.data as { id: string; email: string; invited_by: string; created_at: string; expires_at: string }[]).map((i) => ({
           id: i.id,
           email: i.email,

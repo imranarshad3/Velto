@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { quantityUnits } from './units.js'
 export { quantityUnits, type QuantityUnit } from './units.js'
 export const projectTypes = ['residential', 'commercial', 'industrial', 'infrastructure', 'renovation', 'other'] as const
-export const quoteStatuses = ['submitted', 'reviewing', 'quoted', 'closed'] as const
+export const quoteStatuses = ['submitted', 'reviewing', 'quoted', 'closed', 'cancelled'] as const
 export type QuoteStatus = (typeof quoteStatuses)[number]
 
 export const projectTypeLabels: Record<(typeof projectTypes)[number], string> = {
@@ -25,6 +25,7 @@ export const quoteStatusLabels: Record<QuoteStatus, string> = {
   reviewing: 'Under review',
   quoted: 'Quote sent',
   closed: 'Closed',
+  cancelled: 'Cancelled',
 }
 
 const blankToUndefined = (value: unknown) =>
