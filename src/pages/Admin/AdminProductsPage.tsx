@@ -122,7 +122,7 @@ function Thumb({ p, size }: { p: Row; size: string }) {
   return (
     <span className={`relative grid shrink-0 place-items-center overflow-hidden rounded-xl border border-border bg-cream ${size}`}>
       <ImageOff aria-hidden="true" className="absolute size-5 text-muted/70" />
-      {p.image && <Img image={p.image} alt="" className="relative size-full bg-white object-contain p-1.5" />}
+      {p.image && <Img image={p.image} alt="" className="relative size-full bg-white object-cover " />}
     </span>
   )
 }

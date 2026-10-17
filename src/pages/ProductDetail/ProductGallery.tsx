@@ -20,7 +20,7 @@ interface ProductGalleryProps {
  * Packshots are small concept crops (≈236 px), so they are capped at ~1.6× their natural size on a sand stage
  * (multiply blends their light backdrop away). Photographs fill the frame.
  */
-const packshot = 'h-full w-full max-h-full object-contain'
+const packshot = 'h-full w-full max-h-full object-cover'
 const photo = 'absolute inset-0 size-full object-cover'
 
 function SlideImage({ slide, priority }: { slide: GallerySlide; priority?: boolean }) {
