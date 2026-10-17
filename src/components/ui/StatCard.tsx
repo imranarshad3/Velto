@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react'
+import { MoveRight, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
@@ -28,7 +28,7 @@ export default function StatCard({ icon: Icon, label, value, hint, to, tone = 'f
         <span className={`grid size-11 place-items-center rounded-xl ${tones[tone]}`}>
           <Icon aria-hidden="true" className="size-5" />
         </span>
-        {to && <span aria-hidden="true" className="text-[1.25rem] leading-none text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-forest">→</span>}
+        {to && <span aria-hidden="true" className="text-[1.25rem] leading-none text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-forest"><MoveRight size={16}  /></span>}
       </div>
       <p className="mt-5 font-display text-[clamp(2rem,1.7rem+1vw,2.5rem)] leading-none text-ink tabular-nums">{value}</p>
       <p className="mt-2 text-[0.875rem] font-semibold text-ink">{label}</p>

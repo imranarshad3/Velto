@@ -12,7 +12,7 @@ export default function ProductsHero() {
   return (
     <section aria-labelledby="products-title" className="relative isolate overflow-hidden bg-cream">
 
-      <div className="container-page min-[90rem]:container-wide relative z-10 pt-[clamp(1rem,2.5vw,1.75rem)] pb-[clamp(1.75rem,4vw,3rem)] md:min-h-[clamp(22rem,36vw,30rem)] md:pb-[clamp(5.5rem,9vw,7.5rem)]">
+      <div className="container-page min-[90rem]:container-wide relative z-10 pt-[clamp(1rem,2.5vw,1.75rem)] pb-[clamp(1.75rem,4vw,3rem)] md:min-h-[clamp(22rem,36vw,30rem)] md:pb-[15rem]">
         <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Products' }]} />
         <div className="md:max-w-[44%]">
           <p
