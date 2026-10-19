@@ -3,9 +3,9 @@ export const resourceKinds = ['data_sheet', 'installation_guide', 'safety_data_s
 export type ResourceKind = (typeof resourceKinds)[number]
 
 export const resourceKindLabels: Record<ResourceKind, string> = {
-  data_sheet: 'Technical data sheet',
+  data_sheet: 'Product details',
   installation_guide: 'Installation guide',
-  safety_data_sheet: 'Safety data sheet',
+  safety_data_sheet: 'Safety information',
   certificate: 'Certificate',
   brochure: 'Brochure',
 }

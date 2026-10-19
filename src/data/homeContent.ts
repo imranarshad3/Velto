@@ -24,10 +24,10 @@ export interface IconItem {
 
 /** Service-oriented benefits only: no certifications, statistics or performance superlatives. */
 export const whyChooseFeatures: IconItem[] = [
-  { title: 'Organised by category', text: 'Find products by material and job type.', icon: LayoutGrid },
-  { title: 'Application guidance', text: 'Match products to the surface you are working on.', icon: Compass },
-  { title: 'Technical resources', text: 'Data sheets and installation guides as they are published.', icon: BookOpen },
-  { title: 'Project quotes', text: 'Ask for quantities and pricing for larger jobs.', icon: ClipboardList },
+  { title: 'Easy to browse', text: 'Find products by material and job type.', icon: LayoutGrid },
+  { title: 'Help for each area', text: 'Find products for the area you are working on.', icon: Compass },
+  { title: 'Product guides', text: 'Find product details and step-by-step guides.', icon: BookOpen },
+  { title: 'Project prices', text: 'Ask for the amount you need and a price for your project.', icon: ClipboardList },
 ]
 
 export interface Application {
@@ -38,12 +38,12 @@ export interface Application {
 }
 
 export const applications: Application[] = [
-  { slug: 'bathrooms', name: 'Bathrooms', text: 'Tiling, grouting and wet-area waterproofing.', icon: Bath },
-  { slug: 'kitchens', name: 'Kitchens', text: 'Wall and floor tiling, joints and sealing.', icon: CookingPot },
-  { slug: 'roofs', name: 'Roofs', text: 'Roof and terrace waterproofing systems.', icon: House },
-  { slug: 'floors', name: 'Floors', text: 'Levelling, tiling and floor finishes.', icon: Grid2x2 },
-  { slug: 'pools', name: 'Pools', text: 'Waterproofing and tiling for water-retaining areas.', icon: WavesLadder },
-  { slug: 'exterior-walls', name: 'Exterior Walls', text: 'Repair, protection and surface treatments.', icon: BrickWall },
+  { slug: 'bathrooms', name: 'Bathrooms', text: 'Tiles, grout and waterproofing for wet areas.', icon: Bath },
+  { slug: 'kitchens', name: 'Kitchens', text: 'Tiles, grout and sealant for walls and floors.', icon: CookingPot },
+  { slug: 'roofs', name: 'Roofs', text: 'Waterproofing for roofs and terraces.', icon: House },
+  { slug: 'floors', name: 'Floors', text: 'Level, tile or coat your floors.', icon: Grid2x2 },
+  { slug: 'pools', name: 'Pools', text: 'Waterproofing and tiles for pools and water features.', icon: WavesLadder },
+  { slug: 'exterior-walls', name: 'Exterior Walls', text: 'Repair and protect outside walls.', icon: BrickWall },
 ]
 
 export interface InspirationItem {
@@ -95,8 +95,8 @@ export interface Resource {
 }
 
 export const resources: Resource[] = [
-  { title: 'Product data sheets', text: 'Technical data for each product.', icon: FileText, href: '/resources/documents?kind=data_sheet' },
-  { title: 'Installation guides', text: 'Step-by-step application instructions.', icon: BookOpen, href: '/resources/documents?kind=installation_guide' },
-  { title: 'Coverage calculator', text: 'Estimate quantities for your area.', icon: Calculator, href: '/resources/coverage-calculator' },
-  { title: 'Quote help', text: 'Tell us about your project requirements.', icon: MessagesSquare, href: '#quote' },
+  { title: 'Product details', text: 'Key details for each product.', icon: FileText, href: '/resources/documents?kind=data_sheet' },
+  { title: 'Installation guides', text: 'Simple steps to use each product.', icon: BookOpen, href: '/resources/documents?kind=installation_guide' },
+  { title: 'Coverage calculator', text: 'Work out how much you need for your area.', icon: Calculator, href: '/resources/coverage-calculator' },
+  { title: 'Quote help', text: 'Tell us what you need for your project.', icon: MessagesSquare, href: '#quote' },
 ]

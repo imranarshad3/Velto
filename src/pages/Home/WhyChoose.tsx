@@ -12,10 +12,10 @@ export default function WhyChoose() {
   const whyChooseFeatures = useContentData('home', 'WhyChoose.data', defaultwhyChooseFeatures)
   const cms = useContent('home', 'WhyChoose')
   return (
-    <section aria-labelledby="why-title" className="relative isolate overflow-hidden bg-forest-deep py-[var(--section-gap)] text-white">
+    <section aria-labelledby="why-title" className="why-choose-section edge-image-section relative isolate overflow-hidden text-white">
 
-      <div className="container-page grid gap-[clamp(2.5rem,5vw,5rem)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
-        <div className="min-w-0">
+      <div className="edge-image-grid container-page grid gap-[clamp(2.5rem,5vw,5rem)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
+        <div className="edge-image-copy min-w-0">
           <Reveal>
             <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
               <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
@@ -24,7 +24,7 @@ export default function WhyChoose() {
               {cms("field-2", "Why Choose ")}<span className="text-gold">{cms("field-3", "VELTO?")}</span>
             </h2>
             <p className="mt-5 max-w-[34rem] font-display text-[clamp(1.25rem,1.05rem+0.8vw,1.75rem)] leading-snug text-white/85">
-              {cms("field-4", "A storefront built around finding the right product for the job.")}</p>
+              {cms("field-4", "Find the right product for the work you need to do.")}</p>
           </Reveal>
 
           <ol className="mt-[var(--heading-gap)] grid gap-x-8 sm:grid-cols-2">
@@ -51,7 +51,7 @@ export default function WhyChoose() {
           </Reveal>
         </div>
 
-        <Reveal delay={0.12} className="relative min-w-0 pr-[clamp(0.75rem,2vw,1.5rem)] pb-[clamp(0.75rem,2vw,1.5rem)]">
+        <Reveal delay={0.12} className="edge-image-media relative min-w-0 pr-[clamp(0.75rem,2vw,1.5rem)] pb-[clamp(0.75rem,2vw,1.5rem)]">
           {/* Offset gold frame behind the image. */}
           <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-panel)] bg-forest shadow-[var(--shadow-float)] lg:aspect-square">
             <Img cmsImage={{ page: 'home', field: 'WhyChoose.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} className="absolute inset-0 size-full object-cover" />

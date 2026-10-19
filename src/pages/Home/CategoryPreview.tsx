@@ -29,7 +29,7 @@ export default function CategoryPreview() {
             )}
             action={
               <ButtonLink
-                to={cms("field-4", "/products")}
+                to={`${cms("field-4", "/products").split('#')[0]}#product-results`}
                 variant="secondary"
                 size="sm"
               >

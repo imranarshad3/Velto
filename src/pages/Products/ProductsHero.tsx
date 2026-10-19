@@ -33,11 +33,11 @@ export default function ProductsHero() {
             className="animate-rise mt-4 max-w-[30rem] text-[clamp(0.9375rem,0.9rem+0.25vw,1.125rem)] leading-relaxed text-muted"
             style={delay(0.16)}
           >
-            Construction chemical solutions for every build — from homes to large infrastructure projects.
+            Products for building, repairs and waterproofing.
           </p>
           <div className="animate-rise mt-6 flex flex-wrap gap-3" style={delay(0.24)}>
             <ButtonLink to="/quote" className="px-6">
-              Ask for Price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              Get a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
             <a href="#shop-application-title" className="inline-flex min-h-12 items-center px-2 text-[0.9375rem] font-semibold text-forest underline decoration-copper/50 underline-offset-[0.35em] hover:decoration-copper">
               Shop by area
@@ -53,7 +53,7 @@ export default function ProductsHero() {
         <div aria-hidden="true" className="absolute inset-y-0 left-0 hidden w-2/5 bg-linear-to-r from-cream via-cream/70 to-transparent md:block" />
         <div aria-hidden="true" className="absolute inset-x-0 bottom-0 hidden h-1/3 bg-linear-to-t from-cream/90 to-transparent md:block" />
         <p className="absolute right-3 bottom-3 rounded-full glass-dark px-3 py-1 text-[0.6875rem] font-medium text-white md:right-[var(--page-gutter)] md:bottom-[clamp(5.5rem,9vw,7.5rem)]">
-          Illustrative concept imagery
+          Example image
         </p>
       </div>
     </section>

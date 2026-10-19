@@ -147,9 +147,9 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
         } aria-labelledby="quote-form-title" aria-busy={isSubmitting} className="flex min-w-0 flex-col gap-5">
         <div className="flex flex-col gap-4 pb-1 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[0.75rem] font-bold tracking-[0.18em] text-copper uppercase">Five short steps</p>
+            <p className="text-[0.75rem] font-bold tracking-[0.18em] text-copper uppercase">Five easy steps</p>
             <h2 id="quote-form-title" className="mt-1 font-display text-[clamp(1.625rem,1.35rem+0.9vw,2.125rem)] leading-tight">
-              Quote request
+              Project price
             </h2>
             <p className="mt-1 text-[0.875rem] text-muted">
               Fields marked <span className="text-copper">*</span> are required.
@@ -159,7 +159,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
             <p className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-1.5 text-[0.8125rem] text-ink shadow-[var(--shadow-soft)] sm:max-w-[24rem]">
               <Lock aria-hidden="true" className="size-4 shrink-0 text-forest" />
               {auth.signedIn ? (
-                'Signed in: this request will appear in My quotes.'
+                'Signed in: you can follow this request in your account.'
               ) : (
                 <span>
                   Submitting as a guest.{' '}
@@ -181,7 +181,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
         )}
 
         <div className="flex flex-col gap-5">
-          <Section step={1} title="Contact details" description="So we know who to send the quote to.">
+          <Section step={1} title="Contact details" description="So we know where to send your price.">
             <Field id="fullName" label="Full name" required error={err('fullName')}>
               {(a) => <input {...a} {...register('fullName')} autoComplete="name" className={inputClass} />}
             </Field>
@@ -196,11 +196,11 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
             </Field>
           </Section>
 
-          <Section step={2} title="Products" description="Choose products and approximate quantities, if you know them.">
+          <Section step={2} title="Products" description="Choose products and add how much you need, if you know.">
             <div className="flex flex-col gap-4 md:col-span-2">
               {unknownProduct && (
                 <p className="rounded-xl border border-copper/25 bg-copper-soft/60 p-3.5 text-[0.875rem] text-ink">
-                  The product in your link isn’t in our catalogue. Choose one below, or send a general enquiry.
+                  The product in your link is not listed. Choose another product or send us a message.
                 </p>
               )}
               {fields.length === 0 && (
@@ -270,7 +270,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
             </div>
           </Section>
 
-          <Section step={3} title="Project" description="A few details help us recommend the right system.">
+          <Section step={3} title="Project" description="A few details help us suggest the right products.">
             <Field id="projectType" label="Project type" error={err('projectType')}>
               {(a) => (
                 <select {...a} {...register('projectType')} className={inputClass}>
@@ -296,7 +296,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
             </Field>
           </Section>
 
-          <Section step={4} title="Delivery" description="Roughly where the products are needed.">
+          <Section step={4} title="Delivery" description="Where you need the products.">
             <Field id="city" label="City / region" required error={err('city')}>
               {(a) => <input {...a} {...register('city')} autoComplete="address-level2" className={inputClass} />}
             </Field>
@@ -317,7 +317,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
                   className="mt-1 size-5 shrink-0 cursor-pointer accent-forest"
                 />
                 <span>
-                  I agree that VELTO may use these details to respond to this quote request. See our{' '}
+                  I agree that VELTO may use these details to send me a project price. See our{' '}
                   <Link to="/privacy" className="font-semibold text-forest underline underline-offset-2">
                     privacy policy
                   </Link>
@@ -355,7 +355,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
               </>
             ) : (
               <>
-                Send quote request <Send aria-hidden="true" className="size-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                Send price request <Send aria-hidden="true" className="size-4 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
               </>
             )}
           </button>

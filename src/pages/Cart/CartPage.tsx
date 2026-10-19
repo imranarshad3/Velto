@@ -58,7 +58,7 @@ export default function CartPage() {
               title="Your cart is empty"
               actions={
                 <>
-                  <ButtonLink to="/products">
+                  <ButtonLink to="/products#product-results">
                     Browse products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                   </ButtonLink>
                   <ButtonLink to="/wishlist" variant="secondary">
@@ -67,7 +67,7 @@ export default function CartPage() {
                 </>
               }
             >
-              Add products from the catalogue to start your order.
+              Add products to your cart to get started.
             </EmptyState>
           ) : (
             <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start xl:gap-12">

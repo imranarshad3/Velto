@@ -12,9 +12,9 @@ import { demoCategories as defaultdemoCategories } from '../../data/demoCategori
 
 /** Describes what the store does. No founding dates, statistics, certifications or customer claims. */
 const principles = [
-  { icon: LayoutGrid, title: 'A clear catalogue', text: 'Products organised by category and by application, so you can find what a job needs.' },
-  { icon: Compass, title: 'Practical guidance', text: 'Overviews of how common jobs fit together, with technical documents as they are published.' },
-  { icon: ClipboardList, title: 'Quotes for real projects', text: 'Send one request for several products, with the quantities and details that matter.' },
+  { icon: LayoutGrid, title: 'Easy to browse', text: 'Find products by type or by the area you are working on.' },
+  { icon: Compass, title: 'Helpful project guides', text: 'See the usual steps for common jobs and find product guides as they are ready.' },
+  { icon: ClipboardList, title: 'Prices for your project', text: 'Ask for prices for several products in one request.' },
   { icon: BookOpen, title: 'Honest information', text: 'We only publish product details, prices and documents once they are verified.' },
 ]
 
@@ -88,15 +88,15 @@ export default function AboutPage() {
             <Reveal delay={0.08} className="relative z-10 lg:col-span-6 lg:col-start-7 lg:row-start-1">
               <div className="surface-card p-[clamp(1.5rem,3.5vw,3rem)] lg:shadow-[var(--shadow-float)]">
                 <h2 id="story-title" className="font-display text-[length:var(--h2)] leading-[1.08] tracking-[-0.01em]">
-                  {cms("field-14", "From the right product to a confident quote")}</h2>
+                  {cms("field-14", "Find the right products and get a clear price")}</h2>
                 <div className="mt-5 flex flex-col gap-4 leading-relaxed text-muted">
                   <p>
-                    {cms("field-15", "VELTO brings construction chemicals together in one place and organises them around the jobs builders, architects, contractors and homeowners actually do — so you can go from the surface in front of you to the products it needs, and on to a single quote.")}</p>
+                    {cms("field-15", "VELTO brings construction products together in one place. Find products by the job you’re doing, then send us your needs to get a price.")}</p>
                   <p>
                     {cms("field-16", "ULTRA Chemicals is the manufacturer of the products we feature; VELTO is the store. We keep the two clearly separate, and we publish product details only once they are confirmed.")}</p>
                 </div>
                 <div className="mt-7 flex flex-wrap gap-3">
-                  <ButtonLink to={cms("field-17", "/products")}>
+                  <ButtonLink to={`${cms("field-17", "/products").split('#')[0]}#product-results`}>
                     {cms("field-18", "Browse products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                   </ButtonLink>
                   <ButtonLink to={cms("field-19", "/contact")} variant="secondary">
@@ -153,7 +153,7 @@ export default function AboutPage() {
             </ul>
           </Reveal>
           <Reveal delay={0.08} className="relative mx-auto w-full max-w-[34rem] lg:max-w-none">
-            <div aria-hidden="true" className="absolute -top-4 -left-4 h-3/4 w-3/4 rounded-[var(--radius-panel)] bg-copper-soft" />
+            <div aria-hidden="true" className="absolute -top-4 -left-4 h-3/4 w-3/4 rounded-[var(--radius-panel)]" />
             <ul className="relative grid grid-cols-2 gap-[var(--grid-gap)] sm:gap-4">
               {mosaic.map(({ name, image }, i) => (
                 <li key={name} className={`group relative overflow-hidden rounded-[var(--radius-card)] bg-sand-deep shadow-[var(--shadow-card)] ${i % 2 ? 'mt-8 aspect-[4/5]' : 'aspect-[4/5]'}`}>

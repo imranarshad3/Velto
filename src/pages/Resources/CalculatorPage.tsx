@@ -87,21 +87,21 @@ export default function CalculatorPage() {
       <title>Coverage Calculator — VELTO</title>
       <PageHeader
         eyebrow="Resources"
-        title="Coverage calculator"
+        title="Work out how much you need"
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Resources', to: '/resources' }, { label: 'Coverage Calculator' }]}
-        description="Estimate how much material and how many packs you need, using verified manufacturer coverage data or the values from your product’s technical data sheet."
+        description="Enter the area you need to cover and the product details to work out how much material to buy."
       />
       <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-6 py-[var(--content-pad)] pb-[var(--section-gap)] lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-8 surface-card p-[clamp(1.25rem,4vw,2.5rem)]">
           <fieldset className="min-w-0">
-            <legend className="font-display text-[1.375rem]">1. Product</legend>
-            <p className="mt-1 text-[0.875rem] text-muted">Choose a product with verified manufacturer coverage, or enter values from your own data sheet.</p>
+            <legend className="font-display text-[1.375rem]">1. Product details</legend>
+            <p className="mt-1 text-[0.875rem] text-muted">Choose a product, or enter the use and pack size shown on its label.</p>
             <div className="mt-4 flex flex-col gap-1.5">
               <label htmlFor={field('product')} className={label}>
                 Product
               </label>
               <select id={field('product')} value={selected?.productSlug ?? ''} onChange={(e) => chooseProduct(e.target.value)} disabled={resources.kind !== 'ready'} className={`${inputClass} max-w-[32rem] cursor-pointer`}>
-                <option value="">{resources.kind === 'loading' ? 'Loading products…' : 'Enter my own data sheet values'}</option>
+                <option value="">{resources.kind === 'loading' ? 'Loading products…' : 'Enter product details myself'}</option>
                 {coverageList.map((c) => (
                   <option key={c.productSlug} value={c.productSlug}>
                     {find(c.productSlug)?.name}
@@ -109,15 +109,15 @@ export default function CalculatorPage() {
                 ))}
               </select>
               {resources.kind === 'ready' && coverageList.length === 0 && (
-                <p className="text-[0.8125rem] text-muted">No products have verified coverage data yet. Enter the values from the product’s technical data sheet below.</p>
+                <p className="text-[0.8125rem] text-muted">We don’t have use details for this product yet. Enter them below from the pack or product guide.</p>
               )}
-              {resources.kind === 'error' && <p className="text-[0.8125rem] text-muted">Product data couldn’t be loaded. You can still enter values from the data sheet below.</p>}
+              {resources.kind === 'error' && <p className="text-[0.8125rem] text-muted">Product details could not be loaded. You can still enter the values from the product guide below.</p>}
             </div>
           </fieldset>
 
           <fieldset className="min-w-0">
-            <legend className="font-display text-[1.375rem]">2. Areas</legend>
-            <p className="mt-1 text-[0.875rem] text-muted">Add each surface as length × width in metres.</p>
+            <legend className="font-display text-[1.375rem]">2. Area to cover</legend>
+            <p className="mt-1 text-[0.875rem] text-muted">For each surface, enter its length and width in metres.</p>
             <ul className="mt-4 flex flex-col gap-3">
               {rows.map((r, i) => (
                 <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-[var(--grid-gap)]">
@@ -151,7 +151,7 @@ export default function CalculatorPage() {
           </fieldset>
 
           <fieldset className="min-w-0">
-            <legend className="font-display text-[1.375rem]">3. From the data sheet</legend>
+            <legend className="font-display text-[1.375rem]">3. How to use the product</legend>
             {selected && (
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-forest/15 bg-forest-soft/60 px-4 py-3 text-[0.875rem]">
                 <span className="inline-flex items-center gap-2 font-semibold text-forest">
@@ -168,7 +168,7 @@ export default function CalculatorPage() {
             <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor={field('rate')} className={label}>
-                  Consumption per m² per coat
+                  Amount per m² for each coat
                 </label>
                 <div className="flex gap-2">
                   <input id={field('rate')} type="number" min="0" step="any" inputMode="decimal" value={effRate} readOnly={Boolean(selected)} onChange={(e) => setRate(e.target.value)} className={`${inputClass} min-w-0 read-only:bg-sand/60`} />
@@ -183,7 +183,7 @@ export default function CalculatorPage() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <label htmlFor={field('coats')} className={label}>
-                  Number of coats / layers
+                  Number of coats
                 </label>
                 <input id={field('coats')} type="number" min="1" step="1" inputMode="numeric" value={coats} onChange={(e) => setCoats(e.target.value)} className={inputClass} />
               </div>
@@ -199,7 +199,7 @@ export default function CalculatorPage() {
 
         <aside aria-labelledby="result-title" className="rounded-[var(--radius-card)] bg-forest p-6 text-white lg:sticky lg:top-[calc(var(--header-height)+1.5rem)]">
           <h2 id="result-title" className="font-display text-[1.5rem]">
-            Estimate
+            Your estimate
           </h2>
           <dl aria-live="polite" className="mt-4 flex flex-col gap-3">
             {(
@@ -218,7 +218,7 @@ export default function CalculatorPage() {
             ))}
           </dl>
           <p className="mt-4 flex gap-2 text-[0.8125rem] text-white/75">
-            <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> An estimate only. Actual consumption depends on the substrate, method and conditions.
+            <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> This is an estimate. The amount you use depends on the surface and how you apply the product.
           </p>
           {selected && packs ? (
             <button type="button" onClick={addToQuote} className={buttonClass('light', 'md', 'mt-5 w-full')}>

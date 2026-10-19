@@ -3,6 +3,7 @@ import Breadcrumb, { type Crumb } from './Breadcrumb.tsx'
 import Skeleton from './Skeleton.tsx'
 
 interface PageHeaderProps {
+  className?: string
   title: string
   crumbs: Crumb[]
   eyebrow?: string
@@ -40,9 +41,9 @@ export function PageHeaderSkeleton({ aside = false }: { aside?: boolean }) {
 }
 
 /** Standard page header for utility and content pages: cream field, blueprint grid and soft brand glow. */
-export default function PageHeader({ title, crumbs, eyebrow, description, actions, aside }: PageHeaderProps) {
+export default function PageHeader({ className = '', title, crumbs, eyebrow, description, actions, aside }: PageHeaderProps) {
   return (
-    <section aria-labelledby="page-title" className="relative isolate overflow-hidden border-b border-border/70 bg-cream">
+    <section aria-labelledby="page-title" className={`relative isolate overflow-hidden border-b border-border/70 bg-cream ${className}`}>
       <div className="container-page pt-3 pb-[clamp(2.75rem,1.75rem+4vw,5rem)]">
         <Breadcrumb items={crumbs} />
         <div className={`mt-5 grid items-end gap-8 ${aside ? 'lg:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>

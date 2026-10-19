@@ -5,7 +5,7 @@ import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import { inputClass } from '../../components/ui/form/Field.tsx'
 
 const links = [
-  { to: '/products', label: 'Products' },
+  { to: '/products#product-results', label: 'Products' },
   { to: '/applications', label: 'Applications' },
   { to: '/resources', label: 'Resources' },
   { to: '/contact', label: 'Contact' },
@@ -16,7 +16,7 @@ export default function NotFoundPage() {
   const [q, setQ] = useState('')
   const onSearch = (e: FormEvent) => {
     e.preventDefault()
-    navigate(q.trim() ? `/products?q=${encodeURIComponent(q.trim())}` : '/products')
+    navigate(q.trim() ? `/products?q=${encodeURIComponent(q.trim())}#product-results` : '/products#product-results')
   }
 
   return (
@@ -28,7 +28,7 @@ export default function NotFoundPage() {
         <h1 id="not-found-title" className="mt-2 font-display text-[clamp(1.75rem,1.4rem+1.5vw,2.5rem)]">
           This page doesn’t exist
         </h1>
-        <p className="mt-3 text-muted">The link may be outdated, or the page may have moved. Try searching the catalogue instead.</p>
+        <p className="mt-3 text-muted">This link may be old, or the page may have moved. Search for a product instead.</p>
         <form role="search" onSubmit={onSearch} className="mx-auto mt-6 flex max-w-[28rem] gap-2">
           <label htmlFor="notfound-search" className="sr-only">
             Search products

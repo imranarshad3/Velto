@@ -13,8 +13,8 @@ import RemoteState from './RemoteState.tsx'
 
 const quickActions = [
   { to: '/quote', label: 'Ask for a price', hint: 'Send product needs and project details', icon: ClipboardList },
-  { to: '/products', label: 'Browse products', hint: 'Explore the full catalogue', icon: PackageSearch },
-  { to: '/resources/coverage-calculator', label: 'Coverage calculator', hint: 'Estimate quantities before you request', icon: Calculator },
+  { to: '/products#product-results', label: 'Browse products', hint: 'See all products', icon: PackageSearch },
+  { to: '/resources/coverage-calculator', label: 'Coverage calculator', hint: 'Work out how much you need before you ask for a price', icon: Calculator },
   { to: '/track', label: 'Track a guest request', hint: 'Use your reference and tracking code', icon: Search },
 ]
 
@@ -40,12 +40,12 @@ export default function DashboardPage() {
           </ButtonLink>
         }
       >
-        Your quotes, saved products and account settings.
+        Your price requests, saved products and account settings.
       </AccountHeading>
 
       <ul className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-[var(--grid-gap)] sm:gap-4 xl:grid-cols-[repeat(4,minmax(0,1fr))]">
         <li className="animate-rise [--delay:0.1s]">
-          <StatCard icon={ClipboardList} label="Quote requests" hint="Sent while signed in" value={state.kind === 'ready' ? quotes.length : '—'} to="/account/quotes" tone="forest" />
+          <StatCard icon={ClipboardList} label="Price requests" hint="Sent while signed in" value={state.kind === 'ready' ? quotes.length : '—'} to="/account/quotes" tone="forest" />
         </li>
         <li className="animate-rise [--delay:0.16s]">
           <StatCard icon={Hourglass} label="Awaiting response" hint="Submitted or under review" value={state.kind === 'ready' ? open : '—'} to="/account/quotes" tone="copper" />
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 id="recent-title" className="font-display text-[clamp(1.5rem,1.3rem+0.8vw,1.875rem)] leading-tight">
-                Recent quote requests
+                Recent price requests
               </h2>
               <p className="mt-1 text-[0.875rem] text-muted">Your three latest requests and where they stand.</p>
             </div>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
                     <ClipboardList aria-hidden="true" className="size-5" />
                   </span>
                   <p className="min-w-0 flex-1 text-muted">
-                    No requests yet. <Link to="/products" className="font-semibold text-forest underline decoration-copper/50 underline-offset-4">Browse products</Link> to get started.
+                    No requests yet. <Link to="/products#product-results" className="font-semibold text-forest underline decoration-copper/50 underline-offset-4">Browse products</Link> to get started.
                   </p>
                 </div>
               )

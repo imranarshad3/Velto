@@ -5,7 +5,7 @@ export interface NavItem {
 
 export const primaryNav: NavItem[] = [
   { label: 'Home', to: '/' },
-  { label: 'Products', to: '/products' },
+  { label: 'Products', to: '/products#product-results' },
   { label: 'Find Products', to: '/solutions' },
   { label: 'Shop by Area', to: '/applications' },
   { label: 'Resources', to: '/resources' },
@@ -21,8 +21,8 @@ export const utilityNav: NavItem[] = [
 /** Neutral announcement copy only. No delivery thresholds, phone numbers or order figures until confirmed. */
 export const announcements: string[] = [
   'Construction chemical solutions for every build',
-  'Application guidance for builders, architects & contractors',
-  'Ask for a price for project & bulk orders',
+  'Help choosing products for each job',
+  'Get a price for your project or large order',
 ]
 
 export interface FooterColumn {
@@ -34,10 +34,10 @@ export const footerColumns: FooterColumn[] = [
   {
     title: 'Shop',
     links: [
-      { label: 'All Products', to: '/products' },
-      { label: 'Tile Adhesives', to: '/products?category=tile-adhesives' },
-      { label: 'Waterproofing', to: '/products?category=waterproofing' },
-      { label: 'Concrete Repair', to: '/products?category=concrete-repair' },
+      { label: 'All Products', to: '/products#product-results' },
+      { label: 'Tile Adhesives', to: '/products?category=tile-adhesives#product-results' },
+      { label: 'Waterproofing', to: '/products?category=waterproofing#product-results' },
+      { label: 'Concrete Repair', to: '/products?category=concrete-repair#product-results' },
     ],
   },
   {
@@ -46,7 +46,7 @@ export const footerColumns: FooterColumn[] = [
       { label: 'Find Products', to: '/solutions' },
       { label: 'Shop by Area', to: '/applications' },
       { label: 'Resources', to: '/resources' },
-      { label: 'Coverage Calculator', to: '/resources/coverage-calculator' },
+      { label: 'Work out how much you need', to: '/resources/coverage-calculator' },
     ],
   },
   {
@@ -61,7 +61,7 @@ export const footerColumns: FooterColumn[] = [
     title: 'Support',
     links: [
       { label: 'FAQ', to: '/faq' },
-      { label: 'Ask for Price', to: '/quote' },
+      { label: 'Get a price', to: '/quote' },
       { label: 'Track an Order', to: '/track' },
     ],
   },

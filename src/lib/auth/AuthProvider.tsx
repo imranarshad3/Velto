@@ -45,10 +45,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider
       publishableKey={clerkPublishableKey}
-      appearance={clerkAppearance}
+      appearance={{ ...clerkAppearance, options: { ...clerkAppearance.options, unsafe_disableDevelopmentModeWarnings: true } }}
       localization={{
-        signIn: { start: { title: 'Sign in to VELTO', subtitle: 'Sign in to checkout, track orders and save your favourites.' } },
-        signUp: { start: { title: 'Create your VELTO account', subtitle: 'Shop with ease and keep your orders in one place.' } },
+        signIn: { start: { title: 'Welcome back', subtitle: 'Sign in to view your orders and saved products.' } },
+        signUp: { start: { title: 'Create your account', subtitle: 'Save products and keep track of your orders.' } },
       }}
       afterSignOutUrl="/"
       signInUrl="/sign-in"

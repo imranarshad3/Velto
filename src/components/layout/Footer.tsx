@@ -24,10 +24,10 @@ export default function Footer() {
             {cms("field-1", "Construction chemistry, ")}<span className="text-emerald-muted">{cms("field-2", "chosen with confidence.")}</span>
           </p>
           <p className="mt-3 text-[0.9375rem] leading-relaxed text-white/65">
-            {cms("field-3", "VELTO is a storefront for construction chemical solutions, featuring ULTRA Chemicals products.")}</p>
+            {cms("field-3", "VELTO brings together building and repair products from ULTRA Chemicals.")}</p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link to={cms("field-4", "/quote")} className={buttonClass('light', 'md')}>
-              {cms("field-5", "Ask for Price")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-5", "Get a price")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </Link>
             <Link to={cms("field-6", "/contact")} className={buttonClass('outline-light', 'md')}>
               {cms("field-7", "Contact us")}</Link>
@@ -57,7 +57,7 @@ export default function Footer() {
       </div>
 
       <div className="container-page flex flex-col gap-2 py-5 text-[0.8125rem] text-white/55 md:flex-row md:items-center md:justify-between">
-        <p>© {year} {cms("field-8", " VELTO. Product imagery is illustrative.")}</p>
+        <p>© {year} {cms("field-8", " VELTO. Images are examples only.")}</p>
         <ul className="flex flex-wrap gap-x-6">
           {legalNav.map((link) => (
             <li key={link.to}>

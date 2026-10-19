@@ -76,7 +76,7 @@ export default function ProductsPage() {
           </div>
         </aside>
 
-        <section aria-labelledby="results-title" className="min-w-0">
+        <section id="product-results" aria-labelledby="results-title" className="min-w-0 scroll-mt-[calc(var(--header-height)+1rem)]">
           <h2 id="results-title" ref={resultsRef} tabIndex={-1} className="sr-only scroll-mt-[calc(var(--header-height)+1rem)]">
             Product results
           </h2>
@@ -123,7 +123,6 @@ export default function ProductsPage() {
                 ) : (
                   <span className="font-semibold text-ink">No products found</span>
                 )}
-                <span className="rounded-full bg-sand px-2 py-0.5 text-[0.6875rem] font-bold tracking-[0.08em] text-copper">DEMO</span>
               </p>
               <button
                 type="button"
@@ -230,7 +229,7 @@ export default function ProductsPage() {
           ) : catalog.length === 0 ? (
             <div className="mt-[var(--heading-gap)]">
               <EmptyState icon={SearchX} title="No products published yet">
-                Our catalogue is being prepared. Request a quote and our team will help with your project.
+                Products are being added. Ask us for a price and we’ll help with your project.
               </EmptyState>
             </div>
           ) : (

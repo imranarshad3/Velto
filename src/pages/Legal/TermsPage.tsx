@@ -8,17 +8,17 @@ const sections: LegalSection[] = [
     title: 'Product information',
     body: (
       <>
-        <p>Listings marked <strong>DEMO</strong> describe product types and use illustrative images; they are not verified product specifications or photographs.</p>
-        <p>Always follow the manufacturer’s technical data sheet and safety information when using any product. Application guidance on this site is general and does not replace professional advice for your specific project.</p>
+        <p>Product pages show only details confirmed for the listed product. Photos and application guidance help you understand typical uses; always follow the maker’s instructions for the product you buy.</p>
+        <p>Always follow the maker’s product and safety instructions. Guidance on this site is general and does not replace advice for your specific project.</p>
       </>
     ),
   },
   {
     id: 'quotes',
-    title: 'Quotes and orders',
+    title: 'Prices and orders',
     body: (
       <ul>
-        <li>A quote request is an enquiry, not an order. Nothing is reserved or charged when you send one.</li>
+        <li>A price request is an enquiry, not an order. Nothing is reserved or charged when you send one.</li>
         <li>Prices, availability and delivery are only agreed when we confirm them to you in writing.</li>
         <li>Online payment is not currently offered on this site.</li>
       </ul>

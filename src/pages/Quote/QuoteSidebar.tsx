@@ -6,20 +6,20 @@ import { productPath } from '../../data/catalog.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 
 const steps = [
-  { title: 'Send your request', text: 'Share the products, quantities and project details.' },
-  { title: 'We review it', text: 'Our team checks product suitability and availability.' },
-  { title: 'Receive your quote', text: 'We contact you by email or phone with pricing.' },
+  { title: 'Send your request', text: 'Tell us which products and how much you need.' },
+  { title: 'We check your request', text: 'We check the products and availability.' },
+  { title: 'Get your price', text: 'We’ll email or call you with a price.' },
 ]
 
 const assurances = [
-  { icon: MailCheck, text: 'No payment needed to request a quote.' },
+  { icon: MailCheck, text: 'No payment needed to ask for a price.' },
   { icon: LockKeyhole, text: 'Your details are only used to respond to this request.' },
 ]
 
 export default function QuoteSidebar({ products }: { products: CatalogProduct[] }) {
   const { categories } = useCatalog()
   return (
-    <aside aria-label="Quote summary" className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[calc(var(--header-height)+1.5rem)]">
+    <aside aria-label="Price request summary" className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[calc(var(--header-height)+1.5rem)]">
       <section aria-labelledby="selected-product-title" className="overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)]">
         <div className="flex items-center justify-between gap-3 border-b border-border bg-cream/70 px-5 py-4">
           <h2 id="selected-product-title" className="text-[0.75rem] font-bold tracking-[0.16em] text-ink uppercase">
@@ -56,7 +56,7 @@ export default function QuoteSidebar({ products }: { products: CatalogProduct[] 
           ) : (
             <p className="text-[0.9375rem] text-muted">No products selected. Add products in the form, or describe what you need.</p>
           )}
-          <p className="mt-4 rounded-xl bg-canvas px-3.5 py-2.5 text-[0.8125rem] text-muted">Pricing and availability are confirmed in your quote.</p>
+          <p className="mt-4 rounded-xl bg-canvas px-3.5 py-2.5 text-[0.8125rem] text-muted">We’ll confirm the price and availability.</p>
         </div>
       </section>
 
@@ -92,13 +92,13 @@ export default function QuoteSidebar({ products }: { products: CatalogProduct[] 
         <h2 id="unsure-title" className="font-display text-[1.1875rem] text-ink">
           Not sure what you need?
         </h2>
-        <p className="mt-1 text-[0.875rem] text-muted">Describe the surface and the job in the project details — we will suggest suitable products.</p>
+        <p className="mt-1 text-[0.875rem] text-muted">Tell us what you are working on. We’ll help you find the right products.</p>
         <div className="mt-2 flex flex-wrap gap-x-5">
-          <Link to="/products" className="group inline-flex min-h-11 items-center gap-1.5 text-[0.875rem] font-semibold text-forest hover:underline">
+          <Link to="/products#product-results" className="group inline-flex min-h-11 items-center gap-1.5 text-[0.875rem] font-semibold text-forest hover:underline">
             Browse products <ArrowRight aria-hidden="true" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link to="/resources" className="group inline-flex min-h-11 items-center gap-1.5 text-[0.875rem] font-semibold text-forest hover:underline">
-            Technical resources <ArrowRight aria-hidden="true" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            Product guides <ArrowRight aria-hidden="true" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
       </section>

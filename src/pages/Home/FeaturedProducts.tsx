@@ -25,7 +25,7 @@ export default function FeaturedProducts() {
             title={cms("field-2", "Featured Products")}
             description={cms("field-3", "A preview of the product types in our range.")}
             action={
-              <ButtonLink to={cms("field-4", "/products")} variant="secondary" size="sm">
+              <ButtonLink to={`${cms("field-4", "/products").split('#')[0]}#product-results`} variant="secondary" size="sm">
                 <span>
                   {cms("field-5", "View All")}<span className="hidden sm:inline"> {cms("field-6", " Products")}</span>
                 </span>

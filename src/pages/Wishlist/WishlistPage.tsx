@@ -40,7 +40,7 @@ export default function WishlistPage() {
               icon={Heart}
               title="No saved products yet"
               actions={
-                <ButtonLink to="/products">
+                <ButtonLink to="/products#product-results">
                   Browse products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                 </ButtonLink>
               }
@@ -62,7 +62,7 @@ export default function WishlistPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <ButtonLink to="/products" variant="secondary">
+                  <ButtonLink to="/products#product-results" variant="secondary">
                     Keep browsing
                   </ButtonLink>
                   <button type="button" onClick={addAll} className={buttonClass('primary', 'md', 'flex-1 sm:flex-none')}>

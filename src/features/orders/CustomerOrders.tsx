@@ -67,7 +67,7 @@ export default function CustomerOrders() {
       {({ orders }) => {
         if (!orders.length)
           return (
-            <EmptyState icon={ShoppingBag} title="No orders yet" actions={<ButtonLink to="/products">Browse products</ButtonLink>}>
+            <EmptyState icon={ShoppingBag} title="No orders yet" actions={<ButtonLink to="/products#product-results">Browse products</ButtonLink>}>
               When you place a Cash on Delivery order, you can follow every step of its delivery here.
             </EmptyState>
           )

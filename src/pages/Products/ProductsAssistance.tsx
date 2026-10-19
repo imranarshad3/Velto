@@ -16,7 +16,7 @@ export default function ProductsAssistance() {
           <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
             {applications.map((application, i) => (
               <Reveal as="li" key={application.slug} delay={Math.min(i, 5) * 0.06}>
-                <ApplicationTile application={application} to={`/products?application=${application.slug}`} />
+                <ApplicationTile application={application} to={`/products?application=${application.slug}#product-results`} />
               </Reveal>
             ))}
           </ul>

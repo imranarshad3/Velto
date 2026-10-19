@@ -9,7 +9,7 @@ import AccountAvatar from './AccountAvatar.tsx'
 
 const nav = [
   { to: '/account', label: 'Overview', icon: LayoutDashboard, end: true },
-  { to: '/account/quotes', label: 'My quotes', icon: ClipboardList },
+  { to: '/account/quotes', label: 'My price requests', icon: ClipboardList },
   { to: '/wishlist', label: 'Wishlist', icon: Heart },
   { to: '/account/orders', label: 'Orders', icon: Package },
   { to: '/account/profile', label: 'Profile & security', icon: UserCog },
@@ -43,7 +43,7 @@ export default function AccountLayout() {
               <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
             </p>
             <h1 className="mt-2 font-display text-[clamp(2rem,1.6rem+1.6vw,2.75rem)] leading-tight">Accounts are coming soon</h1>
-            <p className="mt-3 max-w-[30rem] leading-relaxed text-muted">You can request quotes as a guest and track them with your reference and tracking code.</p>
+            <p className="mt-3 max-w-[30rem] leading-relaxed text-muted">You can ask for a price without an account and track your request with its reference and code.</p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <ButtonLink to="/quote">
                 Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />

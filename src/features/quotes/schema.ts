@@ -23,7 +23,7 @@ export const projectTypeLabels: Record<(typeof projectTypes)[number], string> = 
 export const quoteStatusLabels: Record<QuoteStatus, string> = {
   submitted: 'Submitted',
   reviewing: 'Under review',
-  quoted: 'Quote sent',
+  quoted: 'Price sent',
   closed: 'Closed',
   cancelled: 'Cancelled',
 }

@@ -8,7 +8,6 @@ import Skeleton from '../../components/ui/Skeleton.tsx'
 import { buttonClass } from '../../components/ui/button.ts'
 import { inputClass } from '../../components/ui/form/Field.tsx'
 import { productPath } from '../../data/catalog.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { formatBytes, resourceDownloadPath, resourceKindLabels, resourceKinds, type ResourceKind } from '../../features/resources/types.ts'
 import { useResources } from '../../features/resources/useResources.ts'
@@ -34,7 +33,7 @@ interface Doc {
 }
 
 export default function DocumentsPage() {
-  const { products, find } = useCatalog()
+  const { products, categories, find } = useCatalog()
   const [state, retry] = useResources()
   const [params, setParams] = useSearchParams()
   const kind = resourceKinds.includes(params.get('kind') as ResourceKind) ? (params.get('kind') as ResourceKind) : null
@@ -86,19 +85,19 @@ export default function DocumentsPage() {
   return (
     <>
       <title>Resource Center — VELTO</title>
-      <meta name="description" content="Technical data sheets, installation guides and safety data sheets for VELTO products." />
+      <meta name="description" content="Product details, fitting guides and safety information from product makers." />
       <PageHeader
         eyebrow="Resources"
         title="Resource Center"
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Resources', to: '/resources' }, { label: 'Resource Center' }]}
-        description="Data sheets, installation guides and safety documents supplied by the manufacturer. Search, filter and download."
+        description="Find product details, fitting instructions and safety information. Search by product name or document title."
       />
       <div className="container-page flex flex-col gap-6 py-[var(--content-pad)] pb-[var(--section-gap)]">
-        <div className="surface-card overflow-clip">
+        {!(state.kind === 'ready' && docs.length === 0) && <div className="surface-card overflow-clip">
           <form role="search" onSubmit={onSearch} className="grid gap-3 border-b border-border p-[clamp(1rem,2.5vw,1.5rem)] md:grid-cols-[minmax(0,1fr)_minmax(0,14rem)]">
             <div className="flex min-w-0 gap-2">
               <label htmlFor="resource-search" className="sr-only">
-                Search documents
+                Search product guides
               </label>
               <span className="relative min-w-0 flex-1">
                 <Search aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3.5 size-[1.125rem] -translate-y-1/2 text-muted" />
@@ -114,7 +113,7 @@ export default function DocumentsPage() {
               </label>
               <select id="resource-category" value={category} onChange={(e) => set({ category: e.target.value || null })} className={`${inputClass} cursor-pointer appearance-none pr-10`}>
                 <option value="">All categories</option>
-                {demoCategories.map((c) => (
+                {categories.map((c) => (
                   <option key={c.slug} value={c.slug}>
                     {c.name}
                   </option>
@@ -125,7 +124,7 @@ export default function DocumentsPage() {
           </form>
           <nav aria-label="Document type" className="no-scrollbar overflow-x-auto px-[clamp(0.75rem,2vw,1.25rem)] py-3">
             <ul className="flex gap-2">
-              {[null, ...resourceKinds].map((k) => {
+              {[null, ...resourceKinds.filter((candidate) => state.kind !== 'ready' || base.some((document) => document.kind === candidate))].map((k) => {
                 const active = kind === k
                 const count = k ? base.filter((d) => d.kind === k).length : base.length
                 return (
@@ -144,7 +143,7 @@ export default function DocumentsPage() {
               })}
             </ul>
           </nav>
-        </div>
+        </div>}
 
         {state.kind === 'loading' && (
           <ul aria-busy="true" aria-label="Loading documents" className="grid gap-[var(--grid-gap)] sm:grid-cols-2 xl:grid-cols-3">
@@ -165,17 +164,17 @@ export default function DocumentsPage() {
         {state.kind === 'ready' && docs.length === 0 && (
           <EmptyState
             icon={FileText}
-            title="No documents published yet"
+            title="No product guides available yet"
             actions={
               <>
-                <ButtonLink to="/contact?topic=products&message=Please%20send%20me%20the%20technical%20documents%20for%3A%20">Request a document</ButtonLink>
+              <ButtonLink to="/contact?topic=products&message=Please%20help%20me%20find%20product%20information%20for%3A%20">Ask us for help</ButtonLink>
                 <ButtonLink to="/resources/coverage-calculator" variant="secondary">
-                  Coverage calculator
+                  Work out how much you need
                 </ButtonLink>
               </>
             }
           >
-            We publish technical documents only once they are supplied and verified by the manufacturer. Need one now? Ask us and we’ll send it.
+            We haven’t added product guides or safety files yet. Ask us and we’ll help you find the right product information.
           </EmptyState>
         )}
 
@@ -252,15 +251,15 @@ export default function DocumentsPage() {
               <h2 id="assist-title" className="font-display text-[clamp(1.375rem,1.2rem+0.6vw,1.75rem)] leading-tight">
                 Can’t find what you need?
               </h2>
-              <p className="mt-1 max-w-[36rem] text-[0.9375rem] text-white/75">Ask our team for a data sheet or installation advice, or work out quantities with the coverage calculator.</p>
+              <p className="mt-1 max-w-[36rem] text-[0.9375rem] text-white/75">Ask us for product details or how-to advice, or work out how much you need.</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <ButtonLink to="/contact?topic=products&message=Please%20send%20me%20the%20technical%20documents%20for%3A%20" variant="light">
-              Request a document
+            <ButtonLink to="/contact?topic=products&message=Please%20help%20me%20find%20product%20information%20for%3A%20" variant="light">
+              Ask us for help
             </ButtonLink>
             <ButtonLink to="/resources/coverage-calculator" variant="outline-light">
-              Coverage calculator
+              Work out how much you need
             </ButtonLink>
           </div>
         </section>

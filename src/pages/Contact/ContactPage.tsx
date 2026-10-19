@@ -13,9 +13,9 @@ import { QuoteApiError, sendContactMessage } from '../../features/quotes/api.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 
 const shortcuts = [
-  { icon: ClipboardList, title: 'Need prices or availability?', text: 'A quote request is the fastest route.', to: '/quote', cta: 'Ask for a price' },
-  { icon: Search, title: 'Following up a request?', text: 'Check its status with your reference.', to: '/track', cta: 'Track a request' },
-  { icon: LifeBuoy, title: 'Quick question?', text: 'Many answers are already in our FAQ.', to: '/faq', cta: 'Read the FAQ' },
+  { icon: ClipboardList, title: 'Need a price or product details?', text: 'Ask for a price and we’ll check for you.', to: '/quote', cta: 'Ask for a price' },
+  { icon: Search, title: 'Checking on a request?', text: 'Check its status with your reference.', to: '/track', cta: 'Track a request' },
+  { icon: LifeBuoy, title: 'Have a question?', text: 'Many answers are already in our FAQ.', to: '/faq', cta: 'Read the FAQ' },
 ]
 
 const order = ['fullName', 'email', 'phone', 'topic', 'message', 'consent'] as const
@@ -118,7 +118,7 @@ export default function ContactPage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <button type="button" onClick={() => setSent(false)} className={buttonClass('secondary', 'md')}>
                   {cms("field-10", "Send another message")}</button>
-                <ButtonLink to={cms("field-11", "/products")} variant="ghost">
+                <ButtonLink to={`${cms("field-11", "/products").split('#')[0]}#product-results`} variant="ghost">
                   {cms("field-12", "Browse products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
                 </ButtonLink>
               </div>

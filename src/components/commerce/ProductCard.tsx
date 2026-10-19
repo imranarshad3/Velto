@@ -1,107 +1,92 @@
+import { Link } from "react-router";
+import { ArrowRight, Minus, Plus, ShoppingBasket, Trash2 } from "lucide-react";
 
-import { Link } from 'react-router'
-import {
-  ArrowRight,
-  Minus,
-  Plus,
-  ShoppingBasket,
-  Trash2,
-} from 'lucide-react'
-
-import type { CatalogProduct } from '../../data/catalog.ts'
-import { productPath } from '../../data/catalog.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
-import {
-  MAX_CART_ITEMS,
-  useCart,
-} from '../../features/cart/cartStore.ts'
-import { cardPrice } from '../../features/catalog/price.ts'
-import { useToasts } from '../../features/ui/toastStore.ts'
-import Img from '../ui/Img.tsx'
-import WishlistButton from './WishlistButton.tsx'
+import type { CatalogProduct } from "../../data/catalog.ts";
+import { productPath } from "../../data/catalog.ts";
+import { demoCategories } from "../../data/demoCategories.ts";
+import { MAX_CART_ITEMS, useCart } from "../../features/cart/cartStore.ts";
+import { cardPrice } from "../../features/catalog/price.ts";
+import { useToasts } from "../../features/ui/toastStore.ts";
+import Img from "../ui/Img.tsx";
+import WishlistButton from "./WishlistButton.tsx";
 
 interface ProductCardProps {
-  product: CatalogProduct
-  layout?: 'grid' | 'list'
-  density?: 'default' | 'roomy'
+  product: CatalogProduct;
+  layout?: "grid" | "list";
+  density?: "default" | "roomy";
 }
 
-const categories = new Map(
-  demoCategories.map((c) => [c.slug, c])
-)
+const categories = new Map(demoCategories.map((c) => [c.slug, c]));
 
-const MAX_QTY = 9999
+const MAX_QTY = 9999;
 
-const clamp = (n: number) =>
-  Math.min(MAX_QTY, Math.max(1, Math.round(n) || 1))
+const clamp = (n: number) => Math.min(MAX_QTY, Math.max(1, Math.round(n) || 1));
 
 export default function ProductCard({
   product,
-  layout = 'grid',
+  layout = "grid",
 }: ProductCardProps) {
-  const titleId = `${product.id}-title`
-  const category = categories.get(product.categorySlug)
-  const categoryLabel = product.categoryName ?? category?.name
-  const Icon = category?.icon
-  const list = layout === 'list'
-  const price = cardPrice(product)
+  const titleId = `${product.id}-title`;
+  const category = categories.get(product.categorySlug);
+  const categoryLabel = product.categoryName ?? category?.name;
+  const Icon = category?.icon;
+  const list = layout === "list";
+  const price = cardPrice(product);
 
-  const cartItem = useCart((s) =>
-    s.items.find((i) => i.slug === product.slug)
-  )
+  const cartItem = useCart((s) => s.items.find((i) => i.slug === product.slug));
 
-  const show = useToasts((s) => s.show)
-  const qty = clamp(cartItem?.quantity ?? 1)
-  const unit = cartItem?.unit ?? 'units'
+  const show = useToasts((s) => s.show);
+  const qty = clamp(cartItem?.quantity ?? 1);
+  const unit = cartItem?.unit ?? "units";
 
   const addToCart = () => {
-    const { add, update } = useCart.getState()
-    const result = add(product.slug)
+    const { add, update } = useCart.getState();
+    const result = add(product.slug);
 
-    if (result === 'full') {
+    if (result === "full") {
       show(
         `Your cart holds up to ${MAX_CART_ITEMS} products. Complete your current cart first.`,
         {
-          label: 'View cart',
-          to: '/cart',
-        }
-      )
-      return
+          label: "View cart",
+          to: "/cart",
+        },
+      );
+      return;
     }
 
     update(product.slug, {
       quantity: 1,
       unit,
-    })
+    });
 
     show(`${product.name} added to your cart`, {
-      label: 'View cart',
-      to: '/cart',
-    })
-  }
+      label: "View cart",
+      to: "/cart",
+    });
+  };
 
   const setQty = (n: number) => {
     useCart.getState().update(product.slug, {
       quantity: clamp(n),
-    })
-  }
+    });
+  };
 
   const decrement = () => {
     if (qty > 1) {
-      setQty(qty - 1)
-      return
+      setQty(qty - 1);
+      return;
     }
 
-    useCart.getState().remove(product.slug)
+    useCart.getState().remove(product.slug);
 
     show(`${product.name} removed from your cart`, {
-      label: 'View cart',
-      to: '/cart',
-    })
-  }
+      label: "View cart",
+      to: "/cart",
+    });
+  };
 
   const step =
-    'grid size-11 shrink-0 place-items-center text-ink transition-colors hover:bg-sand disabled:cursor-not-allowed disabled:text-muted/50 disabled:hover:bg-transparent'
+    "grid size-11 shrink-0 place-items-center text-ink transition-colors hover:bg-sand disabled:cursor-not-allowed disabled:text-muted/50 disabled:hover:bg-transparent";
 
   return (
     <article
@@ -120,7 +105,7 @@ export default function ProductCard({
         hover:border-forest/20
         hover:shadow-[0_1.5rem_3rem_-1.75rem_rgb(41_76_104/0.4)]
         motion-reduce:hover:translate-y-0
-        ${list ? 'flex-col sm:flex-row' : 'flex-col'}
+        ${list ? "flex-col sm:flex-row" : "flex-col"}
       `}
     >
       {/* PRODUCT IMAGE - TALLER AND NO CROPPING */}
@@ -129,15 +114,15 @@ export default function ProductCard({
           relative shrink-0 overflow-hidden bg-sand
           ${
             list
-              ? 'aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(10rem,28%,14rem)]'
-              : 'aspect-square w-full'
+              ? "aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(10rem,28%,14rem)]"
+              : "aspect-square w-full"
           }
         `}
       >
         {product.image ? (
           <Img
-  image={product.image}
-  className="
+            image={product.image}
+            className="
     absolute inset-0 block
     h-full w-full max-w-none
     object-cover object-center
@@ -145,7 +130,7 @@ export default function ProductCard({
     group-hover:scale-[1.025]
     motion-reduce:group-hover:scale-100
   "
-/>
+          />
         ) : (
           <span
             className="
@@ -155,10 +140,7 @@ export default function ProductCard({
             "
           >
             {Icon && (
-              <Icon
-                aria-hidden="true"
-                className="size-9 text-forest/50"
-              />
+              <Icon aria-hidden="true" className="size-9 text-forest/50" />
             )}
 
             <span className="text-[0.75rem] font-medium">
@@ -257,29 +239,26 @@ export default function ProductCard({
 
           <p
             className="
-              flex shrink-0 flex-col
-              @[18rem]:items-end
-              @[18rem]:pt-0.5
-            "
+    flex shrink-0 flex-col
+    @[18rem]:items-end
+    @[18rem]:pt-0.5
+  "
           >
             <span
               className={`
-                leading-tight font-extrabold
-                whitespace-nowrap
-                text-forest tabular-nums
-                ${
-                  price
-                    ? 'text-[1.125rem] @[18rem]:text-[1.1875rem]'
-                    : 'text-[0.9375rem]'
-                }
-              `}
+      leading-tight font-extrabold
+      whitespace-nowrap tabular-nums
+      ${
+        price
+          ? "text-[1.125rem] @[18rem]:text-[1.1875rem] text-[#a0522d]"
+          : "text-[0.9375rem] text-forest"
+      }
+    `}
             >
-              {price ? price.label : 'Price on request'}
+              {price ? price.label : "Price on request"}
 
               {price?.demo && (
-                <span className="sr-only">
-                  {' '}(illustrative demo price)
-                </span>
+                <span className="sr-only"> (illustrative demo price)</span>
               )}
             </span>
 
@@ -287,11 +266,11 @@ export default function ProductCard({
               <span
                 aria-hidden="true"
                 className="
-                  text-[0.6875rem]
-                  font-semibold
-                  tracking-[0.08em]
-                  text-copper uppercase
-                "
+        text-[0.6875rem]
+        font-semibold
+        tracking-[0.08em]
+        text-copper uppercase
+      "
               >
                 Demo price
               </span>
@@ -317,7 +296,7 @@ export default function ProductCard({
             flex flex-wrap items-center
             gap-2 pt-4
             @[15rem]:flex-nowrap
-            ${list ? '@[40rem]:justify-end' : ''}
+            ${list ? "@[40rem]:justify-end" : ""}
           `}
         >
           {/* BUY NOW */}
@@ -338,13 +317,14 @@ export default function ProductCard({
               @[15rem]:w-auto
               @[15rem]:flex-1
               @[20rem]:px-5
-              ${list ? '@[40rem]:max-w-[16rem]' : ''}
+              ${list ? "@[40rem]:max-w-[16rem]" : ""}
             `}
           >
             <span>
               Buy now
               <span className="sr-only">
-                {' '}for {qty} {unit} of {product.name}
+                {" "}
+                for {qty} {unit} of {product.name}
               </span>
             </span>
 
@@ -374,32 +354,23 @@ export default function ProductCard({
               <button
                 type="button"
                 className={`${step} bg-canvas ${
-                  qty <= 1 ? 'hover:text-danger' : ''
+                  qty <= 1 ? "hover:text-danger" : ""
                 }`}
                 onClick={decrement}
                 aria-label={
                   qty <= 1
                     ? `Remove ${product.name} from cart`
-                    : 'Decrease quantity'
+                    : "Decrease quantity"
                 }
               >
                 {qty <= 1 ? (
-                  <Trash2
-                    aria-hidden="true"
-                    className="size-4"
-                  />
+                  <Trash2 aria-hidden="true" className="size-4" />
                 ) : (
-                  <Minus
-                    aria-hidden="true"
-                    className="size-4"
-                  />
+                  <Minus aria-hidden="true" className="size-4" />
                 )}
               </button>
 
-              <label
-                htmlFor={`${product.id}-qty`}
-                className="sr-only"
-              >
+              <label htmlFor={`${product.id}-qty`} className="sr-only">
                 Quantity in cart ({unit})
               </label>
 
@@ -410,9 +381,7 @@ export default function ProductCard({
                 min={1}
                 max={MAX_QTY}
                 value={qty}
-                onChange={(e) =>
-                  setQty(Number(e.target.value))
-                }
+                onChange={(e) => setQty(Number(e.target.value))}
                 className="
                   h-11 w-full min-w-10
                   border-x border-border
@@ -435,10 +404,7 @@ export default function ProductCard({
                 disabled={qty >= MAX_QTY}
                 aria-label="Increase quantity"
               >
-                <Plus
-                  aria-hidden="true"
-                  className="size-4"
-                />
+                <Plus aria-hidden="true" className="size-4" />
               </button>
             </div>
           ) : (
@@ -476,7 +442,5 @@ export default function ProductCard({
         </div>
       </div>
     </article>
-  )
+  );
 }
-
-

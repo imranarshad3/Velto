@@ -16,11 +16,11 @@ interface ResourceTile {
 }
 
 const resources: ResourceTile[] = [
-  { icon: FileText, title: 'Resource Center', text: 'Search and download data sheets, installation guides and safety documents.', to: '/resources/documents', kind: 'Library' },
-  { icon: Calculator, title: 'Coverage calculator', text: 'Work out material and pack quantities from your area and manufacturer coverage data, then request them in a quote.', to: '/resources/coverage-calculator', kind: 'Tool' },
+  { icon: FileText, title: 'Product guides', text: 'Find product details, how-to guides and safety information.', to: '/resources/documents', kind: 'Library' },
+  { icon: Calculator, title: 'Work out how much you need', text: 'Enter your area to work out how much material you may need. Then ask us for a price.', to: '/resources/coverage-calculator', kind: 'Tool' },
   { icon: LifeBuoy, title: 'FAQ', text: 'How quotes, accounts, products and delivery work.', to: '/faq', kind: 'Help' },
-  { icon: MapIcon, title: 'Application guides', text: 'Typical sequences for bathrooms, roofs, floors and more.', to: '/applications', kind: 'Guides' },
-  { icon: Search, title: 'Track a request', text: 'Check a guest quote request with your reference and code.', to: '/track', kind: 'Service' },
+  { icon: MapIcon, title: 'Application guides', text: 'See the steps for bathrooms, roofs, floors and more.', to: '/applications', kind: 'Guides' },
+  { icon: Search, title: 'Track a request', text: 'Check your request with its reference number and code.', to: '/track', kind: 'Service' },
 ]
 
 export default function ResourcesPage() {
@@ -34,7 +34,7 @@ export default function ResourcesPage() {
   if (!ready) {
     return (
       <>
-        <title>Technical Resources — VELTO</title>
+        <title>Product guides — VELTO</title>
         <PageHeaderSkeleton />
       </>
     )
@@ -46,9 +46,9 @@ export default function ResourcesPage() {
       <meta name="description" content={cms("field-2", "Technical documents, a coverage calculator, application guides and FAQs.")} />
       <PageHeader
         eyebrow={cms("field-3", "Resources")}
-        title={cms("field-4", "Tools and information for your project")}
+        title={cms("field-4", "Tools and guides for your project")}
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Resources' }]}
-        description={cms("field-5", "Everything that helps you choose, quantify and apply the right products.")}
+        description={cms("field-5", "Find products, read simple guides and work out how much you need.")}
       />
       <section aria-label="Resources" className="container-page py-[var(--section-gap)]">
         <ul className="grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2 lg:grid-cols-6 lg:gap-[var(--grid-gap-lg)]">

@@ -13,9 +13,9 @@ const delay = (seconds: number) => ({ '--delay': `${seconds}s` }) as CSSProperti
 
 /** Service value props only (derived from existing site copy): no figures, ratings or guarantees. */
 const trust = [
-  { icon: ClipboardList, title: 'Quote-based ordering', text: 'Request pricing for your project' },
-  { icon: Compass, title: 'Application guidance', text: 'Match products to the surface' },
-  { icon: PackageCheck, title: 'Project & bulk requests', text: 'Quantities for larger jobs' },
+  { icon: ClipboardList, title: 'Get a project price', text: 'Tell us what you need' },
+  { icon: Compass, title: 'Find products by area', text: 'Choose the area you are working on' },
+  { icon: PackageCheck, title: 'Large project orders', text: 'Ask about the amount you need' },
 ]
 
 export function HeroSkeleton() {
@@ -96,7 +96,7 @@ export default function Hero() {
             <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-forest">
               <span className="size-1.5 rounded-full bg-gold" />
             </span>
-            {cms("field-1", "Premium Construction Solutions")}</p>
+            {cms("field-1", "Products for building and repair")}</p>
 
           <h1
             id="hero-title"
@@ -113,11 +113,11 @@ export default function Hero() {
             className="animate-rise mt-5 max-w-[29rem] text-[clamp(1rem,0.95rem+0.35vw,1.1875rem)] leading-relaxed text-muted sm:mt-6"
             style={delay(0.16)}
           >
-            {cms("field-5", "Construction chemical solutions for every build — from homes to large infrastructure projects.")}</p>
-          <p className="sr-only">{cms("field-6", "Imagery on this page is illustrative and not official product photography.")}</p>
+            {cms("field-5", "Products for building, repairs and waterproofing.")}</p>
+          <p className="sr-only">{cms("field-6", "These are example images, not product photos.")}</p>
 
           <div className="animate-rise mt-6 flex flex-col gap-3 min-[30rem]:flex-row min-[30rem]:flex-wrap sm:mt-8" style={delay(0.24)}>
-            <ButtonLink to={cms("field-7", "/products")} variant="primary" size="lg" className="max-sm:w-full">
+            <ButtonLink to={`${cms("field-7", "/products").split('#')[0]}#product-results`} variant="primary" size="lg" className="max-sm:w-full">
               {cms("field-8", "Shop Products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
             <ButtonLink to={cms("field-9", "/solutions")} variant="secondary" size="lg" className="max-sm:w-full">

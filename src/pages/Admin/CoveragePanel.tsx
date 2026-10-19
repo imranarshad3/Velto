@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Calculator, Trash2 } from 'lucide-react'
+import { Calculator, FileText, Info, Trash2 } from 'lucide-react'
 import { buttonClass } from '../../components/ui/button.ts'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
 import { adminApi } from '../../features/admin/api.ts'
@@ -82,31 +82,51 @@ function CoverageForm({ product, coverage, resources, onChange }: { product: Adm
           This product is not verified, so its coverage stays private. Customers see it in the calculator only after you mark the product verified.
         </p>
       )}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field id="cov-rate" label={`Coverage rate (${unit} per m² per coat)`} required error={errors.rate}>
+      <div className="rounded-xl border border-forest/10 bg-forest-soft/35 p-4 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface text-forest shadow-[var(--shadow-soft)]"><Calculator aria-hidden="true" className="size-4" /></span>
+          <div>
+            <h3 className="font-semibold text-ink">1. Add the coverage from the product sheet</h3>
+            <p className="mt-1 text-[0.8125rem] leading-relaxed text-muted">Use the exact figures from the manufacturer. Don’t guess. The same unit is used for the rate and pack size.</p>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+        <Field id="cov-rate" label="Amount needed for 1 m² and 1 coat" required error={errors.rate} hint={`Example: 1.5 ${unit} for each m², for each coat.`}>
           {(c) => (
             <div className="flex gap-2">
-              <input {...c} type="number" min="0" step="any" inputMode="decimal" value={form.rate} onChange={(e) => set('rate', e.target.value)} className={`${inputClass} min-w-0`} />
+              <input {...c} type="number" min="0" step="any" inputMode="decimal" placeholder="e.g. 1.5" value={form.rate} onChange={(e) => set('rate', e.target.value)} className={`${inputClass} min-w-0`} />
               <label htmlFor="cov-unit" className="sr-only">
-                Unit
+                Unit used for the rate and pack size
               </label>
-              <select id="cov-unit" value={form.rateUnit} onChange={(e) => set('rateUnit', e.target.value as Form['rateUnit'])} className={`${inputClass} max-w-[6.5rem] shrink-0 cursor-pointer`}>
+              <select id="cov-unit" aria-label="Unit used for the rate and pack size" value={form.rateUnit} onChange={(e) => set('rateUnit', e.target.value as Form['rateUnit'])} className={`${inputClass} max-w-[7.5rem] shrink-0 cursor-pointer`}>
                 {coverageUnits.map((u) => (
                   <option key={u} value={u}>
-                    {u === 'kg' ? 'kg' : 'litres'}
+                    {u === 'kg' ? 'kg' : 'litres (L)'}
                   </option>
                 ))}
               </select>
             </div>
           )}
         </Field>
-        <Field id="cov-coats" label="Recommended coats / layers" required error={errors.coats}>
-          {(c) => <input {...c} type="number" min="1" max="10" step="1" inputMode="numeric" value={form.coats} onChange={(e) => set('coats', e.target.value)} className={inputClass} />}
+        <Field id="cov-coats" label="Number of coats" required error={errors.coats} hint="Use the number shown on the product instructions.">
+          {(c) => <input {...c} type="number" min="1" max="10" step="1" inputMode="numeric" placeholder="e.g. 2" value={form.coats} onChange={(e) => set('coats', e.target.value)} className={inputClass} />}
         </Field>
-        <Field id="cov-pack" label={`Pack size (${unit})`} required error={errors.packAmount}>
-          {(c) => <input {...c} type="number" min="0" step="any" inputMode="decimal" value={form.packAmount} onChange={(e) => set('packAmount', e.target.value)} className={inputClass} />}
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-canvas/70 p-4 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface text-forest shadow-[var(--shadow-soft)]"><Info aria-hidden="true" className="size-4" /></span>
+          <div>
+            <h3 className="font-semibold text-ink">2. Add the pack size</h3>
+            <p className="mt-1 text-[0.8125rem] leading-relaxed text-muted">Check the amount printed on one pack and how it is sold.</p>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+        <Field id="cov-pack" label={`Amount in one pack (${unit})`} required error={errors.packAmount} hint={`Use the same unit as the coverage rate (${unit}).`}>
+          {(c) => <input {...c} type="number" min="0" step="any" inputMode="decimal" placeholder={unit === 'kg' ? 'e.g. 20' : 'e.g. 5'} value={form.packAmount} onChange={(e) => set('packAmount', e.target.value)} className={inputClass} />}
         </Field>
-        <Field id="cov-container" label="Sold in" required error={errors.packContainer}>
+        <Field id="cov-container" label="Pack type" required error={errors.packContainer} hint="Choose how the customer buys it.">
           {(c) => (
             <select {...c} value={form.packContainer} onChange={(e) => set('packContainer', e.target.value as Form['packContainer'])} className={`${inputClass} cursor-pointer`}>
               {packContainers.map((p) => (
@@ -117,9 +137,21 @@ function CoverageForm({ product, coverage, resources, onChange }: { product: Adm
             </select>
           )}
         </Field>
-        <Field id="cov-source" label="Source document" error={errors.sourceResourceId} hint="The data sheet these values come from." className="sm:col-span-2">
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-forest-soft text-forest"><FileText aria-hidden="true" className="size-4" /></span>
+          <div>
+            <h3 className="font-semibold text-ink">3. Link the source (optional)</h3>
+            <p className="mt-1 text-[0.8125rem] leading-relaxed text-muted">Linking the manufacturer’s sheet helps your team check these figures later.</p>
+          </div>
+        </div>
+        <div className="grid gap-4">
+        <Field id="cov-source" label="Product data sheet" error={errors.sourceResourceId} hint={sources.length ? 'Select the document used for these figures, if available.' : 'No documents yet. Add one under Management → Resources to link it here.'}>
           {(c) => (
-            <select {...c} value={form.sourceResourceId} onChange={(e) => set('sourceResourceId', e.target.value)} className={`${inputClass} cursor-pointer`}>
+            <select {...c} disabled={!sources.length} value={form.sourceResourceId} onChange={(e) => set('sourceResourceId', e.target.value)} className={`${inputClass} cursor-pointer disabled:cursor-not-allowed disabled:bg-sand/50 disabled:text-muted`}>
               <option value="">No document linked</option>
               {sources.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -130,9 +162,10 @@ function CoverageForm({ product, coverage, resources, onChange }: { product: Adm
             </select>
           )}
         </Field>
-        <Field id="cov-note" label="Note for customers" error={errors.note} hint="E.g. substrate or trowel conditions the rate assumes." className="sm:col-span-2">
-          {(c) => <input {...c} value={form.note} maxLength={300} onChange={(e) => set('note', e.target.value)} className={inputClass} />}
+        <Field id="cov-note" label="Important usage note" error={errors.note} hint="Optional. Add a key instruction from the product sheet, such as surface preparation." className="sm:col-span-2">
+          {(c) => <input {...c} placeholder="e.g. Apply to a clean, dry surface" value={form.note} maxLength={300} onChange={(e) => set('note', e.target.value)} className={inputClass} />}
         </Field>
+      </div>
       </div>
       <div className="flex flex-wrap justify-end gap-2">
         {coverage && (
@@ -141,7 +174,7 @@ function CoverageForm({ product, coverage, resources, onChange }: { product: Adm
           </button>
         )}
         <button type="submit" disabled={busy} className={buttonClass('primary', 'md', 'disabled:opacity-60')}>
-          {busy ? 'Saving…' : 'Save coverage'}
+          {busy ? 'Saving…' : 'Save coverage data'}
         </button>
       </div>
     </form>

@@ -81,9 +81,9 @@ function NotFound() {
             Product not found
           </h1>
           <p className="mt-3 max-w-[30rem] text-[0.9375rem] leading-relaxed text-muted">
-            This product may have moved or is no longer listed. Browse the catalogue to find what you need.
+            This product is no longer listed. Browse other products instead.
           </p>
-          <ButtonLink to="/products" className="mt-7 px-6">
+          <ButtonLink to="/products#product-results" className="mt-7 px-6">
             <ArrowLeft aria-hidden="true" className="size-4" /> Back to products
           </ButtonLink>
         </div>
@@ -145,7 +145,7 @@ export default function ProductDetailPage() {
     productApplications.length > 0 && { id: 'applications', label: 'Applications' },
     hasSpecs && { id: 'specifications', label: 'Specifications' },
     hasPackaging && { id: 'packaging', label: 'Packaging & Coverage' },
-    hasDocs && { id: 'downloads', label: 'Technical Resources' },
+    hasDocs && { id: 'downloads', label: 'Product guides' },
     technicalPending && { id: 'technical', label: 'Technical Information' },
     hasFaq && { id: 'faq', label: 'FAQ' },
   ].filter((s): s is { id: string; label: string } => Boolean(s))
@@ -162,8 +162,8 @@ export default function ProductDetailPage() {
           <Breadcrumb
             items={[
               { label: 'Home', to: '/' },
-              { label: 'Products', to: '/products' },
-              ...(category ? [{ label: category.name, to: `/products?category=${category.slug}` }] : []),
+              { label: 'Products', to: '/products#product-results' },
+              ...(category ? [{ label: category.name, to: `/products?category=${category.slug}#product-results` }] : []),
               { label: product.name },
             ]}
           />
@@ -174,7 +174,7 @@ export default function ProductDetailPage() {
             <div className="animate-rise flex min-w-0 flex-col">
               <div className="flex flex-wrap items-center gap-3">
                 {category && (
-                  <Link to={`/products?category=${category.slug}`} className="inline-flex min-h-11 items-center text-[0.75rem] font-semibold tracking-[0.16em] text-sage uppercase hover:text-forest">
+                  <Link to={`/products?category=${category.slug}#product-results`} className="inline-flex min-h-11 items-center text-[0.75rem] font-semibold tracking-[0.16em] text-sage uppercase hover:text-forest">
                     {category.name}
                   </Link>
                 )}
@@ -198,7 +198,7 @@ export default function ProductDetailPage() {
                   <dt className="text-[0.75rem] font-semibold tracking-[0.12em] text-muted uppercase">Applications</dt>
                   <dd className="mt-1.5 flex flex-wrap gap-1.5">
                     {productApplications.map((a) => (
-                      <Link key={a.slug} to={`/products?application=${a.slug}`} className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-3 text-[0.8125rem] hover:border-forest hover:text-forest">
+                      <Link key={a.slug} to={`/products?application=${a.slug}#product-results`} className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-3 text-[0.8125rem] hover:border-forest hover:text-forest">
                         {a.name}
                       </Link>
                     ))}
@@ -291,7 +291,7 @@ export default function ProductDetailPage() {
               <ul className="mt-5 grid gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 xl:grid-cols-3">
                 {productApplications.map((a) => (
                   <li key={a.slug}>
-                    <ApplicationTile application={a} to={`/products?application=${a.slug}`} />
+                    <ApplicationTile application={a} to={`/products?application=${a.slug}#product-results`} />
                   </li>
                 ))}
               </ul>
@@ -335,7 +335,7 @@ export default function ProductDetailPage() {
           {hasDocs && (
             <section id="downloads" aria-labelledby="downloads-title" data-product-section className={sectionClass}>
               <h2 id="downloads-title" className={h2Class}>
-                Technical Resources
+                Product guides
               </h2>
               {coverage && (
                 <div className="mt-5 flex flex-col gap-4 rounded-[var(--radius-card)] border border-forest/15 bg-forest-soft/50 p-[clamp(1.25rem,3vw,1.75rem)] sm:flex-row sm:items-center sm:justify-between">
@@ -448,7 +448,7 @@ export default function ProductDetailPage() {
               eyebrow="Explore the range"
               description="Compare products for similar applications and project needs."
               action={
-                <ButtonLink to={category ? `/products?category=${category.slug}` : '/products'} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
+                <ButtonLink to={category ? `/products?category=${category.slug}#product-results` : '/products#product-results'} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
                   View All <ArrowRight aria-hidden="true" className="size-4" />
                 </ButtonLink>
               }

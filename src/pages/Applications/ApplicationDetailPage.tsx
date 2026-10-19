@@ -51,14 +51,14 @@ export default function ApplicationDetailPage() {
             <p className="animate-rise mt-4 max-w-[36rem] text-[clamp(0.9375rem,0.9rem+0.3vw,1.125rem)] leading-relaxed text-muted [--delay:0.1s]">{detail.intro}</p>
             {categories.length > 0 && (
               <div className="animate-rise mt-6 [--delay:0.12s]">
-                <p className="text-[0.75rem] font-bold tracking-[0.14em] text-muted uppercase">Product types involved</p>
+                <p className="text-[0.75rem] font-bold tracking-[0.14em] text-muted uppercase">Products for this job</p>
                 <ul className="mt-2 flex flex-wrap gap-2">
                   {categories.map((c) => {
                     const CIcon = c.icon
                     return (
                       <li key={c.slug}>
                         <Link
-                          to={`/products?category=${c.slug}`}
+                          to={`/products?category=${c.slug}#product-results`}
                           className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface/80 px-4 text-[0.875rem] font-semibold text-ink shadow-[var(--shadow-soft)] transition-colors hover:border-forest/40 hover:text-forest"
                         >
                           <CIcon aria-hidden="true" className="size-4 text-copper" />
@@ -71,7 +71,7 @@ export default function ApplicationDetailPage() {
               </div>
             )}
             <div className="animate-rise mt-7 flex flex-wrap gap-3 [--delay:0.15s]">
-              <ButtonLink to={`/products?application=${application.slug}`} size="lg">
+              <ButtonLink to={`/products?application=${application.slug}#product-results`} size="lg">
                 Shop {application.name.toLowerCase()} products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </ButtonLink>
               <ButtonLink to="/quote" variant="secondary" size="lg">
@@ -125,7 +125,7 @@ export default function ApplicationDetailPage() {
 
       <section aria-labelledby="app-categories-title" className="bg-sand py-[var(--section-gap)]">
         <div className="container-page">
-          <SectionHeading id="app-categories-title" eyebrow="Shop by category" title="Product categories involved" />
+          <SectionHeading id="app-categories-title" eyebrow="Shop by category" title="Product types" />
           <ul className="mt-[var(--heading-gap)] grid grid-cols-2 gap-[var(--grid-gap)] md:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
             {categories.map((category, i) => (
               <Reveal as="li" key={category.slug} delay={i * 0.08}>
@@ -143,7 +143,7 @@ export default function ApplicationDetailPage() {
             eyebrow="Matching products"
             title={`Products for ${application.name.toLowerCase()}`}
             action={
-              <ButtonLink to={`/products?application=${application.slug}`} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
+              <ButtonLink to={`/products?application=${application.slug}#product-results`} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
                 View all ({matching.length}) <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </ButtonLink>
             }

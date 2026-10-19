@@ -10,9 +10,9 @@ const sections: LegalSection[] = [
       <>
         <p>We collect only what you give us and what is needed to run the site securely:</p>
         <ul>
-          <li><strong>Quote requests:</strong> your name, email, phone, optional company, the products and quantities you choose, project type, city or region, optional site/area, your project description, and when you gave consent.</li>
+          <li><strong>Price requests:</strong> your name, email, phone, optional company, the products and quantities you choose, project type, city or region, optional site/area, your project description, and when you agreed to send it.</li>
           <li><strong>Contact messages:</strong> your name, email, optional phone, topic and message.</li>
-          <li><strong>Accounts:</strong> if you create one, sign-in is handled by our authentication provider (Clerk), which processes your name, email and sign-in details. We store your account ID with your quotes and wishlist.</li>
+          <li><strong>Accounts:</strong> if you create one, Clerk handles sign-in and processes your name, email and sign-in details. We store your account ID with your price requests and saved products.</li>
           <li><strong>Wishlist and cart:</strong> saved in your browser’s local storage; if you are signed in, your wishlist is also saved to your account.</li>
           <li><strong>Security data:</strong> to prevent abuse we count requests using a keyed one-way hash of your IP address or account ID. We do not store raw IP addresses for this purpose.</li>
         </ul>
@@ -24,8 +24,8 @@ const sections: LegalSection[] = [
     title: 'How we use it',
     body: (
       <ul>
-        <li>To respond to your quote requests and messages, and to arrange orders you agree to.</li>
-        <li>To run your account, show your quote history and keep your wishlist.</li>
+        <li>To respond to your price requests and messages, and to arrange orders you agree to.</li>
+        <li>To run your account, show your request history and keep your saved products.</li>
         <li>To protect the site against spam and misuse.</li>
       </ul>
     ),
@@ -43,7 +43,7 @@ const sections: LegalSection[] = [
         <p>We do not sell your information. We use service providers to operate the site:</p>
         <ul>
           <li>Clerk — account sign-in and session management.</li>
-          <li>Supabase — database hosting for quotes, messages and wishlists.</li>
+          <li>Supabase — database hosting for price requests, messages and saved products.</li>
           <li>Vercel — website hosting.</li>
           <li>Google Fonts — web fonts; your browser requests fonts from Google’s servers.</li>
           <li>Cloudflare Turnstile — bot checks on forms, if enabled.</li>

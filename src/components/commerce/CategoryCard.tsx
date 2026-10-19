@@ -63,7 +63,7 @@ export default function CategoryCard({
   if (presentation === "editorial")
     return (
       <Link
-        to={to ?? `/products?category=${category.slug}`}
+        to={to ?? `/products?category=${category.slug}#product-results`}
         aria-current={active ? "page" : undefined}
         className={`group flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-colors hover:border-forest/40 ${className}`}
       >
@@ -101,7 +101,7 @@ export default function CategoryCard({
 
   return (
     <Link
-      to={to ?? `/products?category=${category.slug}`}
+      to={to ?? `/products?category=${category.slug}#product-results`}
       aria-current={active ? "page" : undefined}
       className={`group relative isolate flex aspect-[4/5] h-full flex-col justify-end overflow-hidden rounded-[var(--radius-card)] bg-forest-dark shadow-[var(--shadow-soft)] ring-offset-2 ring-offset-canvas transition-[box-shadow,transform] duration-500 ease-[var(--ease-premium)] hover:-translate-y-1 hover:shadow-[var(--shadow-lift)] motion-reduce:hover:translate-y-0 ${active ? "ring-2 ring-copper" : ""} ${className}`}
     >

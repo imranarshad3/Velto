@@ -64,7 +64,7 @@ export default function QuoteSuccess({ result, signedIn }: QuoteSuccessProps) {
               <ShieldAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-copper" />
               <span>
               <strong>Save your tracking code now.</strong> It is shown only once and is needed, with your reference, to
-              check this request’s status. Keep it private — anyone with both can see the request status.
+              check the request status. Keep it private — anyone with both can see the status.
               </span>
             </p>
           </>
@@ -78,7 +78,7 @@ export default function QuoteSuccess({ result, signedIn }: QuoteSuccessProps) {
         <ButtonLink to="/quote" variant="secondary">
           Submit another request
         </ButtonLink>
-        <ButtonLink to="/products" variant="ghost">
+        <ButtonLink to="/products#product-results" variant="ghost">
           Browse products
         </ButtonLink>
       </div>

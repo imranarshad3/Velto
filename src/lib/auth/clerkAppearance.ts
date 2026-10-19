@@ -53,6 +53,7 @@ export const clerkAppearance = {
     otpCodeFieldInput: 'velto-clerk-code',
     otpCodeFieldInputs: 'velto-clerk-code-row',
     footer: 'velto-clerk-footer',
+    footerAction: 'velto-clerk-footer-action',
     footerActionLink: 'velto-clerk-link',
     footerPagesLink: 'velto-clerk-link',
     formResendCodeLink: 'velto-clerk-link',

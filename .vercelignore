@@ -1,0 +1,14 @@
+# Keep local installers, dependencies, build output and repository history out of uploads.
+*.deb
+node_modules
+dist
+.git
+.vercel
+
+# Keep local credentials, backups and project tooling out of production deploys.
+.env*
+backups
+supabase/backups
+NOVARO_Claude_Code_Kit
+AGENTS.md
+CLAUDE.md

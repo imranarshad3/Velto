@@ -17,15 +17,15 @@ export default function TechnicalResources() {
         <Reveal className="min-w-0">
           <SectionHeading
             id="resources-title"
-            eyebrow={cms("field-1", "Documentation")}
-            title={cms("field-2", "Technical Resources")}
-            description={cms("field-3", "Documentation to help you choose and apply products correctly.")}
+            eyebrow={cms("field-1", "Guides and tools")}
+            title={cms("field-2", "Product guides")}
+            description={cms("field-3", "Guides and tools to help you choose and apply products correctly.")}
           />
           <div className="mt-8 rounded-[var(--radius-card)] border border-dashed border-sand-deep p-5">
             <p className="text-[0.9375rem] leading-relaxed text-muted">
-              {cms("field-4", "Search verified data sheets and installation guides, or estimate quantities with the coverage calculator.")}</p>
+              {cms("field-4", "Find product details and how-to guides, or work out how much material you need.")}</p>
             <ButtonLink to={cms("field-5", "/resources")} variant="secondary" className="mt-4">
-              {cms("field-6", "Visit the resource hub ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-6", "See all guides ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
           </div>
         </Reveal>

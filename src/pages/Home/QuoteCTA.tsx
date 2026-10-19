@@ -14,22 +14,22 @@ export default function QuoteCTA() {
           <div>
           <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
             <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
-            {cms("field-1", "Project quotes")}
+            {cms("field-1", "Project prices")}
           </p>
           <h2 id="quote-title" className="mt-4 max-w-[40rem] font-display text-[clamp(2rem,1.4rem+2.6vw,3.5rem)] leading-[1.05]">
             {cms("field-2", "Planning a project?")}</h2>
           <p className="mt-4 max-w-[36rem] text-[clamp(0.9375rem,0.9rem+0.2vw,1.0625rem)] leading-relaxed text-white/80">
-            {cms("field-3", "Tell us what you are building and the areas involved, and we will help with product selection and quantities.")}</p>
+            {cms("field-3", "Tell us what you are working on. We’ll help you choose products and estimate how much you need.")}</p>
           </div>
           <div className="border-t border-white/20 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
-          <p className="text-[0.9375rem] font-semibold text-gold">Start with your project details</p>
-          <p className="mt-2 text-[0.875rem] leading-relaxed text-white/75">Have your surface type, approximate area and product requirements ready.</p>
+          <p className="text-[0.9375rem] font-semibold text-gold">What to tell us</p>
+          <p className="mt-2 text-[0.875rem] leading-relaxed text-white/75">Tell us which area you are working on and roughly how big it is.</p>
           <div className="mt-6 flex flex-col gap-3">
             <ButtonLink to={cms("field-4", "/quote")} variant="light" size="lg">
-              {cms("field-5", "Ask for Price ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-5", "Get a price ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
             <ButtonLink to={cms("field-6", "/solutions")} variant="outline-light" size="lg">
-              {cms("field-7", "Browse Solutions")}</ButtonLink>
+              {cms("field-7", "Find products")}</ButtonLink>
           </div>
           </div>
         </div>

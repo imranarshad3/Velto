@@ -15,10 +15,10 @@ import { brandStoryImage } from '../../data/images.ts'
 import ApplicationCard from '../Applications/ApplicationCard.tsx'
 
 const paths = [
-  { icon: Compass, title: 'Start from the job', text: 'Pick the area you are working on to see the typical sequence and products.', to: '/applications', cta: 'Browse applications' },
-  { icon: LayoutGrid, title: 'Start from the product', text: 'Browse by category, search and filter the full catalogue.', to: '/products', cta: 'Browse products' },
-  { icon: BookOpen, title: 'Check the details', text: 'Technical documents, FAQs and a coverage calculator.', to: '/resources', cta: 'Open resources' },
-  { icon: ClipboardList, title: 'Get a quote', text: 'Send the products and quantities you need, or describe the project.', to: '/quote', cta: 'Ask for a price' },
+  { icon: Compass, title: 'Start from the job', text: 'Choose an area to see the steps and products for the job.', to: '/applications', cta: 'Browse applications' },
+  { icon: LayoutGrid, title: 'Start from the product', text: 'Search and browse all products.', to: '/products#product-results', cta: 'Browse products' },
+  { icon: BookOpen, title: 'Check the details', text: 'Product guides, answers and a tool to work out how much you need.', to: '/resources', cta: 'Open resources' },
+  { icon: ClipboardList, title: 'Get a quote', text: 'Tell us what products and amounts you need, or describe your project.', to: '/quote', cta: 'Ask for a price' },
 ]
 
 export default function SolutionsPage() {
@@ -39,16 +39,17 @@ export default function SolutionsPage() {
       <title>{cms("field-1", "Find Products — VELTO")}</title>
       <meta name="description" content={cms("field-2", "Find the right construction chemical solution by application or product category, then request a quote.")} />
       <PageHeader
+        className="solutions-edge-header"
         eyebrow={cms("field-3", "Find Products")}
         title={cms("field-4", "The right product for every part of the build")}
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Find Products' }]}
-        description={cms("field-5", "Tiling, waterproofing, repair, flooring and surface protection — organised so you can go from problem to product quickly.")}
+        description={cms("field-5", "Find products for tiles, waterproofing, repairs and floors. Browse by the job you need to do.")}
         actions={
           <>
             <ButtonLink to={cms("field-6", "/applications")} size="lg">
               {cms("field-7", "Start from the job ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
-            <ButtonLink to={cms("field-8", "/products")} variant="secondary" size="lg">
+            <ButtonLink to={`${cms("field-8", "/products").split('#')[0]}#product-results`} variant="secondary" size="lg">
               {cms("field-9", "Browse products")}</ButtonLink>
           </>
         }
@@ -57,7 +58,7 @@ export default function SolutionsPage() {
             <div className="aspect-[5/4] overflow-hidden rounded-[var(--radius-panel)] bg-forest-dark shadow-[var(--shadow-float)]">
               <Img cmsImage={{ page: 'solutions', field: 'SolutionsPage.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} priority className="size-full object-cover" />
             </div>
-            <div className="glass absolute -bottom-5 -left-6 flex items-center gap-3 rounded-[var(--radius-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+            <div className="glass absolute bottom-6 left-6 flex items-center gap-3 rounded-[var(--radius-card)] px-4 py-3 shadow-[var(--shadow-card)]">
               <span className="grid size-10 place-items-center rounded-xl bg-forest-soft text-forest">
                 <Compass aria-hidden="true" className="size-5" />
               </span>
@@ -71,7 +72,7 @@ export default function SolutionsPage() {
       />
 
       <section aria-labelledby="paths-title" className="container-page py-[var(--section-gap)]">
-        <SectionHeading id="paths-title" eyebrow={cms("field-12", "Find your way")} title={cms("field-13", "Four ways to find what you need")} />
+        <SectionHeading id="paths-title" eyebrow={cms("field-12", "Find your way")} title={cms("field-13", "Four easy ways to find products")} />
         <ol className="mt-[var(--heading-gap)] grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2 xl:grid-cols-4 xl:gap-[var(--grid-gap-lg)]">
           {paths.map(({ icon: Icon, title, text, to, cta }, i) => (
             <Reveal as="li" key={title} delay={i * 0.08}>
@@ -101,7 +102,7 @@ export default function SolutionsPage() {
           <SectionHeading
             id="by-application-title"
             eyebrow={cms("field-14", "Start from the job")}
-            title={cms("field-15", "By application")}
+            title={cms("field-15", "Shop by area")}
             action={
               <ButtonLink to={cms("field-16", "/applications")} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
                 {cms("field-17", "All applications ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
@@ -122,9 +123,9 @@ export default function SolutionsPage() {
         <SectionHeading
           id="by-category-title"
           eyebrow={cms("field-18", "Start from the product")}
-          title={cms("field-19", "By product category")}
+          title={cms("field-19", "Shop by product type")}
           action={
-            <ButtonLink to={cms("field-20", "/products")} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
+            <ButtonLink to={`${cms("field-20", "/products").split('#')[0]}#product-results`} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
               {cms("field-21", "All products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
             </ButtonLink>
           }

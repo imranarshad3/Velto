@@ -9,9 +9,9 @@ import { authAppearance } from '../../lib/auth/clerkAppearance.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 
 const benefits = [
-  { icon: ClipboardList, text: 'Follow your orders from checkout to delivery' },
-  { icon: Heart, text: 'Keep your wishlist across devices' },
-  { icon: Repeat, text: 'Keep orders and project consultations together' },
+  { icon: ClipboardList, text: 'Track your orders' },
+  { icon: Heart, text: 'Save products for later' },
+  { icon: Repeat, text: 'Keep project price requests together' },
 ]
 
 export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
@@ -29,8 +29,13 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
     <div className="relative isolate overflow-hidden bg-cream">
       <title>{`${signIn ? 'Sign In' : 'Create Account'} — VELTO`}</title>
 
-      <div className="mx-auto max-w-[72rem] px-3 py-4 sm:px-6 sm:py-8 lg:py-12">
-        <div className="animate-rise mx-auto grid max-w-[32rem] lg:max-w-[68rem] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div className="relative mx-auto max-w-[76rem] px-3 py-[clamp(1.5rem,4vw,3.5rem)] sm:px-6">
+        <div aria-hidden="true" className="pointer-events-none absolute top-0 right-[8%] size-[clamp(12rem,30vw,24rem)] rounded-full bg-copper-soft/50 blur-3xl" />
+        <div className="animate-rise relative mx-auto grid min-h-[min(44rem,calc(100svh-8rem))] max-w-[34rem] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] lg:max-w-[72rem] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <section aria-label="VELTO account" className="flex items-center gap-3 border-b border-white/10 bg-forest-deep px-5 py-4 text-white lg:hidden">
+            <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/10 text-gold"><ShieldCheck className="size-5" /></span>
+            <span className="min-w-0"><span className="block text-[0.6875rem] font-bold tracking-[0.18em] text-gold uppercase">VELTO account</span><span className="mt-0.5 block text-[0.875rem] text-white/85">Your orders and products, together.</span></span>
+          </section>
           {/* Brand panel */}
           <section aria-labelledby="auth-brand-title" className="relative isolate hidden overflow-hidden bg-forest-deep text-white lg:block">
             <Img image={professionalImage} priority alt="" className="absolute inset-0 -z-20 size-full object-cover object-[center_30%] opacity-35" />
@@ -43,7 +48,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
                   VELTO account
                 </p>
                 <h2 id="auth-brand-title" className="mt-3 font-display text-[clamp(1.625rem,1.2rem+1.6vw,2.5rem)] leading-[1.08]">
-                  Your next project, <span className="text-gold">starts here.</span>
+                  Your projects, <span className="text-gold">in one place.</span>
                 </h2>
               </div>
               <ul className="grid grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-[minmax(0,1fr)]">
@@ -58,7 +63,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
               </ul>
               <p className="hidden items-center gap-2 text-[0.8125rem] text-white/70 lg:flex">
                 <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-gold" />
-                Your orders, saved products and project consultations, together.
+                Track orders, save products and follow price requests.
               </p>
             </div>
           </section>
@@ -67,14 +72,14 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
           <div className="flex min-w-0 flex-col justify-center px-4 py-6 sm:p-8 lg:p-10">
             <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
               <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
-              {signIn ? 'Welcome back' : 'New account'}
+              {signIn ? 'Sign in' : 'Create account'}
             </p>
             {auth.mode !== 'clerk' && <><h1 id="auth-title" className="mt-2 font-display text-[clamp(1.75rem,1.35rem+1.5vw,2.5rem)] leading-[1.05] tracking-[-0.01em] text-ink">
               {title}
             </h1>
 
-            <p className="mt-3 text-sm leading-relaxed text-muted">{signIn ? 'Sign in to checkout, track orders and save your favourites.' : 'Shop with ease and keep your orders in one place.'}</p></>}
-            <div className="mt-6 min-w-0">
+            <p className="mt-3 text-sm leading-relaxed text-muted">{signIn ? 'View your orders and saved products.' : 'Save products and keep track of your orders.'}</p></>}
+            <div className="mt-7 min-w-0">
               {auth.mode === 'clerk' ? (
                 signIn ? (
                   <SignIn routing="path" path="/sign-in" signUpUrl={`/sign-up${redirectQuery}`} forceRedirectUrl={returnTo} appearance={authAppearance} />
@@ -103,6 +108,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
                 </div>
               )}
             </div>
+            {auth.mode === 'clerk' && <p className="mt-6 flex items-center justify-center gap-2 text-center text-[0.8125rem] text-muted"><ShieldCheck aria-hidden="true" className="size-4 text-forest" /> Your account is protected.</p>}
 
 
           </div>

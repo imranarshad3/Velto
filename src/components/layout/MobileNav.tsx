@@ -67,7 +67,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
         </div>
 
         <nav aria-label="Main" className="flex-1 px-4 py-5" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) onClose() }}>
-          <Link to="/products" className="mb-6 flex min-h-12 items-center gap-3 rounded-xl border border-border bg-surface px-4 text-[0.9375rem] text-muted hover:border-forest">
+          <Link to="/products#product-results" className="mb-6 flex min-h-12 items-center gap-3 rounded-xl border border-border bg-surface px-4 text-[0.9375rem] text-muted hover:border-forest">
             <Search aria-hidden="true" className="size-5" /> Find a product
           </Link>
           <ul aria-label="Your shopping" className="mb-7 grid grid-cols-2 gap-3">
@@ -116,7 +116,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
 
         <div className="flex shrink-0 flex-col gap-3 border-t border-border bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) onClose() }}>
           <Link to="/quote" className={buttonClass('primary', 'md', 'w-full')}>
-            Project consultation
+            Get a project price
           </Link>
           <AccountControl variant="menu" />
         </div>

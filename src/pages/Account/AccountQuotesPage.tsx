@@ -11,14 +11,14 @@ export default function AccountQuotesPage() {
 
   return (
     <>
-      <title>My Quotes — VELTO</title>
-      <AccountHeading title="My quotes" crumbs={[{ label: 'My Quotes' }]} actions={<ButtonLink to="/quote">New quote request</ButtonLink>}>
-        Requests sent while signed in, with their current status.
+      <title>My price requests — VELTO</title>
+      <AccountHeading title="My price requests" crumbs={[{ label: 'My price requests' }]} actions={<ButtonLink to="/quote">Ask for a price</ButtonLink>}>
+        Requests you sent while signed in and their current status.
       </AccountHeading>
       <RemoteState state={state} reload={reload}>
         {(quotes) =>
           quotes.length === 0 ? (
-            <EmptyState icon={ClipboardList} title="No quote requests yet" actions={<ButtonLink to="/quote">Ask for a price</ButtonLink>}>
+            <EmptyState icon={ClipboardList} title="No price requests yet" actions={<ButtonLink to="/quote">Ask for a price</ButtonLink>}>
               Guest requests aren’t linked automatically; track those with your reference and tracking code.
             </EmptyState>
           ) : (

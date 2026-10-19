@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import { UserButton } from '@clerk/react'
 import { Store } from 'lucide-react'
 import { useAppAuth } from '../../lib/auth/context.ts'
+import AdminProfileMenu from './AdminProfileMenu.tsx'
 
 const darkFocus = 'focus-visible:outline-mint'
 
@@ -35,13 +35,7 @@ export default function AdminTopBar() {
           {auth.signedIn && (
             <div className="flex min-w-0 items-center gap-3 border-l border-white/10 pl-3">
               {who && <span className="hidden max-w-[14rem] truncate text-[0.875rem] font-medium text-white/80 md:block">{who}</span>}
-              {auth.mode === 'clerk' ? (
-                <UserButton userProfileMode="navigation" userProfileUrl="/account/profile" />
-              ) : (
-                <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-mint text-[0.8125rem] font-bold text-forest-deep uppercase">
-                  {(who ?? 'S').slice(0, 1)}
-                </span>
-              )}
+              <AdminProfileMenu name={auth.user?.name ?? who ?? 'Admin'} email={auth.user?.email ?? ''} imageUrl={auth.user?.imageUrl ?? null} />
             </div>
           )}
         </div>
