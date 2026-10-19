@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react'
 import type { PageContent } from './types.js'
 
 export interface ImageSize { width: string; height: string }
+/** Dimensions for images that must fill an art-directed frame regardless of optional CMS sizing. */
+export const imageFrameStyle: CSSProperties = { width: '100%', height: '100%', maxWidth: '100%', aspectRatio: 'auto' }
 /** Empty dimensions retain the original layout. Only bounded, relative CSS lengths are accepted. */
 export function validImageDimension(value: string, axis: 'width' | 'height') {
   if (value === '') return true

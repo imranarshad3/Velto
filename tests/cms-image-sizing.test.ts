@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { imageSizeStyle, sizeContentImages, validImageDimension } from '../src/features/cms/imageSizing.js'
+import { imageFrameStyle, imageSizeStyle, sizeContentImages, validImageDimension } from '../src/features/cms/imageSizing.js'
 import { defaultContent } from '../src/features/cms/registry.js'
 import { validContent } from '../src/features/cms/schema.js'
 import { addSection, removeSection } from '../src/features/cms/sections.js'
 
 describe('CMS image sizing', () => {
+  it('fills fixed art-directed frames even when saved CMS sizing would leave empty bands', () => {
+    assert.deepEqual(imageFrameStyle, { width: '100%', height: '100%', maxWidth: '100%', aspectRatio: 'auto' })
+  })
   it('accepts bounded relative lengths and rejects unsafe or unsupported values', () => {
     for (const value of ['', '0.25rem', '24rem', '120rem', '100%', '50.5%']) assert.ok(validImageDimension(value, 'width'), value)
     for (const value of ['0rem', '-2rem', '121rem', '101%', 'NaNrem', '20px', 'calc(100% + 1rem)', '1rem;display:none']) assert.equal(validImageDimension(value, 'width'), false, value)

@@ -11,6 +11,7 @@ import { workspaceApi } from '../../features/cms/api.ts'
 import { prepareImage } from '../../features/cms/image.ts'
 import { pageDefinitions } from '../../features/cms/registry.ts'
 import type { ContentField, ContentPage, ContentRevision, Media, PageContent } from '../../features/cms/types.ts'
+import { clearLocalDraft, readLocalDraft, writeLocalDraft } from '../../features/cms/draftRecovery.ts'
 import { useUnsaved } from '../../features/cms/useUnsaved.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 import { useMediaQuery } from '../../lib/useMediaQuery.ts'
@@ -18,6 +19,34 @@ import ContentPreview, { type PreviewDevice } from './ContentPreview.tsx'
 const message = (e: unknown) => e instanceof Error ? e.message : 'The change could not be saved.'
 /** The alt-text field paired with an image field, when the page defines one. */
 const altKey = (key: string) => key.endsWith('.src') ? key.slice(0, -3) + 'alt' : key.replace('image-src', 'image-alt')
+
+function editorFieldLabel(page: string, section: string, field: ContentField, buttonLabel = false) {
+  const value = field.label.trim()
+  const number = Number(/\.field-(\d+)$/.exec(field.key)?.[1] ?? 0)
+  const collection = /\.data\.(\d+)\.([a-z-]+)$/i.exec(field.key)
+  if (collection) {
+    const item = Number(collection[1]) + 1
+    const part = collection[2].toLowerCase()
+    return `${section} item ${item} ${part === 'title' || part === 'name' ? 'title' : part === 'text' || part === 'description' ? 'description' : part}`
+  }
+  if (field.kind === 'image') return `${section} image`
+  if (field.kind === 'link' || /^to:\s*/i.test(value)) return `${section} button destination`
+  if (section === 'Why Choose' && number) return (['', 'Eyebrow text', 'Main heading', 'Heading highlight', 'Section description', 'Story link destination', 'Story button label', 'Image badge'][number] ?? `${section} text ${number}`)
+  if (/^eyebrow:\s*/i.test(value)) return `${section} small heading`
+  if (/^title:\s*/i.test(value)) return `${section} heading`
+  if (/^description:\s*/i.test(value)) return `${section} introduction`
+  if (/^content:\s*/i.test(value)) return `${page} page description`
+  if (/^alt:\s*/i.test(value)) return `${section} image description (alt text)`
+  if (field.key.endsWith('.image-alt')) return `${section} image description (alt text)`
+  if (section === 'Hero' && number === 1) return 'Hero eyebrow text'
+  if (section === 'Hero' && number <= 4) return `Hero headline part ${number - 1}`
+  if (section === 'Hero' && number === 5) return 'Hero introduction'
+  if (section === 'Hero' && number === 6) return 'Hero image notice'
+  if (section === 'Hero' && number === 11) return 'Hero image badge'
+  if (buttonLabel && field.value.trim().length <= 40) return `${section} button label`
+  if (number && value.includes(':')) return `${section} content ${number}`
+  return `${section} text ${number || ''}`.trim()
+}
 
 /** Image field: paste a path, pick from the library, or upload from this computer (button or drag and drop). */
 function ImageField({field, value, media, busy, onBrowse, onPick, onUpload}: {field: ContentField; value: string; media: Media[]; busy: boolean; onBrowse: () => void; onPick: (m: Media | null) => void; onUpload: (file: File) => Promise<void>}) {
@@ -108,11 +137,14 @@ const paneHead = 'flex min-h-14 shrink-0 items-center justify-between gap-3 bord
 const eyebrow = 'text-[0.6875rem] font-semibold tracking-[0.16em] text-muted uppercase'
 
 function WebsiteEditor({initial}: {initial:string}) {
-  const {getToken} = useAppAuth()
+  const auth = useAppAuth()
+  const {getToken} = auth
+  const getTokenRef = useRef(getToken)
   const desktop = useMediaQuery('(min-width: 64rem)')
   const {sidebarCollapsed, toggleSidebar} = useAdminShell()
   const [slug, setSlug] = useState(initial), [section, setSection] = useState(pageDefinitions.find(p=>p.id===initial)!.sections[0].id)
   const [page, setPage] = useState<ContentPage | null>(null), [draft, setDraft] = useState<PageContent | null>(null)
+  const [loadedDraftKey, setLoadedDraftKey] = useState('')
   const [error, setError] = useState(''), [notice, setNotice] = useState(''), [busy, setBusy] = useState(false)
   const [device, setDevice] = useState<PreviewDevice>('desktop')
   const [show, setShow] = useState({sections: true, editor: true, preview: true}), [focus, setFocus] = useState(false)
@@ -128,17 +160,31 @@ function WebsiteEditor({initial}: {initial:string}) {
   const selectedSection = sections.find(s => s.id === section) ?? sections[0]
   const canMove = (id: string) => definition.reorder || !!draft?.sections?.some(s => s.id === id)
   const dirty = JSON.stringify(draft) !== JSON.stringify(page?.draft ?? null)
+  const draftKey = `${auth.user?.id ?? 'admin'}:${slug}`
   useUnsaved(dirty)
+  useEffect(() => { getTokenRef.current = getToken }, [getToken])
   useEffect(() => { draftRef.current = draft }, [draft])
   useEffect(() => { try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(sizes)) } catch { /* convenience only */ } }, [sizes])
   const token = async () => { const t = await getToken(); if (!t) throw new Error('Please sign in again.'); return t }
   const resetHistory = () => { past.current = []; future.current = []; lastEdit.current = null; syncStack() }
   useEffect(() => {
     let active = true
-    setPage(null); setDraft(null); setError(''); setHistory(null); setNotice(''); resetHistory()
-    void getToken().then(async t => { if (!t) throw new Error('Please sign in again.'); return workspaceApi.page(t, slug) }).then(({page}) => { if (active) {setPage(page); setDraft(page.draft)} }).catch(e => {if (active) setError(message(e))})
+    setPage(null); setDraft(null); setLoadedDraftKey(''); setError(''); setHistory(null); setNotice(''); resetHistory()
+    void getTokenRef.current().then(async t => { if (!t) throw new Error('Please sign in again.'); return workspaceApi.page(t, slug) }).then(({page}) => {
+      if (active) {
+        const local = readLocalDraft(draftKey, page.version)
+        const recovered = local && validContent(slug, local) ? local : null
+        setPage(page); setDraft(recovered ?? page.draft); setLoadedDraftKey(draftKey)
+        if (recovered) setNotice('Recovered your unsaved local draft. Save draft to keep it on this account.')
+      }
+    }).catch(e => {if (active) setError(message(e))})
     return () => {active = false}
-  }, [slug, getToken])
+  }, [draftKey, slug])
+  useEffect(() => {
+    if (!page || page.slug !== slug || loadedDraftKey !== draftKey || !draft) return
+    if (dirty) writeLocalDraft(draftKey, page.version, draft)
+    else clearLocalDraft(draftKey)
+  }, [draftKey, loadedDraftKey, slug, page, draft, dirty])
   /** Apply an edit to the latest draft and record an undo step. */
   const commit = (next: (d: PageContent) => PageContent, key?: string) => {
     const current = draftRef.current
@@ -180,6 +226,7 @@ function WebsiteEditor({initial}: {initial:string}) {
       if ((action === 'publish' && (dirty || page.version === 0))) current = (await workspaceApi.mutate(await token(), slug, page.version, 'save', draft)).page
       const result = await workspaceApi.mutate(await token(), slug, current.version, action, action === 'save' ? draft : undefined, revisionId)
       setPage(result.page); setDraft(result.page.draft); setHistory(null)
+      clearLocalDraft(draftKey)
       if (action === 'restore') resetHistory()
       setNotice(action === 'publish' ? 'Published. The storefront now uses this content.' : action === 'restore' ? 'Revision restored to draft. Preview and publish when ready.' : action === 'unpublish' ? 'Unpublished. Original storefront content is active.' : 'Draft saved.')
       if (action === 'publish' || action === 'unpublish') window.dispatchEvent(new Event('novaro:published'))
@@ -278,19 +325,19 @@ function WebsiteEditor({initial}: {initial:string}) {
           }}>Remove section</button>}
           <p className="mb-4 text-xs text-muted">Text is safely rendered. Links accept site paths or HTTPS destinations.</p>
           <fieldset disabled={busy} className="grid gap-5">
-            {fields.map(field => field.kind === 'image'
+            {fields.map((field, fieldIndex) => field.kind === 'image'
               ? <div key={field.key} className="grid gap-3"><ImageField field={field} value={draft.fields[field.key] ?? field.value} media={media} busy={busy}
                   onBrowse={() => {void token().then(workspaceApi.media).then(r => setMedia(r.media)).catch(e => setError(message(e)))}}
                   onPick={item => pickImage(field.key, item, !!item && !item.id)} onUpload={file => uploadImage(field.key, file)}/>
-                <ImageSizeFields fieldKey={field.key} size={draft.imageSizes?.[field.key]} disabled={busy} onChange={size => commit(d => {
+                {field.key === 'WhyChoose.image-src' ? <p className="text-xs font-normal text-muted">This image fills its frame automatically to prevent blank space.</p> : <ImageSizeFields fieldKey={field.key} size={draft.imageSizes?.[field.key]} disabled={busy} onChange={size => commit(d => {
                   const imageSizes = {...d.imageSizes}
                   if (size.width || size.height) imageSizes[field.key] = size
                   else delete imageSizes[field.key]
                   return {...d, imageSizes}
-                }, `size:${field.key}`)}/>
+                }, `size:${field.key}`)}/>}
                 </div>
-              : <label key={field.key} className="block text-sm font-semibold">{field.label}
-                {field.kind === 'text' ? <textarea rows={(draft.fields[field.key] ?? field.value).length > 140 ? 4 : 2} className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)} maxLength={6000}/> : <input className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)}/>}
+              : <label key={field.key} className="block text-sm font-semibold">{editorFieldLabel(definition.label, sectionLabel ?? '', field, fields[fieldIndex - 1]?.kind === 'link' || fields[fieldIndex + 1]?.kind === 'link')}
+                {field.kind === 'text' ? <><textarea aria-label={editorFieldLabel(definition.label, sectionLabel ?? '', field, fields[fieldIndex - 1]?.kind === 'link' || fields[fieldIndex + 1]?.kind === 'link')} rows={(draft.fields[field.key] ?? field.value).length > 140 ? 4 : 2} className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)} maxLength={6000}/><span className="mt-1 block text-xs font-normal text-muted">Text shown in the {sectionLabel} section.</span></> : <><input aria-label={editorFieldLabel(definition.label, sectionLabel ?? '', field)} className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)}/><span className="mt-1 block text-xs font-normal text-muted">Site path or HTTPS link for this button.</span></>}
               </label>)}
           </fieldset>
           {history && <div className="mt-8 border-t border-border pt-5"><div className="mb-2 flex items-center justify-between"><h3 className="font-semibold">Revision history</h3><button className={buttonClass('ghost','sm')} onClick={() => setHistory(null)}>Close</button></div><p className="mb-3 text-xs text-muted">Restoring creates a draft; it does not publish automatically.</p>{history.length === 0 ? <p>No saved revisions yet.</p> : <ul className="divide-y divide-border">{history.map(r => <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3"><span><strong className="capitalize">{r.action}</strong><span className="block text-xs text-muted">{new Date(r.createdAt).toLocaleString()} · {r.actor}</span></span><button disabled={busy} className={buttonClass('secondary','sm')} onClick={() => void mutate('restore',r.id)}>Restore draft</button></li>)}</ul>}</div>}
