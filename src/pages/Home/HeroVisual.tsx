@@ -1,3 +1,4 @@
+import { useImageSize } from '../../features/cms/context.ts'
 import { useState } from 'react'
 import type { ImageAsset } from '../../data/images.ts'
 
@@ -10,6 +11,7 @@ interface HeroVisualProps {
  * when no image is supplied or the file fails to load.
  */
 export default function HeroVisual({ image }: HeroVisualProps) {
+  const imageStyle = useImageSize('home', 'Hero.image-src')
   const [failed, setFailed] = useState<string | null>(null)
 
   if (image?.src && failed !== image.src) {
@@ -17,6 +19,7 @@ export default function HeroVisual({ image }: HeroVisualProps) {
       <img
         onError={() => setFailed(image.src)}
         src={image.src}
+        style={imageStyle}
         alt={image.alt}
         width={image.width}
         height={image.height}

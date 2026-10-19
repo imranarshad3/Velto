@@ -1,3 +1,4 @@
+import { useContentData } from '../../features/cms/context.ts'
 import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router'
 import Img from '../../components/ui/Img.tsx'
@@ -14,7 +15,8 @@ interface ApplicationCardProps {
 
 /** Image-led application card used on the Applications and Solutions pages. */
 export default function ApplicationCard({ application, as: Heading = 'h3', long = false }: ApplicationCardProps) {
-  const detail = applicationDetails[application.slug]
+  const details = useContentData('applications', 'ApplicationDetails.data', applicationDetails)
+  const detail = details[application.slug]
   const Icon = application.icon
 
   return (

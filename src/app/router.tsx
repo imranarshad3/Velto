@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
           { index: true, lazy: async () => ({ Component: (await import('../pages/Account/DashboardPage.tsx')).default }) },
           { path: 'quotes', lazy: async () => ({ Component: (await import('../pages/Account/AccountQuotesPage.tsx')).default }) },
           { path: 'quotes/:reference', lazy: async () => ({ Component: (await import('../pages/Account/QuoteDetailPage.tsx')).default }) },
-          { path: 'orders/:orderId', lazy: async () => ({ Component: (await import('../pages/Admin/AdminOrderDetailPage.tsx')).default }) },
+          { path: 'orders/:orderId', lazy: async () => ({ Component: (await import('../pages/Account/OrderDetailPage.tsx')).default }) },
           { path: 'orders', lazy: async () => ({ Component: (await import('../pages/Account/OrdersPage.tsx')).default }) },
           { path: 'profile/*', lazy: async () => ({ Component: (await import('../pages/Account/ProfilePage.tsx')).default }) },
         ],

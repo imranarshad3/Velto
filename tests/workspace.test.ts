@@ -4,6 +4,8 @@ import type { AuthVerifier } from '../server/quotes/auth.js'
 import { createApiHandlers } from '../server/quotes/handlers.js'
 import { createMemoryStore } from '../server/quotes/memoryStore.js'
 import { defaultContent, pageDefinitions } from '../src/features/cms/registry.js'
+import { addSection, removeSection } from '../src/features/cms/sections.js'
+import { validContent } from '../src/features/cms/schema.js'
 
 declare global {
   interface Response {
@@ -48,6 +50,49 @@ beforeEach(async () => {
 })
 
 describe('CMS/CRM workspace', () => {
+  it('keeps added sections private until published and restores them from revisions', async () => {
+    const section = { id: `custom-${crypto.randomUUID()}`, type: 'image-text' as const }
+    const draft = addSection(defaultContent('home'), section)
+    draft.fields[`${section.id}.title`] = 'Project support'
+    draft.fields[`${section.id}.image-src`] = '/images/project.webp'
+    draft.imageSizes = { [`${section.id}.image-src`]: { width: '75%', height: '20rem' } }
+    draft.order = [section.id, ...draft.order.filter(id => id !== section.id)]
+    assert.equal((await call('POST', 'cms/home', 'sales', { action: 'save', version: 0, content: draft })).status, 403)
+    assert.equal((await call('POST', 'cms/home', 'editor', { action: 'save', version: 0, content: draft })).status, 200)
+    assert.deepEqual((await (await api.content()).json()).pages, {})
+    assert.equal((await call('POST', 'cms/home', 'editor', { action: 'publish', version: 1 })).status, 200)
+    assert.deepEqual((await (await api.content()).json()).pages.home, draft)
+    const { revisions } = await (await call('GET', 'cms/home/revisions', 'editor')).json()
+    const removed = removeSection(draft, section.id)
+    assert.ok(validContent('home', removed))
+    assert.equal((await call('POST', 'cms/home', 'editor', { action: 'save', version: 2, content: removed })).status, 200)
+    assert.deepEqual((await (await api.content()).json()).pages.home, draft)
+    const restored = await call('POST', 'cms/home', 'editor', { action: 'restore', version: 3, revisionId: revisions[0].id })
+    assert.equal(restored.status, 200)
+    assert.deepEqual((await restored.json()).page.draft, draft)
+  })
+
+  it('validates section types, unique IDs, limits, URLs and fixed page layouts', () => {
+    for (const page of pageDefinitions) assert.ok(validContent(page.id, defaultContent(page.id)))
+    const section = { id: `custom-${crypto.randomUUID()}`, type: 'cta' as const }
+    const draft = addSection(defaultContent('about'), section)
+    assert.ok(validContent('about', { ...draft, hidden: [section.id] }))
+    assert.equal(validContent('about', { ...draft, order: [...draft.order].reverse() }), null)
+    assert.equal(validContent('about', { ...draft, hidden: [draft.order[0]] }), null)
+    assert.equal(validContent('about', { ...draft, sections: [section, section] }), null)
+    assert.equal(validContent('about', { ...draft, sections: [{ ...section, type: 'html' }] }), null)
+    assert.equal(validContent('about', { ...draft, fields: { ...draft.fields, [`${section.id}.link`]: 'javascript:alert(1)' } }), null)
+    assert.equal(validContent('site', addSection(defaultContent('site'), section)), null)
+    assert.equal(validContent('categories', addSection(defaultContent('categories'), section)), null)
+    let full = defaultContent('home')
+    for (let i = 0; i < 20; i++) full = addSection(full, { ...section, id: `custom-${crypto.randomUUID()}` })
+    assert.ok(validContent('home', full))
+    assert.equal(validContent('home', addSection(full, section)), null)
+    const image = addSection(defaultContent('home'), { ...section, type: 'image-text' })
+    image.fields[`${section.id}.image-src`] = 'data:image/svg+xml,unsafe'
+    assert.equal(validContent('home', image), null)
+  })
+
   it('enforces team roles on the server', async () => {
     assert.equal((await call('GET', 'leads', 'editor')).status, 403)
     assert.equal((await call('GET', 'cms', 'sales')).status, 403)

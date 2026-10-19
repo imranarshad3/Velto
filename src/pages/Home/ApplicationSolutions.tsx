@@ -37,7 +37,7 @@ export default function ApplicationSolutions() {
         {/* Waterproofing spotlight: full-height image panel beside the tiles on desktop. */}
         <Reveal delay={0.1} className="min-w-0">
           <div className="group relative isolate flex h-full min-h-[26rem] flex-col justify-end overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep text-white shadow-[var(--shadow-float)]">
-            <Img image={{ ...waterproofingImage, src: cms('image-src', "/images/banners/waterproofing-crop.webp"), alt: cms('image-alt', "Illustrative concept: roller applying a blue waterproofing coat to a rooftop") }} className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.04] motion-reduce:group-hover:scale-100" />
+            <Img cmsImage={{ page: 'home', field: 'ApplicationSolutions.image-src' }} image={{ ...waterproofingImage, src: cms('image-src', "/images/banners/waterproofing-crop.webp"), alt: cms('image-alt', "Illustrative concept: roller applying a blue waterproofing coat to a rooftop") }} className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-[1.04] motion-reduce:group-hover:scale-100" />
             <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(21_43_64/0.1)_0%,rgb(21_43_64/0.55)_45%,rgb(21_43_64/0.95)_100%)]" />
             <div className="p-[clamp(1.25rem,3.5vw,2.25rem)]">
               <p className="text-[0.75rem] font-bold tracking-[0.18em] text-gold uppercase">{cms("field-4", "Waterproofing range")}</p>

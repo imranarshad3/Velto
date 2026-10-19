@@ -1,7 +1,9 @@
 export interface ContentField { key: string; label: string; value: string; kind: 'text' | 'link' | 'image' }
 export interface ContentSection { id: string; label: string; fields: ContentField[] }
 export interface PageDefinition { id: string; label: string; path: string; reorder: boolean; sections: ContentSection[] }
-export interface PageContent { fields: Record<string, string>; order: string[]; hidden: string[] }
+export type AddedSectionType = 'text' | 'image-text' | 'cta'
+export interface AddedSection { id: string; type: AddedSectionType }
+export interface PageContent { imageSizes?: Record<string, import('./imageSizing.js').ImageSize>; sections?: AddedSection[]; fields: Record<string, string>; order: string[]; hidden: string[] }
 export interface ContentPage { slug: string; draft: PageContent; published: PageContent | null; version: number; updatedAt: string | null }
 export interface ContentRevision { id: string; slug: string; content: PageContent; action: string; actor: string; createdAt: string }
 export const leadStages = ['New', 'Contacted', 'Qualified', 'Negotiating', 'Won', 'Lost'] as const

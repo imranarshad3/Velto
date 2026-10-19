@@ -6,6 +6,8 @@ import { hmac } from './quotes/crypto.js'
 import { apiError, bearerToken, clientIp, HttpError, json, readJson } from './http.js'
 import { sessionInvalid } from './quotes/handlers.js'
 import { orderInput } from '../src/features/orders/schema.js'
+import { customerTimeline, deliveryWindow, orderStatuses, REFERENCE_PATTERN, TRACKING_PATTERN, type HistoryEvent } from '../src/features/orders/tracking.js'
+import { createClerkDirectory, withDevDirectory, type UserDirectory } from './quotes/directory.js'
 
 const WINDOW_SECONDS = 600
 const ORDER_LIMITS = { ordersPerUser: 30, ordersPerIp: 60, getPerUser: 300, trackPerIp: 60 }
@@ -32,21 +34,88 @@ function maskEmail(email?: string): string {
   return `${local.slice(0, 2)}••••@${domain}`
 }
 
-function computeEstimatedDelivery(createdAt: string, status: string): { earliest: string; latest: string; label: string } {
-  const created = new Date(createdAt)
-  const earliest = new Date(created.getTime() + 2 * 24 * 60 * 60 * 1000)
-  const latest = new Date(created.getTime() + 4 * 24 * 60 * 60 * 1000)
-  const format = (d: Date) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-  if (status === 'delivered') return { earliest: earliest.toISOString(), latest: latest.toISOString(), label: 'Delivered' }
-  if (status === 'cancelled') return { earliest: '', latest: '', label: 'Order Cancelled' }
-  return { earliest: earliest.toISOString(), latest: latest.toISOString(), label: `${format(earliest)} – ${format(latest)}` }
+const ORDER_COLUMNS = 'id,reference,clerk_user_id,customer,items,subtotal,delivery,total,currency,payment_method,status,status_history,created_at,updated_at,tracking_number,carrier,carrier_reference,estimated_delivery'
+
+// oxlint-disable-next-line typescript/no-explicit-any
+type OrderRow = Record<string, any>
+
+/** Shipment details shared by every view. */
+function trackingOf(order: OrderRow) {
+  return {
+    number: order.tracking_number ?? null,
+    carrier: order.carrier ?? null,
+    carrierReference: order.carrier_reference ?? null,
+    estimatedDelivery: order.status === 'cancelled' ? null : deliveryWindow(order.created_at, order.estimated_delivery),
+  }
 }
+
+/** Customer-facing order: staff identities and internal notes are never included. */
+function customerView(order: OrderRow, reveal: boolean) {
+  const c = order.customer ?? {}
+  return {
+    id: order.id,
+    reference: order.reference,
+    status: order.status,
+    created_at: order.created_at,
+    updated_at: order.updated_at ?? order.created_at,
+    currency: order.currency ?? 'PKR',
+    subtotal: order.subtotal,
+    delivery: order.delivery ?? 300,
+    total: order.total,
+    payment_method: order.payment_method ?? 'cod',
+    customer: {
+      name: c.name,
+      city: c.city,
+      country: c.country,
+      address: reveal ? c.address : maskAddress(c.address),
+      phone: reveal ? c.phone : maskPhone(c.phone),
+      email: reveal ? c.email : maskEmail(c.email),
+    },
+    items: order.items ?? [],
+    tracking: trackingOf(order),
+    timeline: customerTimeline(order.created_at, order.status_history),
+    isOwner: reveal,
+  }
+}
+
+/** Admin view: full details plus the activity log with actor names when the directory can resolve them. */
+function adminView(order: OrderRow, names: Map<string, { name: string | null; email: string | null }> = new Map()) {
+  const history = (Array.isArray(order.status_history) ? order.status_history : []) as HistoryEvent[]
+  return {
+    ...customerView(order, true),
+    activity: history.map((e) => ({
+      kind: e.kind ?? 'status',
+      from: e.from ?? null,
+      to: e.to ?? null,
+      at: e.at,
+      note: e.note ?? null,
+      notePublic: Boolean(e.public),
+      carrier: e.carrier ?? null,
+      carrierReference: e.carrierReference ?? null,
+      eta: e.eta ?? null,
+      actor: e.actor ? (names.get(e.actor)?.name ?? names.get(e.actor)?.email ?? 'Team member') : 'System',
+    })),
+  }
+}
+
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((v) => !Number.isNaN(Date.parse(`${v}T00:00:00Z`)), 'Invalid date')
+const updateInput = z.object({
+  id: z.uuid(),
+  expectedStatus: z.enum(orderStatuses),
+  status: z.enum(orderStatuses),
+  note: z.string().trim().max(500).optional(),
+  notePublic: z.boolean().optional(),
+  carrier: z.string().trim().max(60).refine((v) => v === '' || v.length >= 2, 'Carrier is too short').optional(),
+  carrierReference: z.string().trim().regex(/^([A-Za-z0-9-]{3,40})?$/).optional(),
+  estimatedDelivery: isoDate.nullable().optional(),
+}).strict()
 
 export interface OrdersHandlerDeps {
   db?: SupabaseClient
   verifyAuth?: AuthVerifier
   allowedOrigins?: string[]
   hashSecret?: string
+  directory?: UserDirectory | null
 }
 
 export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
@@ -115,12 +184,12 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         }
 
         const notFound = () => apiError(404, 'not_found', 'No order found matching this reference and contact information.')
+        // Exact match only (never a pattern), on an order reference or a VELTO tracking ID.
+        const key = reference.trim().toUpperCase()
+        const column = REFERENCE_PATTERN.test(key) ? 'reference' : TRACKING_PATTERN.test(key) ? 'tracking_number' : null
+        if (!column) return notFound()
 
-        const { data: order, error } = await trackDb
-          .from('orders')
-          .select('id,reference,clerk_user_id,customer,items,subtotal,delivery,total,currency,payment_method,status,status_history,created_at')
-          .ilike('reference', reference)
-          .maybeSingle()
+        const { data: order, error } = await trackDb.from('orders').select(ORDER_COLUMNS).eq(column, key).maybeSingle()
 
         if (error || !order) return notFound()
 
@@ -156,31 +225,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
           }
         }
 
-        return json({
-          order: {
-            id: order.id,
-            reference: order.reference,
-            status: order.status,
-            status_history: order.status_history ?? [],
-            created_at: order.created_at,
-            currency: order.currency ?? 'PKR',
-            subtotal: order.subtotal,
-            delivery: order.delivery ?? 300,
-            total: order.total,
-            payment_method: order.payment_method ?? 'cod',
-            customer: {
-              name: order.customer.name,
-              city: order.customer.city,
-              country: order.customer.country,
-              address: isOwnerOrAdmin ? order.customer.address : maskAddress(order.customer.address),
-              phone: isOwnerOrAdmin ? order.customer.phone : maskPhone(order.customer.phone),
-              email: isOwnerOrAdmin ? order.customer.email : maskEmail(order.customer.email),
-            },
-            items: order.items,
-            isOwner: isOwnerOrAdmin,
-            estimatedDelivery: computeEstimatedDelivery(order.created_at, order.status),
-          },
-        })
+        return json({ order: customerView(order, isOwnerOrAdmin) })
       }
 
       if (request.method === 'GET') {
@@ -197,26 +242,58 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         if (!(await rateLimit('orders-get-user', auth.userId, ORDER_LIMITS.getPerUser))) {
           return apiError(429, 'rate_limited', 'Too many requests. Please wait a few minutes and try again.')
         }
-        let query = db.from('orders').select('id,reference,customer,items,subtotal,delivery,total,currency,status,created_at').order('created_at', { ascending: false }).limit(100)
-        if (!isAdminUser) query = query.eq('clerk_user_id', auth.userId)
         const orderId = url.searchParams.get('id')
-        if (orderId) {
-          if (!z.string().uuid().safeParse(orderId).success) return apiError(422, 'invalid', 'Invalid order reference.')
-          query = query.eq('id', orderId)
-        }
+        if (orderId && !z.uuid().safeParse(orderId).success) return apiError(422, 'invalid', 'Invalid order reference.')
+        let query = db.from('orders').select(ORDER_COLUMNS).order('created_at', { ascending: false }).limit(isAdminUser ? 500 : 100)
+        if (!isAdminUser) query = query.eq('clerk_user_id', auth.userId)
+        if (orderId) query = query.eq('id', orderId)
         const { data, error } = await query
         if (error) throw new Error('orders_read')
-        return json({ orders: data })
+        const rows = (data ?? []) as OrderRow[]
+        if (!isAdminUser) return json({ orders: rows.map((o) => customerView(o, true)) })
+        let names = new Map<string, { name: string | null; email: string | null }>()
+        if (orderId && rows[0]) {
+          const actors = [...new Set(((rows[0].status_history ?? []) as HistoryEvent[]).map((e) => e.actor).filter((a): a is string => !!a))]
+          const directory = deps.directory !== undefined ? deps.directory : env.NOVARO_DEV_FAKE_AUTH === '1' && !env.VERCEL ? withDevDirectory(createClerkDirectory(env.CLERK_SECRET_KEY)) : createClerkDirectory(env.CLERK_SECRET_KEY)
+          try {
+            if (directory && actors.length) names = await directory.describe(actors)
+          } catch {
+            // Names are a convenience; the log still shows "Team member".
+          }
+        }
+        return json({ orders: rows.map((o) => adminView(o, names)) })
       }
 
       if (request.method === 'PATCH') {
         if (!isAdminUser || auth.kind !== 'user') return apiError(403, 'forbidden', 'Admin access required.')
-        const parsed = z.object({ id: z.string().uuid(), status: z.enum(['placed', 'confirmed', 'shipped', 'delivered', 'cancelled']) }).strict().safeParse(await readJson(request, 2048))
-        if (!parsed.success) return apiError(422, 'invalid', 'Choose a valid order status.')
-        const { data, error } = await db.rpc('update_cod_order', { p_actor: auth.userId, p_id: parsed.data.id, p_status: parsed.data.status })
+        const parsed = updateInput.safeParse(await readJson(request, 4096))
+        if (!parsed.success) return apiError(422, 'invalid', 'Check the status and shipment details.')
+        const u = parsed.data
+        if (u.estimatedDelivery) {
+          const eta = Date.parse(`${u.estimatedDelivery}T00:00:00Z`)
+          if (eta < Date.now() - 86_400_000 || eta > Date.now() + 90 * 86_400_000) return apiError(422, 'invalid', 'Choose a delivery date from today up to 90 days ahead.')
+        }
+        const { data, error } = await db.rpc('admin_update_order', {
+          p_actor: auth.userId,
+          p_id: u.id,
+          p_expected: u.expectedStatus,
+          p_status: u.status,
+          p_note: u.note || null,
+          p_note_public: u.notePublic ?? false,
+          p_carrier: u.carrier || null,
+          p_carrier_ref: u.carrierReference || null,
+          p_eta: u.estimatedDelivery ?? null,
+        })
         if (error?.message.includes('cancelled_order_closed')) return apiError(409, 'order_closed', 'Cancelled orders cannot be reopened. Create a new order instead.')
         if (error) throw new Error('orders_update')
-        return data ? json({ ok: true }) : apiError(404, 'not_found', 'Order not found.')
+        if (data === 'not_found') return apiError(404, 'not_found', 'Order not found.')
+        if (data === 'conflict') return apiError(409, 'order_changed', 'This order was updated by someone else. Refresh to see the latest status.')
+        if (data === 'closed') return apiError(409, 'order_closed', 'Delivered and cancelled orders are closed.')
+        if (data === 'invalid_transition') return apiError(422, 'invalid_transition', 'Orders can only move forward through the delivery steps.')
+        if (data !== 'ok') throw new Error('orders_update')
+        const { data: fresh, error: readError } = await db.from('orders').select(ORDER_COLUMNS).eq('id', u.id).maybeSingle()
+        if (readError || !fresh) return json({ ok: true })
+        return json({ ok: true, order: adminView(fresh as OrderRow) })
       }
 
       if (request.method === 'POST') {

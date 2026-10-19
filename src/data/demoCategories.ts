@@ -13,7 +13,7 @@ export interface Category {
   icon: LucideIcon
   /** Placeholder material texture used when no licensed image exists. */
   texture: 'tile' | 'water' | 'grout' | 'concrete' | 'floor' | 'admix' | 'surface' | 'tools'
-  image?: { src: string; alt: string; width: number; height: number }
+  image?: import('./images.js').ImageAsset
   productCount?: number
 }
 

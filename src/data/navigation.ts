@@ -14,7 +14,7 @@ export const primaryNav: NavItem[] = [
 
 export const utilityNav: NavItem[] = [
   { label: 'Help', to: '/faq' },
-  { label: 'Track a Request', to: '/track' },
+  { label: 'Track an Order', to: '/track' },
   { label: 'Contact', to: '/contact' },
 ]
 
@@ -62,7 +62,7 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: 'FAQ', to: '/faq' },
       { label: 'Ask for Price', to: '/quote' },
-      { label: 'Track a Request', to: '/track' },
+      { label: 'Track an Order', to: '/track' },
     ],
   },
 ]

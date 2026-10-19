@@ -1,11 +1,11 @@
 import { SignIn, SignUp } from '@clerk/react'
-import { Link, Navigate, useSearchParams } from 'react-router'
+import { Navigate, useSearchParams } from 'react-router'
 import { ArrowRight, ClipboardList, Heart, KeyRound, Repeat, ShieldCheck } from 'lucide-react'
 import Img from '../../components/ui/Img.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import { buttonArrow } from '../../components/ui/button.ts'
 import { professionalImage } from '../../data/images.ts'
-import { clerkAppearance } from '../../lib/auth/clerkAppearance.ts'
+import { authAppearance } from '../../lib/auth/clerkAppearance.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 
 const benefits = [
@@ -13,33 +13,6 @@ const benefits = [
   { icon: Heart, text: 'Keep your wishlist across devices' },
   { icon: Repeat, text: 'Keep orders and project consultations together' },
 ]
-
-/** Clerk widget tuned to sit flush inside VELTO's form card (shared base stays in lib/auth). */
-const authAppearance = {
-  ...clerkAppearance,
-  options: { unsafe_disableDevelopmentModeWarnings: true },
-  variables: {
-    ...clerkAppearance.variables,
-    colorTextSecondary: '#5c625e',
-    colorBackground: '#ffffff',
-    colorInputBackground: '#ffffff',
-    colorDanger: '#b42318',
-    colorSuccess: '#1f6b45',
-  },
-  elements: {
-    ...clerkAppearance.elements,
-    rootBox: { width: '100%', minWidth: 0 },
-    cardBox: { width: '100%', maxWidth: '100%', minWidth: 0, boxShadow: 'none', border: 0, borderRadius: 0 },
-    card: { width: '100%', minWidth: 0, maxWidth: '100%', boxShadow: 'none', border: 0, background: 'transparent', padding: 0 },
-    headerTitle: 'font-display text-[1.5rem] font-normal text-ink',
-    formButtonPrimary: 'min-h-11 rounded-xl text-[0.9375rem] font-semibold normal-case shadow-[var(--shadow-button)]',
-    formFieldInput: 'min-h-11 rounded-xl',
-    socialButtonsBlockButton: 'min-h-11 rounded-xl',
-    footer: { background: 'transparent', padding: '1rem 0 0' },
-    footerAction: { display: 'none' },
-    footerActionLink: 'font-semibold text-forest',
-  },
-}
 
 export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const auth = useAppAuth()
@@ -96,11 +69,11 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
               <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
               {signIn ? 'Welcome back' : 'New account'}
             </p>
-            <h1 id="auth-title" className="mt-2 font-display text-[clamp(1.75rem,1.35rem+1.5vw,2.5rem)] leading-[1.05] tracking-[-0.01em] text-ink">
+            {auth.mode !== 'clerk' && <><h1 id="auth-title" className="mt-2 font-display text-[clamp(1.75rem,1.35rem+1.5vw,2.5rem)] leading-[1.05] tracking-[-0.01em] text-ink">
               {title}
             </h1>
 
-            <p className="mt-3 text-sm leading-relaxed text-muted">{signIn ? 'Sign in to checkout, track orders and save your favourites.' : 'Shop with ease and keep your orders in one place.'}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{signIn ? 'Sign in to checkout, track orders and save your favourites.' : 'Shop with ease and keep your orders in one place.'}</p></>}
             <div className="mt-6 min-w-0">
               {auth.mode === 'clerk' ? (
                 signIn ? (
@@ -131,12 +104,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
               )}
             </div>
 
-            <p className="mt-6 border-t border-border pt-4 text-[0.9375rem] text-muted">
-              {signIn ? 'New to VELTO? ' : 'Already have an account? '}
-              <Link to={(signIn ? '/sign-up' : '/sign-in') + redirectQuery} className="inline-flex min-h-11 items-center font-semibold text-forest underline decoration-copper/50 underline-offset-4 hover:decoration-copper">
-                {signIn ? 'Create an account' : 'Sign in'}
-              </Link>
-            </p>
+
           </div>
         </div>
       </div>

@@ -1,3 +1,6 @@
+import ImageSizeFields from './ImageSizeFields.tsx'
+import { addSection, removeSection, editableSections, sectionTemplates, supportsSections } from '../../features/cms/sections.ts'
+import { validContent } from '../../features/cms/schema.ts'
 import { useSearchParams, useLocation } from 'react-router'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowDown, ArrowUp, EyeOff, GripVertical, History, ImageUp, LoaderCircle, Maximize2, Minimize2, Monitor, PanelLeftClose, PanelLeftOpen, PanelsTopLeft, Redo2, Rows3, Save, Send, Smartphone, SquarePen, Tablet, Undo2 } from 'lucide-react'
@@ -121,6 +124,9 @@ function WebsiteEditor({initial}: {initial:string}) {
   const [stack, setStack] = useState({undo: 0, redo: 0})
   const syncStack = () => setStack({undo: past.current.length, redo: future.current.length})
   const definition = pageDefinitions.find(p => p.id === slug)!
+  const sections = editableSections(definition, draft)
+  const selectedSection = sections.find(s => s.id === section) ?? sections[0]
+  const canMove = (id: string) => definition.reorder || !!draft?.sections?.some(s => s.id === id)
   const dirty = JSON.stringify(draft) !== JSON.stringify(page?.draft ?? null)
   useUnsaved(dirty)
   useEffect(() => { draftRef.current = draft }, [draft])
@@ -167,6 +173,7 @@ function WebsiteEditor({initial}: {initial:string}) {
     if (!page || !draft || busy) return
     if (action === 'unpublish' && !window.confirm('Remove published overrides? The storefront will use its original fallback content.')) return
     if (action === 'restore' && dirty && !window.confirm('Replace unsaved changes with this revision?')) return
+    if ((action === 'save' || action === 'publish') && !validContent(slug, draft)) { setError('Check image dimensions, section fields and URLs. Use valid rem sizes or width percentages, and site paths or HTTPS URLs.'); return }
     setBusy(true); setError(''); setNotice('')
     try {
       let current = page
@@ -178,7 +185,7 @@ function WebsiteEditor({initial}: {initial:string}) {
       if (action === 'publish' || action === 'unpublish') window.dispatchEvent(new Event('novaro:published'))
     } catch(e) {setError(message(e))} finally {setBusy(false)}
   }
-  const move = (id: string, target: number) => commit(d => { const order = d.order.filter(s => s !== id); order.splice(Math.max(0, target), 0, id); return {...d, order} })
+  const move = (id: string, target: number) => { if (busy || !canMove(id) || (!definition.reorder && target < definition.sections.length)) return; commit(d => { const order = d.order.filter(s => s !== id); order.splice(Math.max(0, target), 0, id); return {...d, order} }) }
   const change = (key: string, value: string) => commit(d => ({...d, fields: {...d.fields, [key]: value}}), key)
   /** Set an image field (and its alt text, when known) in one step so the preview never shows a mismatched pair. */
   const pickImage = (key: string, item: Media | null, typed = false) => commit(d => ({...d, fields: {...d.fields, [key]: item?.url ?? '', ...(!typed && item?.alt ? {[altKey(key)]: item.alt} : {})}}), typed ? key : undefined)
@@ -198,8 +205,8 @@ function WebsiteEditor({initial}: {initial:string}) {
     return next.editor || next.preview ? next : s // keep at least one working surface open
   })
   const openFocus = () => { setShow(s => ({...s, preview: true})); setFocus(true) }
-  const fields = definition.sections.find(s => s.id === section)?.fields ?? []
-  const sectionLabel = definition.sections.find(s => s.id === section)?.label
+  const fields = selectedSection?.fields ?? []
+  const sectionLabel = selectedSection?.label
 
   const columns = [
     show.sections ? `${sizes.sections}rem` : '0rem',
@@ -237,11 +244,21 @@ function WebsiteEditor({initial}: {initial:string}) {
     >
       {/* Sections */}
       <aside aria-label="Sections" inert={!show.sections || focus || undefined} className={`${pane(show.sections)} max-lg:rounded-2xl max-lg:border max-lg:border-border`}>
-        <div className={paneHead}><div><p className={eyebrow}>Sections</p><p className="text-xs text-muted">{definition.reorder ? 'Drag or use arrows to reorder' : 'Fixed page layout'}</p></div></div>
+        <div className={paneHead}><div><p className={eyebrow}>Sections</p><p className="text-xs text-muted">{definition.reorder ? 'Drag or use arrows to reorder' : 'New sections appear below original content'}</p></div></div>
+        {supportsSections(slug) && <div className="grid gap-2 border-b border-border p-3">
+          <label className="text-sm font-semibold" htmlFor="add-section">Add section</label>
+          <select id="add-section" className={inputClass} value="" disabled={busy || (draft.sections?.length ?? 0) >= 20 || draft.order.length >= 40} onChange={e => {
+            const template = sectionTemplates.find(t => t.type === e.target.value)
+            if (!template) return
+            const added = {id: `custom-${crypto.randomUUID()}`, type: template.type}
+            commit(d => addSection(d, added)); setSection(added.id); setShow(s => ({...s, editor: true})); setNotice('Section added to draft. Edit its content, then publish when ready.')
+          }}><option value="" disabled>Choose a section type…</option>{sectionTemplates.map(t => <option key={t.type} value={t.type}>{t.label}</option>)}</select>
+          <p className="text-xs text-muted">{draft.sections?.length ?? 0} / 20 added sections</p>
+        </div>}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
-          {draft.order.map((id, i) => {const s = definition.sections.find(s => s.id === id); return s && <div key={id} draggable={definition.reorder && !busy} onDragStart={() => setDragged(id)} onDragOver={e => e.preventDefault()} onDrop={e => {e.preventDefault(); if (dragged) move(dragged, i); setDragged(null)}} className={`mb-1 rounded-xl p-2 transition-colors ${section === id ? 'bg-forest-soft ring-1 ring-forest/15' : 'hover:bg-sand/60'} ${draft.hidden.includes(id) ? 'opacity-60' : ''}`}>
-            <button className={`flex min-h-11 w-full items-center gap-2 text-left text-sm font-semibold ${section === id ? 'text-forest' : ''}`} onClick={() => {setSection(id); if (!show.editor) toggle('editor')}}>{definition.reorder && <GripVertical size={15} className="shrink-0 text-muted"/>} <span className="truncate">{s.label}</span></button>
-            {definition.reorder && <div className="flex items-center gap-1"><label className="mr-auto flex min-h-9 items-center gap-2 text-xs"><input type="checkbox" checked={!draft.hidden.includes(id)} onChange={e => commit(d => ({...d, hidden: e.target.checked ? d.hidden.filter(x => x !== id) : [...d.hidden, id]}))}/> Visible</label><button aria-label={`Move ${s.label} up`} disabled={i === 0} className="min-h-9 px-2 disabled:opacity-30" onClick={() => move(id,i-1)}><ArrowUp size={14}/></button><button aria-label={`Move ${s.label} down`} disabled={i === draft.order.length-1} className="min-h-9 px-2 disabled:opacity-30" onClick={() => move(id,i+1)}><ArrowDown size={14}/></button></div>}
+          {draft.order.map((id, i) => {const s = sections.find(s => s.id === id); return s && <div key={id} draggable={canMove(id) && !busy} onDragStart={() => setDragged(id)} onDragOver={e => e.preventDefault()} onDrop={e => {e.preventDefault(); if (dragged) move(dragged, i); setDragged(null)}} className={`mb-1 rounded-xl p-2 transition-colors ${section === id ? 'bg-forest-soft ring-1 ring-forest/15' : 'hover:bg-sand/60'} ${draft.hidden.includes(id) ? 'opacity-60' : ''}`}>
+            <button className={`flex min-h-11 w-full items-center gap-2 text-left text-sm font-semibold ${section === id ? 'text-forest' : ''}`} onClick={() => {setSection(id); if (!show.editor) toggle('editor')}}>{canMove(id) && <GripVertical size={15} className="shrink-0 text-muted"/>} <span className="truncate">{s.label}</span></button>
+            {canMove(id) && <div className="flex items-center gap-1"><label className="mr-auto flex min-h-11 items-center gap-2 text-xs"><input type="checkbox" disabled={busy} checked={!draft.hidden.includes(id)} onChange={e => commit(d => ({...d, hidden: e.target.checked ? d.hidden.filter(x => x !== id) : [...d.hidden, id]}))}/> Visible</label><button aria-label={`Move ${s.label} up`} disabled={busy || i === (definition.reorder ? 0 : definition.sections.length)} className="min-h-11 px-2 disabled:opacity-30" onClick={() => move(id,i-1)}><ArrowUp size={14}/></button><button aria-label={`Move ${s.label} down`} disabled={busy || i === draft.order.length-1} className="min-h-11 px-2 disabled:opacity-30" onClick={() => move(id,i+1)}><ArrowDown size={14}/></button></div>}
           </div>})}
         </div>
         <div className="grid shrink-0 gap-1 border-t border-border p-2">
@@ -255,12 +272,23 @@ function WebsiteEditor({initial}: {initial:string}) {
       <section aria-label="Content editor" inert={!show.editor || focus || undefined} className={`${pane(show.editor)} max-lg:rounded-2xl max-lg:border max-lg:border-border`}>
         <div className={paneHead}><div className="min-w-0"><p className={eyebrow}>Editing</p><h2 className="truncate font-display text-[1.125rem]">{sectionLabel}</h2></div></div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
+          {draft.sections?.some(s => s.id === selectedSection?.id) && <button type="button" disabled={busy} className={buttonClass('danger', 'sm', 'mb-4')} onClick={() => {
+            if (!window.confirm('Remove this section from the draft? You can undo this change.')) return
+            commit(d => removeSection(d, selectedSection.id)); setSection(definition.sections[0].id)
+          }}>Remove section</button>}
           <p className="mb-4 text-xs text-muted">Text is safely rendered. Links accept site paths or HTTPS destinations.</p>
           <fieldset disabled={busy} className="grid gap-5">
             {fields.map(field => field.kind === 'image'
-              ? <ImageField key={field.key} field={field} value={draft.fields[field.key] ?? field.value} media={media} busy={busy}
+              ? <div key={field.key} className="grid gap-3"><ImageField field={field} value={draft.fields[field.key] ?? field.value} media={media} busy={busy}
                   onBrowse={() => {void token().then(workspaceApi.media).then(r => setMedia(r.media)).catch(e => setError(message(e)))}}
                   onPick={item => pickImage(field.key, item, !!item && !item.id)} onUpload={file => uploadImage(field.key, file)}/>
+                <ImageSizeFields fieldKey={field.key} size={draft.imageSizes?.[field.key]} disabled={busy} onChange={size => commit(d => {
+                  const imageSizes = {...d.imageSizes}
+                  if (size.width || size.height) imageSizes[field.key] = size
+                  else delete imageSizes[field.key]
+                  return {...d, imageSizes}
+                }, `size:${field.key}`)}/>
+                </div>
               : <label key={field.key} className="block text-sm font-semibold">{field.label}
                 {field.kind === 'text' ? <textarea rows={(draft.fields[field.key] ?? field.value).length > 140 ? 4 : 2} className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)} maxLength={6000}/> : <input className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)}/>}
               </label>)}

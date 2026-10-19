@@ -36,7 +36,7 @@ export default function AdminTopBar() {
             <div className="flex min-w-0 items-center gap-3 border-l border-white/10 pl-3">
               {who && <span className="hidden max-w-[14rem] truncate text-[0.875rem] font-medium text-white/80 md:block">{who}</span>}
               {auth.mode === 'clerk' ? (
-                <UserButton />
+                <UserButton userProfileMode="navigation" userProfileUrl="/account/profile" />
               ) : (
                 <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-mint text-[0.8125rem] font-bold text-forest-deep uppercase">
                   {(who ?? 'S').slice(0, 1)}

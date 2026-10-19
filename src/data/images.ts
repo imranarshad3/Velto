@@ -4,6 +4,7 @@
  * See public/images/ASSET_PROVENANCE.md for the generation prompts and sources.
  */
 export interface ImageAsset {
+  displaySize?: import('../features/cms/imageSizing.js').ImageSize
   src: string
   alt: string
   width: number

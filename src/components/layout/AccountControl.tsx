@@ -24,7 +24,7 @@ export default function AccountControl({ variant = 'header' }: { variant?: 'head
       <Link to="/account" className={`inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-lg px-2 text-[0.9375rem] font-semibold ${menu ? 'text-ink hover:text-forest' : 'text-white/90 hover:bg-white/10 hover:text-white'}`}>
         <UserRound aria-hidden="true" className="size-5 shrink-0" /> My account
       </Link>
-      {auth.mode === 'clerk' && <UserButton />}
+      {auth.mode === 'clerk' && <UserButton userProfileMode="navigation" userProfileUrl="/account/profile" />}
     </div>
   )
 }

@@ -73,7 +73,7 @@ export default function AboutPage() {
           <div className="mt-[clamp(2.5rem,6vw,5rem)] grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-12 lg:items-center lg:gap-0">
             <Reveal className="relative lg:col-span-7 lg:col-start-1 lg:row-start-1">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-panel)] bg-sand-deep shadow-[var(--shadow-card)] sm:aspect-[16/10] lg:aspect-[5/4]">
-                <Img image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} className="size-full object-cover" />
+                <Img cmsImage={{ page: 'about', field: 'AboutPage.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} className="size-full object-cover" />
               </div>
             </Reveal>
             <Reveal delay={0.08} className="relative z-10 lg:col-span-6 lg:col-start-7 lg:row-start-1">

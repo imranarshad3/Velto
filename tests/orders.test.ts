@@ -50,7 +50,8 @@ function createMockDb(options: {
 } = {}) {
   const admins = new Set(options.admins ?? ['user_admin', 'user_sales', 'user_editor'])
   const roles = options.roles ?? { user_admin: 'admin', user_sales: 'sales', user_editor: 'editor' }
-  const orders = [...testOrders]
+  const orders = testOrders.map((o) => structuredClone(o))
+  const calls: Record<string, unknown>[] = []
   let hitCount = 0
 
   // oxlint-disable-next-line typescript/no-explicit-any
@@ -79,7 +80,9 @@ function createMockDb(options: {
         maybeSingle: async () => {
           if (table === 'orders') {
             const found = orders.find((o) => {
-              if (filterCol === 'reference') return o.reference.toLowerCase() === filterVal?.toLowerCase()
+              if (filterCol === 'reference') return o.reference === filterVal
+              // oxlint-disable-next-line typescript/no-explicit-any
+              if (filterCol === 'tracking_number') return (o as any).tracking_number === filterVal
               if (filterCol === 'id') return o.id === filterVal
               return false
             })
@@ -113,13 +116,17 @@ function createMockDb(options: {
         if (options.rateLimitHits && hitCount > options.rateLimitHits) return { data: false, error: null }
         return { data: true, error: null }
       }
-      if (fn === 'update_cod_order') {
-        const order = orders.find((o) => o.id === args.p_id)
-        if (order) {
-          order.status = args.p_status as string
-          return { data: true, error: null }
-        }
-        return { data: false, error: null }
+      if (fn === 'admin_update_order') {
+        calls.push(args)
+        // oxlint-disable-next-line typescript/no-explicit-any
+        const order: any = orders.find((o) => o.id === args.p_id)
+        if (!order) return { data: 'not_found', error: null }
+        if (order.status !== args.p_expected) return { data: 'conflict', error: null }
+        if (order.status === 'delivered' || order.status === 'cancelled') return { data: 'closed', error: null }
+        order.status_history = [...(order.status_history ?? []), { kind: 'status', actor: args.p_actor, from: order.status, to: args.p_status, at: new Date().toISOString(), note: args.p_note ?? undefined, public: args.p_note ? args.p_note_public : undefined }]
+        order.status = args.p_status as string
+        if (args.p_status === 'shipped') order.tracking_number = 'VTABCDEF1234'
+        return { data: 'ok', error: null }
       }
       if (fn === 'place_cod_order') {
         return {
@@ -136,6 +143,8 @@ function createMockDb(options: {
       return { data: null, error: null }
     },
   }
+  client.calls = calls
+  client.orders = orders
   return client
 }
 
@@ -188,7 +197,8 @@ describe('Orders API security & authorization', () => {
     const body = await res.json()
     assert.ok(body.orders.length >= 1)
     for (const o of body.orders) {
-      assert.equal(o.clerk_user_id, 'user_cust_A')
+      assert.equal(o.customer.email, 'cust_a@example.com')
+      assert.equal(o.clerk_user_id, undefined, 'internal owner id is never exposed')
     }
   })
 
@@ -206,7 +216,7 @@ describe('Orders API security & authorization', () => {
       new Request(`${SITE}/api/orders`, {
         method: 'PATCH',
         headers: { authorization: 'Bearer token-cust-A', 'content-type': 'application/json' },
-        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', status: 'shipped' }),
+        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', expectedStatus: 'placed', status: 'shipped' }),
       }),
     )
     assert.equal(res.status, 403)
@@ -237,7 +247,7 @@ describe('Orders API security & authorization', () => {
       new Request(`${SITE}/api/orders`, {
         method: 'PATCH',
         headers: { authorization: 'Bearer token-editor', 'content-type': 'application/json' },
-        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', status: 'shipped' }),
+        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', expectedStatus: 'placed', status: 'shipped' }),
       }),
     )
     assert.equal(res.status, 403)
@@ -260,7 +270,7 @@ describe('Orders API security & authorization', () => {
       new Request(`${SITE}/api/orders`, {
         method: 'PATCH',
         headers: { authorization: 'Bearer token-admin', 'content-type': 'application/json' },
-        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', status: 'delivered' }),
+        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', expectedStatus: 'placed', status: 'delivered' }),
       }),
     )
     assert.equal(res.status, 200)
@@ -274,7 +284,7 @@ describe('Orders API security & authorization', () => {
       new Request(`${SITE}/api/orders`, {
         method: 'PATCH',
         headers: { authorization: 'Bearer token-admin', 'content-type': 'application/json' },
-        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', status: 'fraudulent' }),
+        body: JSON.stringify({ id: 'a0000000-0000-4000-8000-000000000001', expectedStatus: 'placed', status: 'fraudulent' }),
       }),
     )
     assert.equal(res.status, 422)
@@ -322,7 +332,8 @@ describe('Orders API security & authorization', () => {
     assert.equal(body.order.reference, 'VEL-0000000000000001')
     assert.equal(body.order.isOwner, true)
     assert.equal(body.order.customer.email, 'cust_a@example.com')
-    assert.ok(body.order.estimatedDelivery.label)
+    assert.ok(body.order.tracking.estimatedDelivery.earliest)
+    assert.equal(body.order.timeline[0].status, 'placed')
   })
 
   it('allows guest client to track order with valid reference and matching email', async () => {
@@ -416,4 +427,69 @@ describe('single order detail access', () => {
   assert.equal(customer.status,200)
   assert.equal((await customer.json()).orders.length,0)
  })
+})
+
+const patch = (body: unknown, token = 'token-admin') =>
+  new Request(`${SITE}/api/orders`, { method: 'PATCH', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(body) })
+const ORDER_A = 'a0000000-0000-4000-8000-000000000001'
+
+describe('order tracking updates', () => {
+  it('passes shipment details to the database and returns the refreshed order', async () => {
+    const db = createMockDb()
+    const handler = createOrdersHandler({ db, verifyAuth, allowedOrigins: [SITE] })
+    const eta = new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10)
+    const res = await handler(patch({ id: ORDER_A, expectedStatus: 'placed', status: 'shipped', carrier: 'TCS', carrierReference: 'TCS-778899', estimatedDelivery: eta, note: 'Left warehouse', notePublic: true }))
+    assert.equal(res.status, 200)
+    assert.deepEqual(db.calls[0], { p_actor: 'user_admin', p_id: ORDER_A, p_expected: 'placed', p_status: 'shipped', p_note: 'Left warehouse', p_note_public: true, p_carrier: 'TCS', p_carrier_ref: 'TCS-778899', p_eta: eta })
+  })
+
+  it('returns 409 when the order changed since it was loaded', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const res = await handler(patch({ id: ORDER_A, expectedStatus: 'confirmed', status: 'shipped' }))
+    assert.equal(res.status, 409)
+    assert.equal((await res.json()).error, 'order_changed')
+  })
+
+  it('rejects closed orders, bad courier references and far-future dates', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const second = 'a0000000-0000-4000-8000-000000000002'
+    await handler(patch({ id: second, expectedStatus: 'shipped', status: 'delivered' }))
+    const closed = await handler(patch({ id: second, expectedStatus: 'delivered', status: 'cancelled' }))
+    assert.equal(closed.status, 409)
+    assert.equal((await handler(patch({ id: ORDER_A, expectedStatus: 'placed', status: 'confirmed', carrierReference: 'bad ref!' }))).status, 422)
+    assert.equal((await handler(patch({ id: ORDER_A, expectedStatus: 'placed', status: 'confirmed', estimatedDelivery: '2099-01-01' }))).status, 422)
+    assert.equal((await handler(patch({ id: ORDER_A, expectedStatus: 'placed', status: 'confirmed', extra: 1 }))).status, 422)
+  })
+
+  it('customer views hide staff identities and internal notes', async () => {
+    const db = createMockDb()
+    const handler = createOrdersHandler({ db, verifyAuth, allowedOrigins: [SITE] })
+    await handler(patch({ id: ORDER_A, expectedStatus: 'placed', status: 'confirmed', note: 'Customer is a VIP, call first', notePublic: false }))
+    await handler(patch({ id: ORDER_A, expectedStatus: 'confirmed', status: 'shipped', note: 'On the way', notePublic: true }))
+    const res = await handler(new Request(`${SITE}/api/orders?id=${ORDER_A}`, { headers: { authorization: 'Bearer token-cust-A' } }))
+    const text = await res.text()
+    assert.equal(res.status, 200)
+    assert.doesNotMatch(text, /user_admin|VIP|actor/)
+    const order = JSON.parse(text).orders[0]
+    assert.deepEqual(order.timeline.map((e: { status: string }) => e.status), ['placed', 'confirmed', 'shipped'])
+    assert.equal(order.timeline[2].note, 'On the way')
+    assert.equal(order.tracking.number, 'VTABCDEF1234')
+    const admin = await (await handler(new Request(`${SITE}/api/orders?admin=1&id=${ORDER_A}`, { headers: { authorization: 'Bearer token-admin' } }))).json()
+    assert.equal(admin.orders[0].activity.length, 2)
+    assert.equal(admin.orders[0].activity[0].note, 'Customer is a VIP, call first')
+  })
+
+  it('guests can track by tracking ID; wildcard or malformed references never match', async () => {
+    const db = createMockDb()
+    const handler = createOrdersHandler({ db, verifyAuth, allowedOrigins: [SITE] })
+    await handler(patch({ id: ORDER_A, expectedStatus: 'placed', status: 'shipped' }))
+    const track = (reference: string) => handler(new Request(`${SITE}/api/orders?action=track`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reference, contact: 'cust_a@example.com' }) }))
+    const ok = await track('vtabcdef1234')
+    assert.equal(ok.status, 200)
+    const body = await ok.json()
+    assert.equal(body.order.reference, 'VEL-0000000000000001')
+    assert.match(body.order.customer.phone, /^•+1111$/)
+    assert.equal((await track('VEL-%')).status, 404)
+    assert.equal((await track('VEL-000000000000000_')).status, 404)
+  })
 })

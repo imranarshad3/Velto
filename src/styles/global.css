@@ -1,5 +1,7 @@
+@layer theme, base, clerk, components, utilities;
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./clerk.css";
 
 @layer base {
   html {

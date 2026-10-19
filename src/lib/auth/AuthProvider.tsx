@@ -1,3 +1,4 @@
+import { clerkAppearance } from './clerkAppearance.ts'
 import { lazy, Suspense, useMemo, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { ClerkProvider, useAuth, useClerk, useUser } from '@clerk/react'
@@ -44,9 +45,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider
       publishableKey={clerkPublishableKey}
+      appearance={clerkAppearance}
       localization={{
-        signIn: { start: { title: 'Sign in', subtitle: 'Welcome back to VELTO' } },
-        signUp: { start: { title: 'Create account', subtitle: 'Join VELTO to get started' } },
+        signIn: { start: { title: 'Sign in to VELTO', subtitle: 'Sign in to checkout, track orders and save your favourites.' } },
+        signUp: { start: { title: 'Create your VELTO account', subtitle: 'Shop with ease and keep your orders in one place.' } },
       }}
       afterSignOutUrl="/"
       signInUrl="/sign-in"

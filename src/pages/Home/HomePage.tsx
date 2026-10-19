@@ -1,3 +1,4 @@
+import { AddedSectionView } from '../../features/cms/AddedSections.tsx'
 import { usePageContent } from '../../features/cms/context.ts'
 import ApplicationSolutions from './ApplicationSolutions.tsx'
 import CategoryPreview from './CategoryPreview.tsx'
@@ -17,7 +18,8 @@ export default function HomePage() {
     <title>VELTO — Construction Chemical Solutions</title>
     {order.filter(id => !content?.hidden.includes(id)).map(id => {
       const Section = sections[id as keyof typeof sections]
-      return Section ? <Section key={id} /> : null
+      const added = content?.sections?.find(s => s.id === id)
+      return Section ? <Section key={id} /> : added && content ? <AddedSectionView key={id} section={added} content={content} /> : null
     })}
   </>
 }

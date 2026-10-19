@@ -1,27 +1,35 @@
-import { KeyRound, LifeBuoy, UserRound } from 'lucide-react'
+import { useState } from 'react'
+import { KeyRound, LifeBuoy, Package, UserRound } from 'lucide-react'
 import { Link } from 'react-router'
 import PageHeader from '../../components/ui/PageHeader.tsx'
+import { FilterTabs } from '../Admin/ui.tsx'
 import GuestLookup from './GuestLookup.tsx'
+import OrderLookup from './OrderLookup.tsx'
 
 const steps = [
-  { icon: KeyRound, title: 'Reference + tracking code', text: 'Both were shown on the confirmation screen when you submitted your request.' },
-  { icon: UserRound, title: 'Signed in?', text: 'Every request linked to your account is listed in My quotes.', to: '/account/quotes', link: 'Open My quotes' },
-  { icon: LifeBuoy, title: 'Lost your code?', text: 'Contact us with your reference and the email you used.', to: '/contact', link: 'Contact us' },
+  { icon: Package, title: 'Orders', text: 'Use the order reference (VEL-…) or tracking ID (VT…) with the email or phone used at checkout.', to: '/account/orders', link: 'My orders' },
+  { icon: KeyRound, title: 'Quote requests', text: 'Both were shown on the confirmation screen when you submitted your request.' },
+  { icon: UserRound, title: 'Signed in?', text: 'Orders and quote requests linked to your account update automatically there.', to: '/account', link: 'Open my account' },
+  { icon: LifeBuoy, title: 'Need help?', text: 'Contact us with your reference and the email you used.', to: '/contact', link: 'Contact us' },
 ]
 
+type Mode = 'order' | 'quote'
+
 export default function TrackPage() {
+  const [mode, setMode] = useState<Mode>('order')
   return (
     <>
-      <title>Track a Request — VELTO</title>
+      <title>Track an Order — VELTO</title>
       <PageHeader
-        eyebrow="Request status"
-        title="Track a request"
-        crumbs={[{ label: 'Home', to: '/' }, { label: 'Track a Request' }]}
-        description="Guest requests can be checked with the reference and tracking code shown when you submitted. Signed-in customers can see every request in My quotes."
+        eyebrow="Order & request status"
+        title="Track your order"
+        crumbs={[{ label: 'Home', to: '/' }, { label: 'Track' }]}
+        description="Follow your delivery step by step with your order reference or tracking ID. Quote requests can be checked here too."
       />
       <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-[var(--content-pad)] pb-[var(--section-gap)] lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10">
-        <div className="min-w-0">
-          <GuestLookup />
+        <div className="flex min-w-0 flex-col gap-5">
+          <FilterTabs<Mode> label="What do you want to track?" value={mode} onChange={setMode} options={[{ value: 'order', label: 'Order delivery' }, { value: 'quote', label: 'Quote request' }]} />
+          {mode === 'order' ? <OrderLookup /> : <GuestLookup />}
         </div>
         <aside aria-label="How tracking works" className="h-fit rounded-[var(--radius-panel)] border border-border bg-cream/70 p-6">
           <h2 className="font-display text-[1.375rem]">How it works</h2>

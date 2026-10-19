@@ -1,3 +1,4 @@
+import AddedSections from '../../features/cms/AddedSections.tsx'
 import ContentProvider from '../../features/cms/ContentProvider.tsx'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router'
 import CatalogProvider from '../../features/catalog/CatalogProvider.tsx'
@@ -27,6 +28,7 @@ export default function SiteLayout() {
       {admin ? <AdminTopBar /> : <Header />}
       <main id="main" tabIndex={-1} className="focus:outline-none">
         <Outlet />
+        {!admin && <AddedSections />}
       </main>
       {!admin && <Footer />}
       <WishlistSync />

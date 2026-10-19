@@ -1,6 +1,6 @@
 import { UserProfile } from '@clerk/react'
 import { useAppAuth } from '../../lib/auth/context.ts'
-import { clerkAppearance } from '../../lib/auth/clerkAppearance.ts'
+import { profileAppearance } from '../../lib/auth/clerkAppearance.ts'
 import AccountHeading from './AccountHeading.tsx'
 
 /** Profile, email, password and sessions are managed by Clerk's secure components. */
@@ -14,8 +14,8 @@ export default function ProfilePage() {
         Manage your name, email addresses, password and signed-in devices.
       </AccountHeading>
       {auth.mode === 'clerk' ? (
-        <div className="overflow-x-auto">
-          <UserProfile routing="path" path="/account/profile" appearance={clerkAppearance} />
+        <div className="min-w-0">
+          <UserProfile routing="path" path="/account/profile" appearance={profileAppearance} />
         </div>
       ) : (
         <dl className="grid gap-[var(--grid-gap)] surface-card p-5 sm:grid-cols-2">
