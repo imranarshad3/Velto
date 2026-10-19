@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/image.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="VELTO — Building Better Foundations. Construction chemical solutions for tiling, waterproofing, repair and flooring projects." />
     <!-- Matches the announcement bar at the top of every storefront page (footer green #081f19). -->
@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Start the storefront data requests in parallel with the JS download (same URLs the app fetches). -->
+    <link rel="preload" href="/api/content" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="/api/catalog" as="fetch" crossorigin="anonymous" />
     <title>VELTO — Building Better Foundations</title>
   </head>
   <body>

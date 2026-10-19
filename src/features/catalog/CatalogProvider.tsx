@@ -16,34 +16,70 @@ const withDemoPrice = (product: CatalogProduct): CatalogProduct => {
   return { ...product, image, ...(demoPrice ? { demoPrice } : {}) }
 }
 
+interface Snapshot {
+  products: CatalogProduct[]
+  categories: StoreCategory[]
+}
+
+const CACHE_KEY = 'velto:catalog_v1'
+
+/** Last published catalogue from this browser, so repeat visits render real products on the first frame. */
+function readCache(): Snapshot | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CACHE_KEY) ?? 'null') as Snapshot | null
+    return parsed && Array.isArray(parsed.products) && Array.isArray(parsed.categories) ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+/** Started at module load (before React renders) and shared by every mount, including StrictMode re-runs. */
+const request: Promise<Snapshot | null> | null =
+  typeof window === 'undefined'
+    ? null
+    : fetch('/api/catalog')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((body: Partial<Snapshot> | null) => {
+          if (!Array.isArray(body?.products)) return null
+          const snapshot = { products: body.products, categories: Array.isArray(body.categories) ? body.categories : [] }
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(snapshot))
+          } catch {
+            // Storage full or blocked: the catalogue still renders from memory.
+          }
+          return snapshot
+        })
+        .catch(() => null)
+
 /**
- * Catalogue source of truth for the app: the published catalogue from `/api/catalog`, with the bundled
- * DEMO list rendered immediately and kept as the fallback when the API is unavailable or unconfigured.
+ * Catalogue source of truth for the app: the published catalogue from `/api/catalog` only.
+ * Production never shows the bundled DEMO list; `vite dev` falls back to it when the API is unavailable.
  */
 export default function CatalogProvider({ children }: { children: ReactNode }) {
-  const [live, setLive] = useState<CatalogProduct[] | null>(null)
-  const [liveCategories, setLiveCategories] = useState<StoreCategory[] | null>(null)
+  const [snapshot, setSnapshot] = useState<Snapshot | null>(readCache)
+  const [fallback, setFallback] = useState(false)
   const [settled, setSettled] = useState(false)
 
   useEffect(() => {
-    const controller = new AbortController()
-    fetch('/api/catalog', { signal: controller.signal })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((body: { products?: CatalogProduct[]; categories?: StoreCategory[] } | null) => {
-        if (Array.isArray(body?.products)) setLive(body.products.map(withDemoPrice))
-        if (Array.isArray(body?.categories)) setLiveCategories(body.categories)
-      })
-      .catch(() => {})
-      .finally(() => !controller.signal.aborted && setSettled(true))
-    return () => controller.abort()
+    let active = true
+    void request?.then((fresh) => {
+      if (!active) return
+      if (fresh) setSnapshot(fresh)
+      else if (import.meta.env.DEV && !readCache()) setFallback(true)
+      setSettled(true)
+    })
+    return () => {
+      active = false
+    }
   }, [])
 
   const value = useMemo<CatalogState>(() => {
-    const products = live ?? bundled
+    const live = fallback ? null : snapshot
+    const products = live ? live.products.map(withDemoPrice) : fallback ? bundled : []
     const bySlug = new Map(products.map((p) => [p.slug, p]))
-    const categories = liveCategories ? liveCategories.map(toDisplayCategory) : demoCategories
-    return { products, categories, source: live ? 'live' : 'demo', status: settled ? 'ready' : 'loading', find: (slug) => (slug ? bySlug.get(slug) : undefined) }
-  }, [live, liveCategories, settled])
+    const categories = live ? live.categories.map(toDisplayCategory) : fallback ? demoCategories : []
+    return { products, categories, source: fallback ? 'demo' : 'live', status: settled ? 'ready' : 'loading', find: (slug) => (slug ? bySlug.get(slug) : undefined) }
+  }, [snapshot, fallback, settled])
 
   return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>
 }

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, type CSSProperties } from 'react'
 import { ChevronDown, LayoutGrid, LayoutList, RotateCcw, Search, SearchX, SlidersHorizontal, X } from 'lucide-react'
 import ProductCard from '../../components/commerce/ProductCard.tsx'
-import DemoNotice from '../../components/ui/DemoNotice.tsx'
+import CardSkeleton from '../../components/commerce/CardSkeleton.tsx'
 import EmptyState from '../../components/ui/EmptyState.tsx'
 import { buttonClass } from '../../components/ui/button.ts'
 import Drawer from '../../components/ui/Drawer.tsx'
@@ -19,7 +19,7 @@ const optionLabel = (facet: Facet, value: string) => facetOptions[facet].find((o
 
 export default function ProductsPage() {
   const { query, update, toggle, clearFilters } = useCatalogQuery()
-  const { products: catalog } = useCatalog()
+  const { products: catalog, status } = useCatalog()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const resultsRef = useRef<HTMLHeadingElement>(null)
 
@@ -223,6 +223,16 @@ export default function ProductsPage() {
                 <Pagination page={page} pageCount={pageCount} onChange={goToPage} />
               </div>
             </>
+          ) : status === 'loading' && catalog.length === 0 ? (
+            <ul aria-busy="true" aria-label="Loading products" className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 min-[90rem]:gap-[var(--grid-gap-lg)] min-[100rem]:grid-cols-3">
+              {[0, 1, 2, 3].map((i) => <li key={i}><CardSkeleton /></li>)}
+            </ul>
+          ) : catalog.length === 0 ? (
+            <div className="mt-[var(--heading-gap)]">
+              <EmptyState icon={SearchX} title="No products published yet">
+                Our catalogue is being prepared. Request a quote and our team will help with your project.
+              </EmptyState>
+            </div>
           ) : (
             <div className="mt-[var(--heading-gap)]">
               <EmptyState
@@ -240,13 +250,6 @@ export default function ProductsPage() {
             </div>
           )}
 
-          <div className="mt-6 rounded-[var(--radius-card)] border border-border/80 bg-cream/70 px-4 py-3">
-            <DemoNotice>
-              DEMO catalogue: entries are generic product types. Images are illustrative concepts or placeholders, not
-              official ULTRA product photographs. Prices marked DEMO are illustrative only; confirmed pricing and
-              availability are provided with your quote.
-            </DemoNotice>
-          </div>
         </section>
       </div>
 

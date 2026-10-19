@@ -4,9 +4,9 @@ import type { Category } from '../../data/demoCategories.ts'
 
 export interface CatalogState {
   products: CatalogProduct[]
-  /** Visible categories in admin-defined order (bundled DEMO list until the API answers). */
+  /** Visible categories in admin-defined order (empty until the API or the browser cache answers). */
   categories: Category[]
-  /** `demo` = bundled DEMO catalogue; `live` = verified catalogue served by the API. */
+  /** `demo` = bundled DEMO catalogue (dev-only fallback); `live` = catalogue served by the API. */
   source: 'demo' | 'live'
   status: 'loading' | 'ready'
   find: (slug: string | null | undefined) => CatalogProduct | undefined

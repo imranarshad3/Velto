@@ -44,4 +44,12 @@ describe('CMS image sizing', () => {
     assert.ok(!('displaySize' in original[0].image))
     assert.equal(result[0].image.width, 600, 'intrinsic dimensions remain intact')
   })
+
+  it('drops retired fields from content saved before their removal, but still rejects unknown ones', () => {
+    const original = defaultContent('home')
+    const saved = validContent('home', { ...original, fields: { ...original.fields, 'FeaturedProducts.field-7': 'Old demo notice' } })
+    assert.ok(saved)
+    assert.ok(!('FeaturedProducts.field-7' in saved.fields))
+    assert.equal(validContent('home', { ...original, fields: { ...original.fields, 'FeaturedProducts.field-99': 'x' } }), null)
+  })
 })

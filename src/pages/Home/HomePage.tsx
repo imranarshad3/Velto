@@ -1,4 +1,4 @@
-import { AddedSectionView } from '../../features/cms/AddedSections.tsx'
+import { AddedSectionView } from '../../features/cms/AddedSectionView.tsx'
 import { useContentReady, usePageContent } from '../../features/cms/context.ts'
 import ApplicationSolutions from './ApplicationSolutions.tsx'
 import CategoryPreview from './CategoryPreview.tsx'

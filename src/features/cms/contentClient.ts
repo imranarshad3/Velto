@@ -12,6 +12,9 @@ interface CachePayload {
 let inMemoryPages: Record<string, PageContent> | null = null
 let inMemoryEtag: string | null = null
 let inFlightPromise: Promise<Record<string, PageContent>> | null = null
+/** When the network last confirmed `inMemoryPages`; lets the provider reuse the startup preload instead of refetching. */
+let validatedAt = 0
+const FRESH_MS = 30_000
 const listeners = new Set<() => void>()
 
 function getStorage(): Storage | null {
@@ -52,6 +55,9 @@ export async function fetchPublishedContent(options?: {
     const pages = await inFlightPromise
     return { pages, updated: false }
   }
+  if (!options?.force && inMemoryPages && Date.now() - validatedAt < FRESH_MS) {
+    return { pages: inMemoryPages, updated: false }
+  }
 
   const runFetch = async (): Promise<Record<string, PageContent>> => {
     getCachedPublishedPages()
@@ -66,6 +72,7 @@ export async function fetchPublishedContent(options?: {
     })
 
     if (res.status === 304 && inMemoryPages) {
+      validatedAt = Date.now()
       return inMemoryPages
     }
 
@@ -80,6 +87,7 @@ export async function fetchPublishedContent(options?: {
 
     inMemoryPages = pages
     inMemoryEtag = etag ?? null
+    validatedAt = Date.now()
 
     const storage = getStorage()
     if (storage) {
@@ -114,6 +122,7 @@ export function onPublishedContentChange(callback: () => void): () => void {
 }
 
 export function notifyPublishedContentChanged() {
+  validatedAt = 0
   inMemoryPages = null
   inMemoryEtag = null
   const storage = getStorage()
@@ -143,6 +152,7 @@ if (typeof window !== 'undefined') {
       const channel = new BroadcastChannel(BROADCAST_CHANNEL)
       channel.onmessage = (e) => {
         if (e.data?.type === 'published_update') {
+          validatedAt = 0
           inMemoryPages = null
           inMemoryEtag = null
           listeners.forEach((fn) => fn())
@@ -153,13 +163,8 @@ if (typeof window !== 'undefined') {
     }
   }
 
-  window.addEventListener('storage', (e) => {
-    if (e.key === CACHE_KEY) {
-      inMemoryPages = null
-      inMemoryEtag = null
-      listeners.forEach((fn) => fn())
-    }
-  })
+  // No `storage` listener: every cache write changes the stored timestamp, so open tabs would keep
+  // force-refetching each other. Publishes reach other tabs through the BroadcastChannel above.
 
   window.addEventListener('novaro:published', () => {
     notifyPublishedContentChanged()

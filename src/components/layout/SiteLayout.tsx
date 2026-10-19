@@ -1,5 +1,6 @@
-import AddedSections from '../../features/cms/AddedSections.tsx'
+import { lazy, Suspense } from 'react'
 import ContentProvider from '../../features/cms/ContentProvider.tsx'
+import { useContentState } from '../../features/cms/context.ts'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router'
 import CatalogProvider from '../../features/catalog/CatalogProvider.tsx'
 import AuthProvider from '../../lib/auth/AuthProvider.tsx'
@@ -9,6 +10,19 @@ import Footer from './Footer.tsx'
 import Header from './Header.tsx'
 import Toaster from './Toaster.tsx'
 import WishlistSync from '../../features/wishlist/WishlistSync.tsx'
+
+// The page registry is admin-sized; load it only when published content actually has editor-added sections.
+const AddedSections = lazy(() => import('../../features/cms/AddedSections.tsx'))
+
+function CustomSections() {
+  const { pages } = useContentState()
+  if (!Object.values(pages).some((page) => page.sections?.length)) return null
+  return (
+    <Suspense fallback={null}>
+      <AddedSections />
+    </Suspense>
+  )
+}
 
 export default function SiteLayout() {
   // The admin console is an app, not a marketing page: it renders its own top bar, no storefront chrome.
@@ -28,7 +42,7 @@ export default function SiteLayout() {
       {admin ? <AdminTopBar /> : <Header />}
       <main id="main" tabIndex={-1} className="focus:outline-none">
         <Outlet />
-        {!admin && <AddedSections />}
+        {!admin && <CustomSections />}
       </main>
       {!admin && <Footer />}
       <WishlistSync />

@@ -86,5 +86,18 @@ export default defineConfig(({ mode }) => {
   assertNoBrowserSecrets(mode)
   return {
     plugins: [react(), tailwindcss(), devApi(mode)],
+    build: {
+      rolldownOptions: {
+        output: {
+          // Stable vendor chunks: app releases no longer invalidate the cached framework/auth code.
+          codeSplitting: {
+            groups: [
+              { name: 'react', test: /node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/, priority: 2 },
+              { name: 'clerk', test: /node_modules[\\/](@clerk|@tanstack|swr|dequal|js-cookie)[\\/]/, priority: 1 },
+            ],
+          },
+        },
+      },
+    },
   }
 })

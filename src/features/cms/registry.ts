@@ -246,12 +246,6 @@ export const pageDefinitions: PageDefinition[] = [
             "label": "Products",
             "value": " Products",
             "kind": "text"
-          },
-          {
-            "key": "FeaturedProducts.field-7",
-            "label": "DEMO preview: product images are illustrative concepts, not offic",
-            "value": "DEMO preview: product images are illustrative concepts, not official ULTRA product photographs. Names, pricing and availability will be published once verified.",
-            "kind": "text"
           }
         ]
       },
