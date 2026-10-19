@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: CMS Caching, ETag, and Invalidation
+    # Subtest: returns ETag and supports 304 Not Modified on unchanged content
+    ok 1 - returns ETag and supports 304 Not Modified on unchanged content
+      ---
+      duration_ms: 45.506265
+      type: 'test'
+      ...
+    # Subtest: invalidates cache and updates ETag when content is published
+    ok 2 - invalidates cache and updates ETag when content is published
+      ---
+      duration_ms: 20.317282
+      type: 'test'
+      ...
+    1..2
+ok 1 - CMS Caching, ETag, and Invalidation
+  ---
+  duration_ms: 67.960452
+  type: 'suite'
+  ...
+# Subtest: CMS image sizing
+    # Subtest: accepts bounded relative lengths and rejects unsafe or unsupported values
+    ok 1 - accepts bounded relative lengths and rejects unsafe or unsupported values
+      ---
+      duration_ms: 3.279274
+      type: 'test'
+      ...
+    # Subtest: allows dimensions only for known image fields, including custom sections
+    ok 2 - allows dimensions only for known image fields, including custom sections
+      ---
+      duration_ms: 22.729149
+      type: 'test'
+      ...
+    # Subtest: sizes collection images by field identity without mutating source data
+    ok 3 - sizes collection images by field identity without mutating source data
+      ---
+      duration_ms: 0.661338
+      type: 'test'
+      ...
+    # Subtest: drops retired fields from content saved before their removal, but still rejects unknown ones
+    ok 4 - drops retired fields from content saved before their removal, but still rejects unknown ones
+      ---
+      duration_ms: 2.788985
+      type: 'test'
+      ...
+    1..4
+ok 2 - CMS image sizing
+  ---
+  duration_ms: 31.917925
+  type: 'suite'
+  ...
+1..2
+# tests 6
+# suites 2
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1392.970148

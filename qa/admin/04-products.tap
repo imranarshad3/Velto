@@ -1,0 +1,66 @@
+TAP version 13
+# Subtest: admin products and public catalogue
+    # Subtest: creates, validates and publishes products; prices public only when verified
+    ok 1 - creates, validates and publishes products; prices public only when verified
+      ---
+      duration_ms: 92.224143
+      type: 'test'
+      ...
+    # Subtest: rejects duplicates and unsafe input
+    ok 2 - rejects duplicates and unsafe input
+      ---
+      duration_ms: 15.82296
+      type: 'test'
+      ...
+    1..2
+ok 1 - admin products and public catalogue
+  ---
+  duration_ms: 110.942308
+  type: 'suite'
+  ...
+# Subtest: product status and delete
+    # Subtest: moves a product between published, draft and archived
+    ok 1 - moves a product between published, draft and archived
+      ---
+      duration_ms: 9.336437
+      type: 'test'
+      ...
+    # Subtest: keeps archive state through edits and un-archives on publish
+    ok 2 - keeps archive state through edits and un-archives on publish
+      ---
+      duration_ms: 5.170159
+      type: 'test'
+      ...
+    # Subtest: validates status values and unknown products
+    ok 3 - validates status values and unknown products
+      ---
+      duration_ms: 2.358366
+      type: 'test'
+      ...
+    # Subtest: never exposes the archived flag publicly
+    ok 4 - never exposes the archived flag publicly
+      ---
+      duration_ms: 1.527407
+      type: 'test'
+      ...
+    # Subtest: deletes unused products and refuses products in open quote requests
+    ok 5 - deletes unused products and refuses products in open quote requests
+      ---
+      duration_ms: 11.751033
+      type: 'test'
+      ...
+    1..5
+ok 2 - product status and delete
+  ---
+  duration_ms: 31.423916
+  type: 'suite'
+  ...
+1..2
+# tests 7
+# suites 2
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 811.452644

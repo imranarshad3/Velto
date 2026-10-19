@@ -1,0 +1,82 @@
+[
+  [
+    "Authentication and sessions",
+    "/admin; /api/admin/me",
+    "auth.test.ts"
+  ],
+  [
+    "Roles and team protection",
+    "/admin/team; roles; workspace-access; assignees",
+    "protected-admin.test.ts"
+  ],
+  [
+    "Dashboard",
+    "/admin; overview",
+    "admin.test.ts"
+  ],
+  [
+    "Products and inventory",
+    "/admin/products; /admin/products/:slug; products; product-status",
+    "admin.test.ts; product-editor.test.ts"
+  ],
+  [
+    "AI product photo assistant",
+    "products/ai-generate",
+    "aiProduct.test.ts"
+  ],
+  [
+    "Categories",
+    "/admin/categories; categories; categories/order",
+    "admin.test.ts"
+  ],
+  [
+    "Orders and tracking",
+    "/admin/orders; /admin/orders/:orderId; /api/orders",
+    "orders.test.ts; order-tracking.test.ts; order-view.test.ts"
+  ],
+  [
+    "Project consultations",
+    "/admin/quotes; /admin/quotes/:reference; quotes",
+    "admin.test.ts; quotes.test.ts"
+  ],
+  [
+    "Analytics",
+    "/admin/analytics; analytics; /api/track/view",
+    "analytics.test.ts"
+  ],
+  [
+    "Customers and messages",
+    "/admin/customers; /admin/messages; customers; messages",
+    "admin.test.ts"
+  ],
+  [
+    "CMS website/pages/settings",
+    "/admin/website; /admin/pages; /admin/settings; cms/:page; cms/:page/revisions; /api/content",
+    "workspace.test.ts; cms-image-sizing.test.ts; cms-caching-performance.test.ts"
+  ],
+  [
+    "Media library",
+    "/admin/media; media/:id",
+    "workspace.test.ts"
+  ],
+  [
+    "CRM and sales pipeline",
+    "/admin/pipeline; leads/:id; leads/:id/events",
+    "workspace.test.ts"
+  ],
+  [
+    "Resources and coverage",
+    "/admin/resources; resources; uploads; coverage",
+    "resources.test.ts"
+  ],
+  [
+    "Invitations",
+    "/admin/team; team; invitations",
+    "team.test.ts"
+  ],
+  [
+    "Database isolation and RLS",
+    "Supabase tables, RPCs, storage",
+    "supabase.integration.test.ts; tests/sql/*.sql"
+  ]
+]

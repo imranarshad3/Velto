@@ -75,16 +75,24 @@ function devApi(mode: string): Plugin {
   }
 }
 
-/** Everything VITE_-prefixed ships to the browser, so refuse names that look like server secrets. */
+/**
+ * Prefixes exposed to the browser. NEXT_PUBLIC_ is included because the Clerk Vercel integration
+ * provisions the publishable key as NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and keeps it in sync; reading
+ * that name directly avoids a hand-copied duplicate that goes stale when the key rotates.
+ */
+const browserEnvPrefixes = ['VITE_', 'NEXT_PUBLIC_']
+
+/** Everything with a browser prefix ships to the browser, so refuse names that look like server secrets. */
 function assertNoBrowserSecrets(mode: string) {
-  const leaked = Object.keys(loadEnv(mode, process.cwd(), 'VITE_')).filter((key) => /SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|DB_URL|JWT_KEY/i.test(key))
-  if (leaked.length) throw new Error(`Server-only secrets must not use the VITE_ prefix: ${leaked.join(', ')}`)
+  const leaked = Object.keys(loadEnv(mode, process.cwd(), browserEnvPrefixes)).filter((key) => /SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|DB_URL|JWT_KEY/i.test(key))
+  if (leaked.length) throw new Error(`Server-only secrets must not use a browser prefix (${browserEnvPrefixes.join(', ')}): ${leaked.join(', ')}`)
 }
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   assertNoBrowserSecrets(mode)
   return {
+    envPrefix: browserEnvPrefixes,
     plugins: [react(), tailwindcss(), devApi(mode)],
     build: {
       rolldownOptions: {

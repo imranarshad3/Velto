@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: valid vision response is validated and image is decoded and normalized
+ok 1 - valid vision response is validated and image is decoded and normalized
+  ---
+  duration_ms: 61.541145
+  type: 'test'
+  ...
+# Subtest: rejects unavailable config, invalid images and excessive bytes before provider calls
+ok 2 - rejects unavailable config, invalid images and excessive bytes before provider calls
+  ---
+  duration_ms: 11.339276
+  type: 'test'
+  ...
+# Subtest: provider errors, malformed drafts, truncated output and operational fields fail safely
+ok 3 - provider errors, malformed drafts, truncated output and operational fields fail safely
+  ---
+  duration_ms: 24.026893
+  type: 'test'
+  ...
+# Subtest: timeout returns a recoverable error
+ok 4 - timeout returns a recoverable error
+  ---
+  duration_ms: 11.587089
+  type: 'test'
+  ...
+# Subtest: merge preserves manual data, live edits, operational fields and existing slugs
+ok 5 - merge preserves manual data, live edits, operational fields and existing slugs
+  ---
+  duration_ms: 1.200782
+  type: 'test'
+  ...
+# Subtest: AI API enforces auth, origin, schema, limits and does not save a product
+ok 6 - AI API enforces auth, origin, schema, limits and does not save a product
+  ---
+  duration_ms: 20.339397
+  type: 'test'
+  ...
+# Subtest: Ollama fallback runs once for provider errors, never for bad input
+ok 7 - Ollama fallback runs once for provider errors, never for bad input
+  ---
+  duration_ms: 6.861428
+  type: 'test'
+  ...
+# Subtest: near-miss model output is normalized instead of failing; fenced JSON is accepted
+ok 8 - near-miss model output is normalized instead of failing; fenced JSON is accepted
+  ---
+  duration_ms: 8.448077
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1057.985172

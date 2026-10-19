@@ -33,4 +33,6 @@ export const AuthContext = createContext<AppAuth>(guestAuth)
 
 export const useAppAuth = () => useContext(AuthContext)
 
-export const clerkPublishableKey: string | undefined = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || undefined
+/** VITE_ wins; NEXT_PUBLIC_ is the name the Clerk Vercel integration provisions and keeps current. */
+export const clerkPublishableKey: string | undefined =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || import.meta.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || undefined
