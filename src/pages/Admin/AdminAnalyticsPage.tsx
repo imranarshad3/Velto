@@ -105,7 +105,7 @@ export default function AdminAnalyticsPage() {
 
           const term = filter.trim().toLowerCase()
           const rows = a.products
-            .filter((r) => !term || [r.name, r.slug, categoryName.get(r.categorySlug) ?? ''].some((v) => v.toLowerCase().includes(term)))
+            .filter((r) => !term || [r.name, r.slug, (r.categoryName ?? categoryName.get(r.categorySlug)) ?? ''].some((v) => v.toLowerCase().includes(term)))
             .sort((x, y) => (sortValue[sort.key](x) - sortValue[sort.key](y)) * sort.dir || x.name.localeCompare(y.name))
 
           const kpis = [
@@ -223,7 +223,7 @@ export default function AdminAnalyticsPage() {
                               {r.name}
                             </Link>
                             <span className="block text-[0.8125rem] text-muted">
-                              {categoryName.get(r.categorySlug) ?? r.slug}
+                              {(r.categoryName ?? categoryName.get(r.categorySlug)) ?? r.slug}
                               {!r.published && ' · Hidden'}
                               {quantityText(r.requestedQuantity) && ` · ${quantityText(r.requestedQuantity)}`}
                             </span>

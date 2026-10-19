@@ -16,13 +16,13 @@ const nav = [
   { to: '/admin/website', label: 'Website Editor', icon: PanelsTopLeft },
   { to: '/admin/pages', label: 'Pages & Sections', icon: FileText },
   { to: '/admin/media', label: 'Media Library', icon: Image },
-  { to: '/admin/categories', label: 'Categories', icon: Grid2X2 },
   { to: '/admin/pipeline', label: 'Sales Pipeline', icon: Kanban },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
   { to: '/admin/analytics', label: 'Analytics', icon: ChartNoAxesCombined },
   { to: '/admin/orders', label: 'Orders', icon: Package },
   { to: '/admin/quotes', label: 'Project consultations', icon: ClipboardList },
   { to: '/admin/products', label: 'Products', icon: Package },
+  { to: '/admin/categories', label: 'Categories', icon: Grid2X2 },
   { to: '/admin/resources', label: 'Resources', icon: FileText },
   { to: '/admin/customers', label: 'CRM / Customers', icon: Users },
   { to: '/admin/messages', label: 'Messages', icon: Mail },
@@ -31,7 +31,7 @@ const nav = [
 
 const darkFocus = 'focus-visible:outline-mint'
 /** Site-building and pipeline tools grouped under one collapsible "Management" menu. */
-const managementPaths = new Set(['/admin/website', '/admin/pages', '/admin/media', '/admin/categories', '/admin/pipeline', '/admin/settings'])
+const managementPaths = new Set(['/admin/website', '/admin/pages', '/admin/media', '/admin/pipeline', '/admin/settings'])
 type NavEntry = (typeof nav)[number]
 
 function NavItem({ to, label, icon: Icon, end, nested = false }: NavEntry & { nested?: boolean }) {
@@ -100,7 +100,7 @@ export default function AdminLayout() {
   // Collapsing only applies to the desktop sidebar; below lg the nav is a compact strip.
   const collapsed = useMediaQuery('(min-width: 64rem)') && sidebarCollapsed
   // Visual editing tools take the full viewport instead of the padded, max-width page column.
-  const fullBleed = /^\/admin\/(website|categories)\/?$/.test(location.pathname)
+  const fullBleed = /^\/admin\/website\/?$/.test(location.pathname)
   if (seenPath !== location.pathname) {
     setSeenPath(location.pathname)
     if (inManagement) setOpen(true)
@@ -148,7 +148,7 @@ export default function AdminLayout() {
     )
   }
 
-  const allowed = nav.filter(item => !role || canAccess(role, ({website:'cms',pages:'cms',categories:'cms',pipeline:'leads'} as Record<string,string>)[item.to.split('/')[2]] ?? item.to.split('/')[2] ?? 'overview'))
+  const allowed = nav.filter(item => !role || canAccess(role, ({website:'cms',pages:'cms',pipeline:'leads'} as Record<string,string>)[item.to.split('/')[2]] ?? item.to.split('/')[2] ?? 'overview'))
   const managed = allowed.filter(item => managementPaths.has(item.to))
   const topLevel = allowed.filter(item => !managementPaths.has(item.to))
   const groupAt = topLevel[0]?.to === '/admin' ? 1 : 0

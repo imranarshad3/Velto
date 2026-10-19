@@ -1,8 +1,8 @@
-import { useContent } from '../../features/cms/context.ts'
+import { useContent, useContentReady } from '../../features/cms/context.ts'
 import { Link } from 'react-router'
 import { ArrowRight, Calculator, FileText, LifeBuoy, Map as MapIcon, Search, type LucideIcon } from 'lucide-react'
 import HelpBanner from '../../components/commerce/HelpBanner.tsx'
-import PageHeader from '../../components/ui/PageHeader.tsx'
+import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { useResources } from '../../features/resources/useResources.ts'
@@ -24,11 +24,21 @@ const resources: ResourceTile[] = [
 ]
 
 export default function ResourcesPage() {
+  const ready = useContentReady('resources')
   const cms = useContent('resources', 'ResourcesPage')
   const { products } = useCatalog()
   const [state] = useResources()
   const docCount = state.kind === 'ready' ? state.data.resources.length + products.filter((p) => p.verified).reduce((n, p) => n + (p.documents?.length ?? 0), 0) : null
   const calcCount = state.kind === 'ready' ? state.data.coverage.length : null
+
+  if (!ready) {
+    return (
+      <>
+        <title>Technical Resources — VELTO</title>
+        <PageHeaderSkeleton />
+      </>
+    )
+  }
 
   return (
     <>

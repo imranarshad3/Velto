@@ -1,17 +1,26 @@
-import { useContentData } from '../../features/cms/context.ts'
-import { useContent } from '../../features/cms/context.ts'
+import { useContentData, useContent, useContentReady } from '../../features/cms/context.ts'
 import HelpBanner from '../../components/commerce/HelpBanner.tsx'
 import Img from '../../components/ui/Img.tsx'
-import PageHeader from '../../components/ui/PageHeader.tsx'
+import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import { applicationDetails as defaultapplicationDetails } from '../../data/applications.ts'
 import { applications as defaultapplications } from '../../data/homeContent.ts'
 import ApplicationCard from './ApplicationCard.tsx'
 
 export default function ApplicationsPage() {
+  const ready = useContentReady('applications')
   const applicationDetails = useContentData('applications', 'ApplicationDetails.data', defaultapplicationDetails)
   const applications = useContentData('applications', 'Applications.data', defaultapplications)
   const cms = useContent('applications', 'ApplicationsPage')
+
+  if (!ready) {
+    return (
+      <>
+        <title>Shop by Area — VELTO</title>
+        <PageHeaderSkeleton />
+      </>
+    )
+  }
   const preview = applications.slice(0, 3).map((a) => applicationDetails[a.slug]?.image).filter((i) => i !== undefined)
 
   return (

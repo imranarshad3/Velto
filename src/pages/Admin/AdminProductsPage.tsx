@@ -22,6 +22,7 @@ import {
   Trash2,
   TriangleAlert,
   X,
+  Archive,
 } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import Img from '../../components/ui/Img.tsx'
@@ -46,7 +47,8 @@ import Menu from './Menu.tsx'
 import { fmt } from './analytics/format.ts'
 import { td, th, tr } from './ui.tsx'
 
-const categoryName = new Map(demoCategories.map((c) => [c.slug, c.name]))
+const builtInNames = new Map(demoCategories.map((c) => [c.slug, c.name]))
+const categoryLabel = (r: { categorySlug: string; categoryName?: string }) => r.categoryName ?? builtInNames.get(r.categorySlug) ?? r.categorySlug
 const PAGE_SIZE = 10
 
 /** Real server-side analytics; null when analytics could not be loaded (shown as "—", never invented). */
@@ -82,7 +84,7 @@ const sortOptions: { value: string; label: string; sort: Sort }[] = [
 const priceText = (p: Row) => displayPrice(p) ?? (p.price ? 'Unverified price' : 'On request')
 const sortValue: Record<SortKey, (r: Row) => string | number> = {
   name: (r) => r.name.toLowerCase(),
-  category: (r) => categoryName.get(r.categorySlug) ?? r.categorySlug,
+  category: (r) => categoryLabel(r),
   price: (r) => (r.verified && r.price ? r.price.amount : -1),
   views: (r) => r.stats?.views ?? -1,
   quotes: (r) => r.stats?.quotes ?? -1,
@@ -200,7 +202,7 @@ export default function AdminProductsPage() {
   const setRows = (update: (rs: Row[]) => Row[]) => setLocal((l) => (loaded ? { source: loaded, rows: update(l?.source === loaded ? l.rows : loaded) } : l))
 
   const [tab, setTab] = useState<Tab>('all')
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState(() => new URLSearchParams(location.search).get('category') ?? '')
   const [draft, setDraft] = useState('')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<Sort>(null)
@@ -208,13 +210,14 @@ export default function AdminProductsPage() {
   const [busy, setBusy] = useState<string | null>(null)
   const [toDelete, setToDelete] = useState<Row | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteBlocked, setDeleteBlocked] = useState(false)
 
   const inCategory = useMemo(() => (rows ?? []).filter((r) => !category || r.categorySlug === category), [rows, category])
   const counts = useMemo(() => Object.fromEntries(tabs.map((t) => [t.value, inCategory.filter(t.match).length])) as Record<Tab, number>, [inCategory])
   const shown = useMemo(() => {
     const term = query.trim().toLowerCase()
     const match = tabs.find((t) => t.value === tab)!.match
-    const list = inCategory.filter((r) => match(r) && (!term || [r.name, r.slug, categoryName.get(r.categorySlug) ?? ''].some((v) => v.toLowerCase().includes(term))))
+    const list = inCategory.filter((r) => match(r) && (!term || [r.name, r.slug, categoryLabel(r)].some((v) => v.toLowerCase().includes(term))))
     if (!sort) return list
     const value = sortValue[sort.key]
     return [...list].sort((a, b) => {
@@ -275,6 +278,7 @@ export default function AdminProductsPage() {
     if (!toDelete) return
     setBusy(toDelete.slug)
     setDeleteError(null)
+    setDeleteBlocked(false)
     try {
       await adminApi.deleteProduct(await token(), toDelete.slug)
       setRows((rs) => rs.filter((r) => r.slug !== toDelete.slug))
@@ -282,13 +286,20 @@ export default function AdminProductsPage() {
       setToDelete(null)
     } catch (error) {
       setDeleteError(error instanceof QuoteApiError ? error.message : 'The product could not be deleted. Please try again.')
+      setDeleteBlocked(error instanceof QuoteApiError && error.code === 'product_in_use')
     } finally {
       setBusy(null)
     }
   }
 
+  const archiveInstead = async (p: Row) => {
+    setToDelete(null)
+    await changeStatus(p, 'archived')
+  }
+
   const askDelete = (p: Row) => {
     setDeleteError(null)
+    setDeleteBlocked(false)
     setToDelete(p)
   }
 
@@ -342,6 +353,7 @@ export default function AdminProductsPage() {
       <RemoteState state={state} reload={reload} skeleton={5}>
         {({ analytics }) => {
           const all = rows ?? []
+          const categoryOptions = [...new Map(all.map((r) => [r.categorySlug, { slug: r.categorySlug, name: categoryLabel(r) }])).values()].sort((x, y) => x.name.localeCompare(y.name))
           const kpis = [
             { label: 'Total products', value: fmt.format(all.length), hint: `${all.filter((r) => !r.verified).length} demo · ${all.filter((r) => r.status === 'archived').length} archived`, icon: Package, tone: 'ink' as const },
             { label: 'Published', value: fmt.format(all.filter((r) => r.status === 'published').length), hint: 'Visible in the store', icon: Store, tone: 'forest' as const },
@@ -429,7 +441,7 @@ export default function AdminProductsPage() {
                       className={selectClass}
                     >
                       <option value="">All categories</option>
-                      {demoCategories.map((c) => (
+                      {categoryOptions.map((c) => (
                         <option key={c.slug} value={c.slug}>
                           {c.name}
                         </option>
@@ -469,7 +481,7 @@ export default function AdminProductsPage() {
                       'No products'
                     )}
                     {query && <> matching “{query}”</>}
-                    {category && <> in {categoryName.get(category)}</>}
+                    {category && <> in {categoryOptions.find((c) => c.slug === category)?.name ?? category}</>}
                   </p>
                   {filtered && (
                     <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center gap-1 font-semibold text-forest hover:underline">
@@ -530,7 +542,7 @@ export default function AdminProductsPage() {
                                   </span>
                                 </span>
                               </td>
-                              <td className={`${td} text-[0.875rem] text-muted`}>{categoryName.get(p.categorySlug) ?? p.categorySlug}</td>
+                              <td className={`${td} text-[0.875rem] text-muted`}>{categoryLabel(p)}</td>
                               <td className={`${td} whitespace-nowrap ${p.verified && p.price ? 'font-semibold text-ink tabular-nums' : 'text-[0.875rem] text-muted'}`}>{priceText(p)}</td>
                               <td className={`${td} text-right`}>
                                 <Metric total={p.stats?.views} recent={p.stats?.views30} />
@@ -559,7 +571,7 @@ export default function AdminProductsPage() {
                               <Link to={`/admin/products/${p.slug}`} className="font-semibold text-ink hover:text-forest hover:underline">
                                 {p.name}
                               </Link>
-                              <p className="text-[0.8125rem] text-muted">{categoryName.get(p.categorySlug) ?? p.categorySlug}</p>
+                              <p className="text-[0.8125rem] text-muted">{categoryLabel(p)}</p>
                               <p className="mt-1 flex flex-wrap items-center gap-2 text-[0.875rem]">
                                 <span className={p.verified && p.price ? 'font-semibold text-ink' : 'text-muted'}>{priceText(p)}</span>
                                 {!p.verified && <Badge tone="copper">Demo</Badge>}
@@ -613,7 +625,13 @@ export default function AdminProductsPage() {
         onCancel={() => setToDelete(null)}
         onConfirm={() => void confirmDelete()}
       >
-        This permanently removes the product, its wishlist entries and its view statistics. It can’t be undone. Products in quote requests can’t be deleted; archive them instead.
+        This permanently removes the product, its wishlist entries and its view statistics. It can’t be undone. Products in open quote requests (not yet closed or cancelled) can’t be deleted.
+        {deleteBlocked && toDelete && toDelete.status !== 'archived' && (
+          <button type="button" onClick={() => void archiveInstead(toDelete)} className={buttonClass('secondary', 'sm', 'mt-4 w-full')}>
+            <Archive aria-hidden="true" className="size-4" />
+            Archive instead (hide from store)
+          </button>
+        )}
       </ConfirmDialog>
     </>
   )

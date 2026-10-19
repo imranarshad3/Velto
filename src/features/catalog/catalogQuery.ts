@@ -142,8 +142,8 @@ export const activeFilterCount = (query: CatalogQuery) =>
   query.categories.length + query.applications.length + query.areas.length
 
 /** Include saved custom categories without changing global filter state. */
-export function productCategories(products: CatalogProduct[]) {
-  const entries = new Map(demoCategories.map(c => [c.slug, { value: c.slug, label: c.name }]))
+export function productCategories(products: CatalogProduct[], categories: { slug: string; name: string }[] = demoCategories) {
+  const entries = new Map(categories.map(c => [c.slug, { value: c.slug, label: c.name }]))
   for (const p of products) if (!entries.has(p.categorySlug)) entries.set(p.categorySlug, { value: p.categorySlug, label: p.categoryName || p.categorySlug.replaceAll('-', ' ') })
   return [...entries.values()]
 }

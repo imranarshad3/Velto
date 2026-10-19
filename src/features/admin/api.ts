@@ -1,4 +1,5 @@
 import type { ProductInput } from '../catalog/productSchema.ts'
+import type { AdminCategory, CategoryInput } from '../catalog/categorySchema.ts'
 import type { CoverageInput, ResourceInput } from '../resources/schema.ts'
 import type { ProductCoverage, TechnicalResource } from '../resources/types.ts'
 import { call, QuoteApiError } from '../quotes/api.ts'
@@ -26,6 +27,12 @@ export const adminApi = {
   setProductStatus: (t: string, slug: string, status: ProductStatus) =>
     admin<{ product: AdminProduct }>(`product-status/${encodeURIComponent(slug)}`, t, { method: 'PATCH', body: JSON.stringify({ status }) }),
   deleteProduct: (t: string, slug: string) => admin<{ ok: true }>(`products/${encodeURIComponent(slug)}`, t, { method: 'DELETE' }),
+  categories: (t: string) => admin<{ categories: AdminCategory[] }>('categories', t),
+  saveCategory: (t: string, slug: string | null, body: CategoryInput) =>
+    admin<{ category: AdminCategory }>(slug ? `categories/${encodeURIComponent(slug)}` : 'categories', t, { method: slug ? 'PATCH' : 'POST', body: JSON.stringify(body) }),
+  reorderCategories: (t: string, slugs: string[]) => admin<{ categories: AdminCategory[] }>('categories/order', t, { method: 'PUT', body: JSON.stringify({ slugs }) }),
+  deleteCategory: (t: string, slug: string, moveTo?: string) =>
+    admin<{ ok: true }>(`categories/${encodeURIComponent(slug)}${moveTo ? `?moveTo=${encodeURIComponent(moveTo)}` : ''}`, t, { method: 'DELETE' }),
   team: (t: string) => admin<AdminTeam>('team', t),
   inviteAdmin: (t: string, email: string) =>
     admin<{ id: string; email: string; delivery: 'sent' | 'existing_user' | 'not_sent'; link: string }>('team/invites', t, { method: 'POST', body: JSON.stringify({ email }) }),

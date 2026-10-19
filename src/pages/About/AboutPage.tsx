@@ -1,10 +1,9 @@
-import { useContentData } from '../../features/cms/context.ts'
-import { useContent } from '../../features/cms/context.ts'
+import { useContentData, useContent, useContentReady } from '../../features/cms/context.ts'
+import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import { ArrowRight, BookOpen, Check, ClipboardList, Compass, LayoutGrid } from 'lucide-react'
 import HelpBanner from '../../components/commerce/HelpBanner.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import Img from '../../components/ui/Img.tsx'
-import PageHeader from '../../components/ui/PageHeader.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
 import { buttonArrow } from '../../components/ui/button.ts'
@@ -25,12 +24,22 @@ const audiences = ['Builders and contractors', 'Architects and specifiers', 'Dev
 
 
 export default function AboutPage() {
+  const ready = useContentReady('about')
   const demoCategories = useContentData('categories', 'Categories.data', defaultdemoCategories)
   const mosaic = ['tile-adhesives', 'waterproofing', 'flooring-solutions', 'concrete-repair'].flatMap((slug) => {
     const c = demoCategories.find((x) => x.slug === slug)
     return c?.image ? [{ name: c.name, image: c.image }] : []
   })
   const cms = useContent('about', 'AboutPage')
+
+  if (!ready) {
+    return (
+      <>
+        <title>About — VELTO</title>
+        <PageHeaderSkeleton aside />
+      </>
+    )
+  }
   return (
     <>
       <title>{cms("field-1", "About — VELTO")}</title>

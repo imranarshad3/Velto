@@ -3,7 +3,7 @@ import { ArrowRight, ImageOff, LockKeyhole, MailCheck, Package } from 'lucide-re
 import Img from '../../components/ui/Img.tsx'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import { productPath } from '../../data/catalog.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
+import { useCatalog } from '../../features/catalog/catalogContext.ts'
 
 const steps = [
   { title: 'Send your request', text: 'Share the products, quantities and project details.' },
@@ -17,6 +17,7 @@ const assurances = [
 ]
 
 export default function QuoteSidebar({ products }: { products: CatalogProduct[] }) {
+  const { categories } = useCatalog()
   return (
     <aside aria-label="Quote summary" className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[calc(var(--header-height)+1.5rem)]">
       <section aria-labelledby="selected-product-title" className="overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)]">
@@ -32,7 +33,7 @@ export default function QuoteSidebar({ products }: { products: CatalogProduct[] 
           {products.length ? (
             <ul className="-my-1 flex max-h-[22rem] flex-col overflow-y-auto">
               {products.map((product) => {
-                const category = demoCategories.find((c) => c.slug === product.categorySlug)
+                const category = categories.find((c) => c.slug === product.categorySlug) ?? (product.categoryName ? { name: product.categoryName } : undefined)
                 return (
                   <li key={product.slug} className="flex items-center gap-3 border-b border-border/70 py-3 last:border-0">
                     <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-[radial-gradient(circle_at_50%_35%,var(--color-surface),var(--color-cream)_75%)] p-1 ring-1 ring-border ring-inset">

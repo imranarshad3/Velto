@@ -93,3 +93,17 @@ test('Ollama fallback runs once for provider errors, never for bad input', async
     return response(draft)
   } })(input)
 })
+
+test('near-miss model output is normalized instead of failing; fenced JSON is accepted', async () => {
+  const messy = { ...draft, slug: 'Tile Adhesive!', categorySlug: '', categoryName: 'Tile Adhesives', applications: ['bathrooms', 'spaceships'], benefits: ['', 'Strong bond'], specifications: [{ label: 'Pack' }, { label: 'Weight', value: '20 kg' }], description: 'x'.repeat(5000), confidence: 'certain', $schema: 'x' }
+  delete (messy as Partial<AiProductDraft>).faq
+  const result = await createProductGenerator({ apiKey: 'test', fetcher: async () => response('Here you go:\n```json\n' + JSON.stringify(messy) + '\n```') })(input)
+  assert.equal(result.slug, 'tile-adhesive')
+  assert.equal(result.categorySlug, 'tile-adhesives')
+  assert.deepEqual(result.applications, ['bathrooms'])
+  assert.deepEqual(result.benefits, ['Strong bond'])
+  assert.deepEqual(result.specifications, [{ label: 'Weight', value: '20 kg' }])
+  assert.deepEqual(result.faq, [])
+  assert.equal(result.description.length, 4000)
+  assert.equal(result.confidence, 'low')
+})

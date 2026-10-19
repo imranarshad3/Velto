@@ -75,6 +75,8 @@ describe('admin authorisation', () => {
       ['GET', 'products'], ['POST', 'products', product], ['PATCH', 'products/tile-adhesive', product], ['GET', 'customers'],
       ['GET', 'messages'], ['PATCH', 'messages/00000000-0000-0000-0000-000000000000', { status: 'read' }],
       ['GET', 'analytics'], ['PATCH', 'product-status/tile-adhesive', { status: 'archived' }], ['DELETE', 'products/tile-adhesive'],
+      ['GET', 'categories'], ['POST', 'categories', { slug: 'x-cat', name: 'X Cat' }], ['PATCH', 'categories/waterproofing', { slug: 'waterproofing', name: 'Hacked' }],
+      ['PUT', 'categories/order', { slugs: ['waterproofing'] }], ['DELETE', 'categories/waterproofing'],
     ]
     for (const [method, path, body] of routes) {
       assert.equal((await call(method, path, undefined, body)).status, 401, `guest ${method} ${path}`)
@@ -228,17 +230,74 @@ describe('product status and delete', () => {
     assert.equal('archived' in products[0], false)
   })
 
-  it('deletes unused products and refuses products in quote requests', async () => {
+  it('deletes unused products and refuses products in open quote requests', async () => {
     const slugs = (await store.listProducts({ includeUnpublished: true })).map((p) => p.slug)
     const unused = slugs.find((s) => s !== 'tile-adhesive')!
     assert.equal((await call('DELETE', `products/${unused}`, 'admin')).status, 200)
     assert.equal(await adminProduct(unused), undefined)
     assert.equal((await call('DELETE', `products/${unused}`, 'admin')).status, 404)
 
-    await submitQuote()
+    const { reference } = await submitQuote()
     const res = await call('DELETE', 'products/tile-adhesive', 'admin')
     assert.equal(res.status, 409)
     assert.equal((await res.json()).error, 'product_in_use')
     assert.ok(await adminProduct('tile-adhesive'))
+
+    // Once every quote with the product is closed or cancelled, it can be deleted.
+    for (const r of (await store.adminListQuotes({ limit: 100, offset: 0 })).rows) await store.adminUpdateQuote(r.reference, 'admin', 'closed', null, null)
+    assert.ok(reference)
+    assert.equal((await call('DELETE', 'products/tile-adhesive', 'admin')).status, 200)
+    assert.equal(await adminProduct('tile-adhesive'), undefined)
+  })
+})
+
+describe('categories', () => {
+  const catalogBody = async () => (await api.catalog(new Request('https://novaro.test/api/catalog'))).json()
+  const categories = async () => (await (await call('GET', 'categories', 'admin')).json()).categories as { slug: string; name: string; visible: boolean; productCount: number }[]
+
+  it('lists built-in categories with product counts and serves visible ones publicly in order', async () => {
+    const list = await categories()
+    assert.ok(list.some((c) => c.slug === 'tile-adhesives' && c.productCount > 0))
+    const body = await catalogBody()
+    assert.deepEqual(body.categories.map((c: { slug: string }) => c.slug), list.map((c) => c.slug))
+    assert.equal('visible' in body.categories[0], false)
+  })
+
+  it('creates, renames (propagating to products), hides and reorders categories', async () => {
+    const created = await call('POST', 'categories', 'admin', { slug: 'decorative-coatings', name: 'Decorative Coatings', description: 'Finishes', image: null })
+    assert.equal(created.status, 201)
+    assert.equal((await call('POST', 'categories', 'admin', { slug: 'decorative-coatings', name: 'Again' })).status, 422)
+    assert.equal((await call('POST', 'categories', 'admin', { slug: 'Bad Slug', name: 'Bad' })).status, 422)
+
+    const used = store.products[0]
+    assert.equal((await call('PATCH', `categories/${used.categorySlug}`, 'admin', { slug: used.categorySlug, name: 'Renamed Group', visible: false })).status, 200)
+    assert.equal((await store.listProducts({ includeUnpublished: true })).find((p) => p.slug === used.slug)?.categoryName, 'Renamed Group')
+    assert.equal((await catalogBody()).categories.some((c: { slug: string }) => c.slug === used.categorySlug), false, 'hidden from storefront')
+
+    const slugs = (await categories()).map((c) => c.slug).reverse()
+    assert.equal((await call('PUT', 'categories/order', 'admin', { slugs })).status, 200)
+    assert.deepEqual((await categories()).map((c) => c.slug), slugs)
+    assert.ok(invalidated >= 3)
+  })
+
+  it('saving a product with a new category creates it', async () => {
+    assert.equal((await call('POST', 'products', 'admin', { ...product, categorySlug: 'sealers', categoryName: 'Sealers', stockQuantity: 3 })).status, 201)
+    assert.ok((await categories()).some((c) => c.slug === 'sealers' && c.name === 'Sealers' && c.productCount === 1))
+  })
+
+  it('refuses deleting a category with products unless they are moved', async () => {
+    const used = store.products[0].categorySlug
+    const res = await call('DELETE', `categories/${used}`, 'admin')
+    assert.equal(res.status, 409)
+    assert.equal((await res.json()).error, 'category_in_use')
+    assert.equal((await call('DELETE', `categories/${used}?moveTo=${used}`, 'admin')).status, 422)
+    assert.equal((await call('DELETE', `categories/${used}?moveTo=nowhere`, 'admin')).status, 422)
+    const count = (await categories()).find((c) => c.slug === used)!.productCount
+    assert.equal((await call('DELETE', `categories/${used}?moveTo=admixtures`, 'admin')).status, 200)
+    const after = await categories()
+    assert.equal(after.some((c) => c.slug === used), false)
+    assert.ok(after.find((c) => c.slug === 'admixtures')!.productCount >= count)
+    assert.ok((await store.listProducts({ includeUnpublished: true })).every((p) => p.categorySlug !== used))
+    assert.equal((await call('DELETE', 'categories/missing', 'admin')).status, 404)
   })
 })

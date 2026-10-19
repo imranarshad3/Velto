@@ -1,11 +1,58 @@
 import sharp from 'sharp'
-import { categorySlugs } from '../../src/features/catalog/productSchema.js'
+import { applicationSlugs, areaSlugs, categorySlugs, slugify } from '../../src/features/catalog/productSchema.js'
 import { z } from 'zod'
 import { aiProductDraftSchema, type AiProductDraft, type AiProductRequest } from '../../src/features/catalog/aiProduct.js'
 import { HttpError } from '../http.js'
 
 export type GenerateProduct = (input: AiProductRequest) => Promise<AiProductDraft>
 export const DEFAULT_VISION_MODEL = 'qwen/qwen3.8-27b'
+
+const OPERATIONAL_KEYS = ['price', 'stock', 'stockQuantity', 'published', 'verified', 'sortOrder', 'documents', 'image', 'images']
+const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max).trim() : '')
+const list = <T>(v: unknown, max: number, map: (item: unknown) => T | null) =>
+  (Array.isArray(v) ? v : []).map(map).filter((item): item is T => item !== null && item !== '').slice(0, max)
+const record = (v: unknown) => (v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null)
+
+/**
+ * Coerce near-miss model output (missing arrays, over-long text, bad slugs, unknown enums) into the draft shape
+ * so admins are not shown a retry error for cosmetic issues. Operational fields are left in place so the
+ * strict schema still rejects drafts that ignored the instructions.
+ */
+export function normalizeDraft(raw: unknown): unknown {
+  const r = record(raw)
+  if (!r || OPERATIONAL_KEYS.some(key => key in r)) return raw
+  const name = text(r.name, 120)
+  const categoryName = text(r.categoryName, 80)
+  const categorySlug = slugify(text(r.categorySlug, 120) || categoryName)
+  return {
+    name,
+    slug: slugify(text(r.slug, 120) || name),
+    categorySlug: categorySlug || null,
+    ...(categoryName ? { categoryName } : {}),
+    usage: text(r.usage, 200),
+    description: text(r.description, 4000),
+    applications: [...new Set(list(r.applications, 6, v => ((applicationSlugs as readonly unknown[]).includes(v) ? (v as (typeof applicationSlugs)[number]) : null)))],
+    areas: [...new Set(list(r.areas, 2, v => ((areaSlugs as readonly unknown[]).includes(v) ? (v as (typeof areaSlugs)[number]) : null)))],
+    benefits: list(r.benefits, 12, v => text(v, 160)),
+    specifications: list(r.specifications, 30, v => {
+      const s = record(v)
+      const label = text(s?.label, 60), value = text(s?.value, 200)
+      return label && value ? { label, value } : null
+    }),
+    packSizes: list(r.packSizes, 12, v => text(v, 40)),
+    coverage: text(r.coverage, 500),
+    faq: list(r.faq, 6, v => {
+      const f = record(v)
+      const question = text(f?.question, 200), answer = text(f?.answer, 1000)
+      return question && answer ? { question, answer } : null
+    }),
+    imageAlt: text(r.imageAlt, 200),
+    confidence: ['low', 'medium', 'high'].includes(r.confidence as string) ? r.confidence : 'low',
+    observations: list(r.observations, 12, v => text(v, 200)),
+    reviewNotes: list(r.reviewNotes, 12, v => text(v, 200)),
+    missingInformation: list(r.missingInformation, 12, v => text(v, 120)),
+  }
+}
 
 export function createProductGenerator(options: { apiKey?: string; model?: string; fetcher?: typeof fetch; timeoutMs?: number; provider?: 'groq' | 'ollama' }): GenerateProduct {
   const ollama = options.provider === 'ollama'
@@ -52,8 +99,10 @@ export function createProductGenerator(options: { apiKey?: string; model?: strin
       const choice = body.choices?.[0]
       if (choice?.finish_reason !== 'stop' || !choice.message?.content || choice.message.content.length > 24000) throw new HttpError(502, 'ai_invalid_response', 'AI returned an incomplete draft. Please try again with a clearer photo.')
       let raw: unknown
-      try { raw = JSON.parse(choice.message.content.trim().replace(/^```(?:json)?\s*\n([\s\S]*?)\n```$/, '$1')) } catch { throw new HttpError(502, 'ai_invalid_response', 'AI returned an invalid draft. Please retry.') }
-      const parsed = aiProductDraftSchema.safeParse(raw)
+      // Tolerate Markdown fences or stray prose around the JSON object.
+      const content = choice.message.content
+      try { raw = JSON.parse(content.slice(content.indexOf('{'), content.lastIndexOf('}') + 1)) } catch { throw new HttpError(502, 'ai_invalid_response', 'AI returned an invalid draft. Please retry.') }
+      const parsed = aiProductDraftSchema.safeParse(normalizeDraft(raw))
       if (!parsed.success) throw new HttpError(502, 'ai_invalid_response', 'AI returned fields that could not be validated. Please retry or fill them manually.')
       return parsed.data
     } catch (error) {

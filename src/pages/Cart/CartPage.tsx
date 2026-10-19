@@ -120,7 +120,7 @@ export default function CartPage() {
                           )}
                         </Link>
                         <div className="min-w-0 self-center">
-                          <p className="text-[0.6875rem] font-bold tracking-[0.14em] text-copper uppercase">{categoryName.get(p.categorySlug)}</p>
+                          <p className="text-[0.6875rem] font-bold tracking-[0.14em] text-copper uppercase">{p.categoryName ?? categoryName.get(p.categorySlug)}</p>
                           <Link to={productPath(p)} className="mt-1 block font-display text-[clamp(1.125rem,1.05rem+0.3vw,1.3125rem)] leading-snug text-ink transition-colors hover:text-forest">
                             {p.name}
                           </Link>

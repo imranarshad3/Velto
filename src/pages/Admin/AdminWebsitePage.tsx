@@ -1,7 +1,7 @@
 import ImageSizeFields from './ImageSizeFields.tsx'
 import { addSection, removeSection, editableSections, sectionTemplates, supportsSections } from '../../features/cms/sections.ts'
 import { validContent } from '../../features/cms/schema.ts'
-import { useSearchParams, useLocation } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowDown, ArrowUp, EyeOff, GripVertical, History, ImageUp, LoaderCircle, Maximize2, Minimize2, Monitor, PanelLeftClose, PanelLeftOpen, PanelsTopLeft, Redo2, Rows3, Save, Send, Smartphone, SquarePen, Tablet, Undo2 } from 'lucide-react'
 import { buttonClass } from '../../components/ui/button.ts'
@@ -96,9 +96,9 @@ function Toggle({ pressed, label, onClick, children, disabled }: { pressed: bool
 
 export default function AdminWebsitePage() {
   const [params] = useSearchParams()
-  const location = useLocation()
-  const requested = location.pathname.endsWith('/categories') ? 'categories' : params.get('page') ?? 'home'
-  const initial = pageDefinitions.some(p => p.id === requested) ? requested : 'home'
+  const requested = params.get('page') ?? 'home'
+  // Categories are managed on /admin/categories, not as website content.
+  const initial = requested !== 'categories' && pageDefinitions.some(p => p.id === requested) ? requested : 'home'
   return <WebsiteEditor key={initial} initial={initial}/>
 }
 const devices: { id: PreviewDevice; label: string; icon: typeof Monitor }[] = [
@@ -226,7 +226,7 @@ function WebsiteEditor({initial}: {initial:string}) {
         <Toggle pressed={show.editor} label="Content editor" onClick={() => toggle('editor')} disabled={show.editor && !show.preview}><SquarePen size={18}/></Toggle>
         <Toggle pressed={show.preview} label="Live preview" onClick={() => toggle('preview')} disabled={show.preview && !show.editor}><PanelsTopLeft size={18}/></Toggle>
       </div>
-      <label className="flex min-w-0 items-center gap-2 text-sm font-semibold"><span className="sr-only sm:not-sr-only">Page</span><select className={`${inputClass} min-h-11 w-auto`} value={slug} disabled={busy} onChange={e => {if (dirty && !window.confirm('Discard unsaved changes?')) return; setSlug(e.target.value); setSection(pageDefinitions.find(p => p.id === e.target.value)!.sections[0].id)}}>{pageDefinitions.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
+      <label className="flex min-w-0 items-center gap-2 text-sm font-semibold"><span className="sr-only sm:not-sr-only">Page</span><select className={`${inputClass} min-h-11 w-auto`} value={slug} disabled={busy} onChange={e => {if (dirty && !window.confirm('Discard unsaved changes?')) return; setSlug(e.target.value); setSection(pageDefinitions.find(p => p.id === e.target.value)!.sections[0].id)}}>{pageDefinitions.filter(p => p.id !== 'categories').map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
       <span role="status" className={`rounded-full px-3 py-1.5 text-xs font-semibold ${dirty ? 'bg-copper-soft text-copper' : 'bg-forest-soft text-forest'}`}>{dirty ? 'Unsaved changes' : page?.published ? 'Published' : 'Draft'}{page ? ` · v${page.version}` : ''}</span>
       <div className="ml-auto flex flex-wrap items-center gap-1.5">
         <Toggle pressed={false} label="Undo (Ctrl+Z)" onClick={undo} disabled={!stack.undo || busy}><Undo2 size={18}/></Toggle>

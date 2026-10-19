@@ -8,6 +8,9 @@ export const categorySlugs = ['tile-adhesives', 'waterproofing', 'grouts-sealant
 export const applicationSlugs = ['bathrooms', 'kitchens', 'roofs', 'floors', 'pools', 'exterior-walls'] as const
 export const areaSlugs = ['interior', 'exterior'] as const
 
+/** Lowercase ASCII words joined by hyphens, max 80 chars: matches product and category slug rules. */
+export const slugify = (v: string) => v.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80).replace(/-+$/, '')
+
 const blank = (v: unknown) => (v === '' || v === null ? undefined : v)
 const line = (max: number) => z.string().trim().min(1).max(max)
 

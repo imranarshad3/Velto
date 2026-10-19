@@ -1,10 +1,29 @@
-import { useContentData } from '../../features/cms/context.ts'
+import { useContentData, useContentReady } from '../../features/cms/context.ts'
 import { Link } from 'react-router'
+import Skeleton from '../ui/Skeleton.tsx'
 import { announcements as defaultannouncements, utilityNav as defaultutilityNav } from '../../data/navigation.ts'
 
 export default function AnnouncementBar() {
+  const ready = useContentReady('site')
   const utilityNav = useContentData('site', 'UtilityNavigation.data', defaultutilityNav)
   const announcements = useContentData('site', 'Announcements.data', defaultannouncements)
+
+  if (!ready) {
+    return (
+      <div className="border-b border-white/[0.06] bg-footer text-[0.75rem] text-white/70">
+        <div className="container-page flex min-h-11 items-center justify-between gap-4">
+          <Skeleton className="h-3.5 w-60 rounded-md bg-white/10" />
+          <nav aria-hidden="true" className="hidden shrink-0 md:block">
+            <div className="flex items-center gap-5">
+              <Skeleton className="h-3.5 w-10 rounded-md bg-white/10" />
+              <Skeleton className="h-3.5 w-20 rounded-md bg-white/10" />
+              <Skeleton className="h-3.5 w-12 rounded-md bg-white/10" />
+            </div>
+          </nav>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="border-b border-white/[0.06] bg-footer text-[0.75rem] text-white/70">
       <div className="container-page flex min-h-11 items-center justify-between gap-4">

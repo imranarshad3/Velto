@@ -15,7 +15,6 @@ import SectionHeading from '../../components/ui/SectionHeading.tsx'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import { areaLabels } from '../../data/catalog.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
 import { applications } from '../../data/homeContent.ts'
 import BuyBox from './BuyBox.tsx'
 import ProductGallery, { type GallerySlide } from './ProductGallery.tsx'
@@ -98,9 +97,9 @@ const h2Class = 'font-display text-[clamp(1.5rem,1.25rem+1vw,2rem)] leading-tigh
 
 export default function ProductDetailPage() {
   const { slug } = useParams()
-  const { products, find, status } = useCatalog()
+  const { products, categories, find, status } = useCatalog()
   const product = find(slug)
-  const category = demoCategories.find((c) => c.slug === product?.categorySlug) ?? (product ? { slug: product.categorySlug, name: product.categoryName || product.categorySlug.replaceAll('-', ' '), image: undefined } : undefined)
+  const category = categories.find((c) => c.slug === product?.categorySlug) ?? (product ? { slug: product.categorySlug, name: product.categoryName || product.categorySlug.replaceAll('-', ' '), image: undefined } : undefined)
   const related = useMemo(() => (product ? relatedProducts(product, products) : []), [product, products])
   useProductViewTracking(product?.slug)
   const [resources] = useResources()

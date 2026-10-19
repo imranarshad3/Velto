@@ -36,6 +36,7 @@ export function buildProductAnalytics(range: AnalyticsRange, products: AdminProd
         slug,
         name: p?.name ?? slug,
         categorySlug: p?.categorySlug ?? '',
+        categoryName: p?.categoryName,
         published: p?.published ?? false,
         views: 0,
         viewsAllTime: 0,

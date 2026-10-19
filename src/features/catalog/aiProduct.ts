@@ -35,9 +35,9 @@ export function draftFormFields(d: AiProductDraft) {
   return {
     name: d.name, slug: d.slug, categorySlug: d.categorySlug ?? '', categoryName: d.categoryName ?? '', usage: d.usage,
     description: d.description, applications: d.applications, areas: d.areas,
-    benefits: d.benefits.join('\n'), specifications: d.specifications.map(s => `${s.label}: ${s.value}`).join('\n'),
-    packSizes: d.packSizes.join('\n'), coverage: d.coverage,
-    faq: d.faq.map(f => `${f.question} | ${f.answer}`).join('\n'), imageAlt: d.imageAlt,
+    benefits: d.benefits, specifications: d.specifications,
+    packSizes: d.packSizes, coverage: d.coverage,
+    faq: d.faq, imageAlt: d.imageAlt,
   }
 }
 

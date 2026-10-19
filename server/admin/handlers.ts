@@ -8,6 +8,7 @@ import { apiError, HttpError, json, readJson } from '../http.js'
 import type { UserDirectory } from '../quotes/directory.js'
 import { resourcePath, type FileStorage } from '../quotes/fileStorage.js'
 import { coverageInputSchema, resourceInputSchema, uploadRequestSchema } from '../../src/features/resources/schema.js'
+import { categoryDeleteSchema, categoryInputSchema, categoryOrderSchema } from '../../src/features/catalog/categorySchema.js'
 import { MAX_RESOURCE_BYTES } from '../../src/features/resources/types.js'
 import type { DataStore } from '../quotes/store.js'
 import { z } from 'zod'
@@ -20,6 +21,7 @@ interface AdminContext {
   requireUser: (request: Request) => Promise<{ userId: string } | Response>
   allow: (userId: string) => Promise<boolean>
   onCatalogChange?: () => void
+  onContentChange?: () => void
   notConfigured: () => Response
   rateLimited: () => Response
   serverError: (scope: string, error: unknown) => Response
@@ -86,7 +88,12 @@ export function createAdminHandler(ctx: AdminContext) {
       const role = await store.workspace.role(actor)
       if (!role || !canAccess(role, resource)) return apiError(403, 'forbidden', 'Your team role does not permit this action.')
       const workspaceResponse = await workspaceHandler(request, store, actor, role, resource, id, key)
-      if (workspaceResponse) return workspaceResponse
+      if (workspaceResponse) {
+        if (resource === 'cms' && method === 'POST' && workspaceResponse.status >= 200 && workspaceResponse.status < 300) {
+          ctx.onContentChange?.()
+        }
+        return workspaceResponse
+      }
 
       if (resource === 'products' && id === 'ai-generate') {
         if (method !== 'POST' || key) return apiError(405, 'method_not_allowed', 'Use POST for image analysis.')
@@ -150,7 +157,7 @@ export function createAdminHandler(ctx: AdminContext) {
           const create = !id
           const slug = create ? parsed.data.slug : id
           if (!/^[a-z0-9-]{1,80}$/.test(slug)) return apiError(404, 'not_found', 'Product not found.')
-          const result = await store.saveProduct(actor, slug, { ...parsed.data, slug, verified: true, ...(create ? { published: true } : {}) }, create)
+          const result = await store.saveProduct(actor, slug, { ...parsed.data, slug, verified: true }, create)
           if (result === 'conflict') return validationError([{ path: ['slug'], message: 'A product with this slug already exists' }])
           if (result === 'not_found') return apiError(404, 'not_found', 'Product not found.')
           ctx.onCatalogChange?.()
@@ -169,11 +176,46 @@ export function createAdminHandler(ctx: AdminContext) {
         return json({ product })
       }
 
+      if (resource === 'categories') {
+        if (!id && method === 'GET') return json({ categories: await store.listCategories() })
+        if (id === 'order' && method === 'PUT') {
+          const parsed = categoryOrderSchema.safeParse(await readJson(request, 32 * 1024))
+          if (!parsed.success) return validationError(parsed.error.issues)
+          await store.reorderCategories(actor, parsed.data.slugs)
+          ctx.onCatalogChange?.()
+          return json({ categories: await store.listCategories() })
+        }
+        if (id && !/^[a-z0-9-]{1,80}$/.test(id)) return apiError(404, 'not_found', 'Category not found.')
+        if ((!id && method === 'POST') || (id && method === 'PATCH')) {
+          const parsed = categoryInputSchema.safeParse(await readJson(request, 16 * 1024))
+          if (!parsed.success) return validationError(parsed.error.issues)
+          const create = !id
+          const slug = create ? parsed.data.slug : id
+          const result = await store.saveCategory(actor, slug, { ...parsed.data, slug }, create)
+          if (result === 'conflict') return validationError([{ path: ['slug'], message: 'A category with this URL slug already exists' }])
+          if (result === 'not_found') return apiError(404, 'not_found', 'Category not found.')
+          ctx.onCatalogChange?.()
+          const category = (await store.listCategories()).find((c) => c.slug === slug)
+          return json({ category }, create ? 201 : 200)
+        }
+        if (id && method === 'DELETE') {
+          const moveTo = new URL(request.url).searchParams.get('moveTo')
+          const parsed = categoryDeleteSchema.safeParse({ moveTo: moveTo || null })
+          if (!parsed.success) return validationError(parsed.error.issues)
+          const result = await store.deleteCategory(actor, id, parsed.data.moveTo)
+          if (result === 'not_found') return apiError(404, 'not_found', 'Category not found.')
+          if (result === 'in_use') return apiError(409, 'category_in_use', 'This category still has products. Choose a category to move them to, then delete.')
+          if (result === 'invalid_target') return validationError([{ path: ['moveTo'], message: 'Choose a different, existing category' }])
+          ctx.onCatalogChange?.()
+          return json({ ok: true })
+        }
+      }
+
       if (resource === 'products' && id && method === 'DELETE') {
         if (!/^[a-z0-9-]{1,80}$/.test(id)) return apiError(404, 'not_found', 'Product not found.')
         const result = await store.deleteProduct(actor, id)
         if (result === 'not_found') return apiError(404, 'not_found', 'Product not found.')
-        if (result === 'in_use') return apiError(409, 'product_in_use', 'This product appears in quote requests, so it can’t be deleted. Archive it instead.')
+        if (result === 'in_use') return apiError(409, 'product_in_use', 'This product is in an open quote request. Close or cancel that quote first, or archive the product to hide it now.')
         ctx.onCatalogChange?.()
         return json({ ok: true })
       }

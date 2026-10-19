@@ -10,6 +10,7 @@ import { Droplets, FlaskConical, Hammer, Layers, LayoutGrid, PaintRoller, SprayC
 export interface Category {
   slug: string
   name: string
+  description?: string
   icon: LucideIcon
   /** Placeholder material texture used when no licensed image exists. */
   texture: 'tile' | 'water' | 'grout' | 'concrete' | 'floor' | 'admix' | 'surface' | 'tools'

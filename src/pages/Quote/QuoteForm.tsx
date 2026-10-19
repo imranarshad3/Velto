@@ -6,7 +6,7 @@ import { Link } from 'react-router'
 import { buttonClass } from '../../components/ui/button.ts'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
 import type { CatalogProduct } from '../../data/catalog.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
+import type { Category } from '../../data/demoCategories.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { QuoteApiError, submitQuote } from '../../features/quotes/api.ts'
 import {
@@ -44,8 +44,12 @@ type ErrorPath = Parameters<ReturnType<typeof useForm<QuoteRequestInput, unknown
 
 const turnstileEnabled = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY)
 
-const groupProducts = (products: CatalogProduct[]) =>
-  demoCategories
+const groupProducts = (products: CatalogProduct[], categories: Pick<Category, 'slug' | 'name'>[]) =>
+  [
+    ...categories,
+    // Products in hidden categories are still quotable.
+    ...new Map(products.filter((p) => !categories.some((c) => c.slug === p.categorySlug)).map((p) => [p.categorySlug, { slug: p.categorySlug, name: p.categoryName || p.categorySlug.replaceAll('-', ' ') }])).values(),
+  ]
     .map((category) => ({ category, products: products.filter((p) => p.categorySlug === category.slug) }))
     .filter((group) => group.products.length > 0)
 
@@ -66,8 +70,8 @@ function Section({ step, title, description, children }: { step: number; title: 
 
 export default function QuoteForm({ initialItems, unknownProduct, onSuccess, aside }: QuoteFormProps) {
   const auth = useAppAuth()
-  const { products } = useCatalog()
-  const productGroups = groupProducts(products)
+  const { products, categories } = useCatalog()
+  const productGroups = groupProducts(products, categories)
   const [formError, setFormError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string>()
   const startedAt = useRef(0)

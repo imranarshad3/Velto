@@ -1,10 +1,7 @@
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
-import { productCategories } from '../../features/catalog/catalogQuery.ts'
-import { useContentData } from '../../features/cms/context.ts'
 import { LayoutGrid } from 'lucide-react'
 import CategoryCard from '../../components/commerce/CategoryCard.tsx'
 import type { Category } from '../../data/demoCategories.ts'
-import { demoCategories as defaultdemoCategories } from '../../data/demoCategories.ts'
 import type { CatalogQuery } from '../../features/catalog/catalogQuery.ts'
 import { toParams } from '../../features/catalog/catalogQuery.ts'
 
@@ -17,9 +14,7 @@ const allProducts: Category = {
 }
 
 export default function CategoryNav({ query }: { query: CatalogQuery }) {
-  const demoCategories = useContentData('categories', 'Categories.data', defaultdemoCategories)
-  const { products } = useCatalog()
-  const categories: Category[] = [...demoCategories, ...productCategories(products).filter(c => !demoCategories.some(d => d.slug === c.value)).map(c => ({ slug: c.value, name: c.label, icon: LayoutGrid, texture: 'tile' as const }))]
+  const { categories } = useCatalog()
   const href = (categories: string[]) => {
     const params = toParams({ ...query, categories, page: 1 }).toString()
     return `/products${params ? `?${params}` : ''}`

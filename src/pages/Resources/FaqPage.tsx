@@ -1,13 +1,22 @@
-import { useContentData } from '../../features/cms/context.ts'
-import { useContent } from '../../features/cms/context.ts'
+import { useContentData, useContent, useContentReady } from '../../features/cms/context.ts'
 import { ChevronDown } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import PageHeader from '../../components/ui/PageHeader.tsx'
+import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import { faqGroups as defaultfaqGroups } from '../../data/faq.ts'
 
 export default function FaqPage() {
+  const ready = useContentReady('faq')
   const faqGroups = useContentData('faq', 'Questions.data', defaultfaqGroups)
   const cms = useContent('faq', 'FaqPage')
+
+  if (!ready) {
+    return (
+      <>
+        <title>FAQ — VELTO</title>
+        <PageHeaderSkeleton />
+      </>
+    )
+  }
   return (
     <>
       <title>{cms("field-1", "FAQ — VELTO")}</title>

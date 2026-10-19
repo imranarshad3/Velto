@@ -2,6 +2,7 @@ import { createSupabaseWorkspace } from '../workspace/supabase.js'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { AdminCustomer, AdminMessage, AdminOverview, AdminProduct, AdminQuoteRow, AuditEntry, ProductActivity } from '../../src/features/admin/types.js'
 import type { ProductData } from '../../src/features/catalog/productSchema.js'
+import type { AdminCategory } from '../../src/features/catalog/categorySchema.js'
 import type { QuoteDetail, QuoteEvent, QuoteSummary } from '../../src/features/quotes/schema.js'
 import { HttpError } from '../http.js'
 import type { ProductCoverage } from '../../src/features/resources/types.js'
@@ -168,6 +169,7 @@ const toResource = (r: ResourceRow): StoredResource => ({
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 })
+type CategoryRow = { slug: string; name: string; description: string | null; image: AdminCategory['image']; visible: boolean; sort_order: number; updated_at: string }
 type CoverageRow = { product_slug: string; rate: number | string; rate_unit: 'kg' | 'L'; coats: number; pack_amount: number | string; pack_container: ProductCoverage['packContainer']; source_resource_id: string | null; note: string | null; updated_at: string }
 const toCoverage = (r: CoverageRow): ProductCoverage => ({
   productSlug: r.product_slug,
@@ -373,6 +375,45 @@ export function createSupabaseStore(url: string, secretKey: string): DataStore {
       const { data, error } = await db.rpc('admin_delete_product', { p_actor: actor, p_slug: slug })
       if (error) fail('delete product', error)
       return data === 'ok' || data === 'in_use' ? data : 'not_found'
+    },
+
+    async listCategories() {
+      const [categories, products] = await Promise.all([
+        db.from('categories').select('*').order('sort_order').order('name').limit(500),
+        db.from('products').select('category_slug').limit(5000),
+      ])
+      if (categories.error) fail('categories', categories.error)
+      if (products.error) fail('category counts', products.error)
+      const counts = new Map<string, number>()
+      for (const p of products.data as { category_slug: string }[]) counts.set(p.category_slug, (counts.get(p.category_slug) ?? 0) + 1)
+      return (categories.data as CategoryRow[]).map((c) => ({
+        slug: c.slug,
+        name: c.name,
+        description: c.description,
+        image: c.image,
+        visible: c.visible,
+        sortOrder: c.sort_order,
+        productCount: counts.get(c.slug) ?? 0,
+        updatedAt: c.updated_at,
+      }))
+    },
+
+    async saveCategory(actor, slug, data, create) {
+      const { data: result, error } = await db.rpc('admin_save_category', { p_actor: actor, p_slug: slug, p_category: data, p_create: create })
+      if (error?.code === '23505') return 'conflict'
+      if (error) fail('save category', error)
+      return result === 'ok' || result === 'conflict' ? result : 'not_found'
+    },
+
+    async reorderCategories(actor, slugs) {
+      const { error } = await db.rpc('admin_reorder_categories', { p_actor: actor, p_slugs: slugs })
+      if (error) fail('reorder categories', error)
+    },
+
+    async deleteCategory(actor, slug, moveTo) {
+      const { data, error } = await db.rpc('admin_delete_category', { p_actor: actor, p_slug: slug, p_move_to: moveTo })
+      if (error) fail('delete category', error)
+      return data === 'ok' || data === 'in_use' || data === 'invalid_target' ? data : 'not_found'
     },
 
     async adminListQuotes({ status, search, limit, offset }) {

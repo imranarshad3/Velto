@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import type { GenerateProduct } from '../admin/aiProduct.js'
 import {
   guestStatusSchema,
@@ -28,6 +29,8 @@ export interface ApiHandlerDeps {
   knownProducts: () => Promise<Set<string>>
   /** Called after admin catalogue changes (cache invalidation). */
   onCatalogChange?: () => void
+  /** Called after admin content changes (cache invalidation). */
+  onContentChange?: () => void
   humanCheck?: HumanCheck
   /** Private document storage for the Resource Center; null disables uploads/downloads. */
   files?: FileStorage | null
@@ -304,7 +307,10 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
         // Prices are public only once the product is verified.
         ...(product.verified && price ? { price } : {}),
       }))
-      return json({ products }, 200, { 'cache-control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' })
+      const categories = (await deps.store.listCategories())
+        .filter((c) => c.visible)
+        .map(({ slug, name, description, image, sortOrder }) => ({ slug, name, description, image, sortOrder }))
+      return json({ products, categories }, 200, { 'cache-control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' })
     } catch (error) {
       return serverError('catalog', error)
     }
@@ -381,6 +387,14 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
     }
   }
 
+  const CONTENT_TTL_MS = 60_000
+  let contentCache: { at: number; pages: Record<string, unknown>; etag: string } | undefined
+  let inFlightPublished: Promise<Record<string, unknown>> | null = null
+  const invalidateContentCache = () => {
+    contentCache = undefined
+    deps.onContentChange?.()
+  }
+
   const admin = createAdminHandler({
     store: deps.store,
     generateProduct: deps.generateProduct,
@@ -388,6 +402,7 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
     requireUser,
     allow: (userId) => deps.store!.hitRateLimit(limitKey('admin-user', userId), WINDOW_SECONDS, LIMITS.adminPerUser),
     onCatalogChange: deps.onCatalogChange,
+    onContentChange: invalidateContentCache,
     notConfigured,
     rateLimited,
     serverError,
@@ -398,10 +413,51 @@ export function createApiHandlers(deps: ApiHandlerDeps) {
     allowInvite: (userId) => deps.store!.hitRateLimit(limitKey('invite-admin', userId), WINDOW_SECONDS, LIMITS.invitesPerAdmin),
   })
 
-  async function content(): Promise<Response> {
-    if (!deps.store) return json({pages: {}})
-    try { return json({pages: await deps.store.workspace.published()}) }
-    catch (error) { return serverError('published content', error) }
+  async function content(request?: Request): Promise<Response> {
+    if (!deps.store) return json({ pages: {} })
+    try {
+      const ifNoneMatch = request?.headers?.get('if-none-match')
+      const currentTime = now()
+      if (contentCache && currentTime - contentCache.at < CONTENT_TTL_MS) {
+        if (ifNoneMatch && ifNoneMatch === contentCache.etag) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              'cache-control': 'public, max-age=0, must-revalidate',
+              etag: contentCache.etag,
+            },
+          })
+        }
+        return json({ pages: contentCache.pages }, 200, {
+          'cache-control': 'public, max-age=0, must-revalidate',
+          etag: contentCache.etag,
+        })
+      }
+      if (!inFlightPublished) {
+        inFlightPublished = deps.store.workspace.published().finally(() => {
+          inFlightPublished = null
+        })
+      }
+      const pages = await inFlightPublished
+      const bodyStr = JSON.stringify(pages)
+      const etag = `W/"${createHash('sha1').update(bodyStr).digest('hex')}"`
+      contentCache = { at: currentTime, pages, etag }
+      if (ifNoneMatch && ifNoneMatch === etag) {
+        return new Response(null, {
+          status: 304,
+          headers: {
+            'cache-control': 'public, max-age=0, must-revalidate',
+            etag,
+          },
+        })
+      }
+      return json({ pages }, 200, {
+        'cache-control': 'public, max-age=0, must-revalidate',
+        etag,
+      })
+    } catch (error) {
+      return serverError('published content', error)
+    }
   }
 
   return { submit, myQuotes, myQuoteDetail, guestStatus, wishlist, contact, catalog, trackView, resources, resourceDownload, admin, content }

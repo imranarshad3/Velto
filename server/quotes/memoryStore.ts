@@ -3,6 +3,7 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import type { AdminInvite, AdminMessage, AdminProduct, AuditEntry, ProductActivity } from '../../src/features/admin/types.js'
 import type { CatalogProduct } from '../../src/data/catalog.js'
 import type { ProductData } from '../../src/features/catalog/productSchema.js'
+import { builtInCategoryNames, categoryNameFromSlug, type AdminCategory } from '../../src/features/catalog/categorySchema.js'
 import type { QuoteDetail, QuoteEvent, QuoteSummary } from '../../src/features/quotes/schema.js'
 import type { ProductCoverage } from '../../src/features/resources/types.js'
 import type { DataStore, InsertedQuote, NewContactMessage, NewQuote, StoredResource } from './store.js'
@@ -23,6 +24,9 @@ export const productFromData = (data: ProductData, updatedAt = new Date().toISOS
   slug: data.slug,
   name: data.name,
   categorySlug: data.categorySlug,
+  categoryName: data.categoryName,
+  images: data.images,
+  stockQuantity: data.stockQuantity,
   usage: data.usage,
   description: data.description,
   applications: data.applications,
@@ -59,6 +63,18 @@ export function createMemoryStore(options: { products?: CatalogProduct[]; admins
   const invites: Invite[] = []
   const isOpen = (i: Invite) => !i.acceptedAt && !i.revokedAt
   const products: AdminProduct[] = (options.products ?? []).map((p, i) => ({ ...p, published: true, archived: false, sortOrder: i, updatedAt: new Date().toISOString() }))
+  type CategoryRow = Omit<AdminCategory, 'productCount'>
+  const categories: CategoryRow[] = Object.entries(builtInCategoryNames).map(([slug, name], i) => ({ slug, name, description: null, image: null, visible: true, sortOrder: i + 1, updatedAt: new Date().toISOString() }))
+  /** Mirrors the products_sync_category trigger: unknown slugs create a category; names come from the category. */
+  const syncCategory = (product: AdminProduct) => {
+    let category = categories.find((c) => c.slug === product.categorySlug)
+    if (!category) {
+      category = { slug: product.categorySlug, name: product.categoryName || categoryNameFromSlug(product.categorySlug), description: null, image: null, visible: true, sortOrder: Math.max(0, ...categories.map((c) => c.sortOrder)) + 1, updatedAt: new Date().toISOString() }
+      categories.push(category)
+    }
+    product.categoryName = category.name
+  }
+  products.forEach(syncCategory)
 
   const log = (actor: string, action: string, entity: string, entityKey: string) =>
     audit.unshift({ actor, action, entity, entityKey, createdAt: new Date().toISOString() })
@@ -186,6 +202,7 @@ export function createMemoryStore(options: { products?: CatalogProduct[]; admins
       const product = productFromData({ ...data, slug })
       // Mirrors the database trigger: publishing un-archives; otherwise archive state is kept.
       if (!create && !product.published) product.archived = products[index].archived
+      syncCategory(product)
       if (create) products.push(product)
       else products[index] = product
       log(actor, create ? 'product.create' : 'product.update', 'product', slug)
@@ -203,12 +220,48 @@ export function createMemoryStore(options: { products?: CatalogProduct[]; admins
     async deleteProduct(actor, slug) {
       const index = products.findIndex((p) => p.slug === slug)
       if (index < 0) return 'not_found'
-      if (rows.some((r) => r.items.some((i) => i.productSlug === slug))) return 'in_use'
+      if (rows.some((r) => !['closed', 'cancelled'].includes(r.status) && r.items.some((i) => i.productSlug === slug))) return 'in_use'
       products.splice(index, 1)
       coverage.delete(slug)
       for (const [user, slugs] of wishlists) wishlists.set(user, slugs.filter((s) => s !== slug))
       for (const key of [...viewDaily.keys()]) if (key.startsWith(`${slug}|`)) viewDaily.delete(key)
       log(actor, 'product.delete', 'product', slug)
+      return 'ok'
+    },
+    async listCategories() {
+      return [...categories]
+        .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name))
+        .map((c) => ({ ...c, productCount: products.filter((p) => p.categorySlug === c.slug).length }))
+    },
+    async saveCategory(actor, slug, data, create) {
+      const existing = categories.find((c) => c.slug === slug)
+      if (create && existing) return 'conflict'
+      if (!create && !existing) return 'not_found'
+      const updatedAt = new Date().toISOString()
+      if (existing) Object.assign(existing, { name: data.name, description: data.description, image: data.image, visible: data.visible, updatedAt })
+      else categories.push({ slug, name: data.name, description: data.description, image: data.image, visible: data.visible, sortOrder: Math.max(0, ...categories.map((c) => c.sortOrder)) + 1, updatedAt })
+      for (const p of products) if (p.categorySlug === slug) p.categoryName = data.name
+      log(actor, create ? 'category.create' : 'category.update', 'category', slug)
+      return 'ok'
+    },
+    async reorderCategories(actor, slugs) {
+      slugs.forEach((slug, i) => {
+        const c = categories.find((x) => x.slug === slug)
+        if (c) c.sortOrder = i + 1
+      })
+      log(actor, 'category.reorder', 'category', 'all')
+    },
+    async deleteCategory(actor, slug, moveTo) {
+      const index = categories.findIndex((c) => c.slug === slug)
+      if (index < 0) return 'not_found'
+      const used = products.filter((p) => p.categorySlug === slug)
+      if (moveTo !== null) {
+        const target = categories.find((c) => c.slug === moveTo)
+        if (!target || moveTo === slug) return 'invalid_target'
+        for (const p of used) Object.assign(p, { categorySlug: target.slug, categoryName: target.name })
+      } else if (used.length) return 'in_use'
+      categories.splice(index, 1)
+      log(actor, 'category.delete', 'category', slug)
       return 'ok'
     },
     async adminListQuotes({ status, search, limit, offset }) {

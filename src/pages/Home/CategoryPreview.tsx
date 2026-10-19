@@ -1,4 +1,3 @@
-import { useContentData } from "../../features/cms/context.ts";
 import { useContent } from "../../features/cms/context.ts";
 import { ArrowRight } from "lucide-react";
 import CategoryCard from "../../components/commerce/CategoryCard.tsx";
@@ -6,14 +5,10 @@ import ButtonLink from "../../components/ui/ButtonLink.tsx";
 import { buttonArrow } from "../../components/ui/button.ts";
 import Reveal from "../../components/ui/Reveal.tsx";
 import SectionHeading from "../../components/ui/SectionHeading.tsx";
-import { demoCategories as defaultdemoCategories } from "../../data/demoCategories.ts";
+import { useCatalog } from "../../features/catalog/catalogContext.ts";
 
 export default function CategoryPreview() {
-  const demoCategories = useContentData(
-    "categories",
-    "Categories.data",
-    defaultdemoCategories,
-  );
+  const { categories } = useCatalog();
   const cms = useContent("home", "CategoryPreview");
   return (
     <section
@@ -66,7 +61,7 @@ export default function CategoryPreview() {
           tabIndex={0}
           className="mt-4 -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-[var(--grid-gap)] overflow-x-auto px-[var(--page-gutter)] pt-1 pb-3 md:mx-0 md:mt-[var(--heading-gap)] md:grid md:grid-cols-4 md:overflow-visible md:p-0"
         >
-          {demoCategories.map((category, index) => (
+          {categories.map((category, index) => (
             <Reveal
               as="li"
               key={category.slug}

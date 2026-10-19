@@ -90,6 +90,7 @@ export interface ProductAnalyticsRow {
   slug: string
   name: string
   categorySlug: string
+  categoryName?: string
   published: boolean
   views: number
   viewsAllTime: number

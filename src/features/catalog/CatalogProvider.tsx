@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { catalog as bundled, type CatalogProduct } from '../../data/catalog.ts'
+import { demoCategories } from '../../data/demoCategories.ts'
+import { toDisplayCategory } from './categories.ts'
+import type { StoreCategory } from './categorySchema.ts'
 import { CatalogContext, type CatalogState } from './catalogContext.ts'
 
 const bundledDemoPrices = new Map(bundled.flatMap((p) => (p.demoPrice ? [[p.slug, p.demoPrice] as const] : [])))
@@ -19,14 +22,16 @@ const withDemoPrice = (product: CatalogProduct): CatalogProduct => {
  */
 export default function CatalogProvider({ children }: { children: ReactNode }) {
   const [live, setLive] = useState<CatalogProduct[] | null>(null)
+  const [liveCategories, setLiveCategories] = useState<StoreCategory[] | null>(null)
   const [settled, setSettled] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
     fetch('/api/catalog', { signal: controller.signal })
       .then((r) => (r.ok ? r.json() : null))
-      .then((body: { products?: CatalogProduct[] } | null) => {
+      .then((body: { products?: CatalogProduct[]; categories?: StoreCategory[] } | null) => {
         if (Array.isArray(body?.products)) setLive(body.products.map(withDemoPrice))
+        if (Array.isArray(body?.categories)) setLiveCategories(body.categories)
       })
       .catch(() => {})
       .finally(() => !controller.signal.aborted && setSettled(true))
@@ -36,8 +41,9 @@ export default function CatalogProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CatalogState>(() => {
     const products = live ?? bundled
     const bySlug = new Map(products.map((p) => [p.slug, p]))
-    return { products, source: live ? 'live' : 'demo', status: settled ? 'ready' : 'loading', find: (slug) => (slug ? bySlug.get(slug) : undefined) }
-  }, [live, settled])
+    const categories = liveCategories ? liveCategories.map(toDisplayCategory) : demoCategories
+    return { products, categories, source: live ? 'live' : 'demo', status: settled ? 'ready' : 'loading', find: (slug) => (slug ? bySlug.get(slug) : undefined) }
+  }, [live, liveCategories, settled])
 
   return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>
 }

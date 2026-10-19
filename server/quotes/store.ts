@@ -1,6 +1,7 @@
 import type { WorkspaceStore } from '../workspace/store.js'
 import type { AdminCustomer, AdminMessage, AdminOverview, AdminProduct, AdminQuoteDetail, AdminQuoteRow, AdminInvite, AdminMemberRow, MessageStatus, ProductActivity, ProductStatus } from '../../src/features/admin/types.js'
 import type { ProductData } from '../../src/features/catalog/productSchema.js'
+import type { AdminCategory, CategoryData } from '../../src/features/catalog/categorySchema.js'
 import type { CoverageData } from '../../src/features/resources/schema.js'
 import type { ProductCoverage, ResourceKind, TechnicalResource } from '../../src/features/resources/types.js'
 import type { QuoteDetail, QuoteItemSummary, QuoteStatus, QuoteSummary } from '../../src/features/quotes/schema.js'
@@ -72,8 +73,14 @@ export interface DataStore {
   listAdminTeam(): Promise<{ members: AdminMemberRow[]; invites: AdminInvite[] }>
   saveProduct(actor: string, slug: string, data: ProductData, create: boolean): Promise<'ok' | 'not_found' | 'conflict'>
   setProductStatus(actor: string, slug: string, status: ProductStatus): Promise<boolean>
-  /** 'in_use' when quote requests reference the product (archive it instead). */
+  /** 'in_use' while open (not closed or cancelled) quote requests reference the product. */
   deleteProduct(actor: string, slug: string): Promise<'ok' | 'not_found' | 'in_use'>
+  // Categories (products reference them by slug; saving a product with an unknown slug creates it)
+  listCategories(): Promise<AdminCategory[]>
+  saveCategory(actor: string, slug: string, data: CategoryData, create: boolean): Promise<'ok' | 'not_found' | 'conflict'>
+  reorderCategories(actor: string, slugs: string[]): Promise<void>
+  /** With moveTo, products are moved there first; without it, a category that has products is 'in_use'. */
+  deleteCategory(actor: string, slug: string, moveTo: string | null): Promise<'ok' | 'not_found' | 'in_use' | 'invalid_target'>
   adminListQuotes(filter: { status?: QuoteStatus; search?: string; limit: number; offset: number }): Promise<{ rows: AdminQuoteRow[]; total: number }>
   adminGetQuote(reference: string): Promise<AdminQuoteDetail | null>
   adminUpdateQuote(reference: string, actor: string, status: QuoteStatus, note: string | null, internalNotes: string | null): Promise<boolean>

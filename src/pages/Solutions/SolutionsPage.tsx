@@ -1,15 +1,15 @@
-import { useContent } from '../../features/cms/context.ts'
+import { useContent, useContentReady } from '../../features/cms/context.ts'
 import { Link } from 'react-router'
 import { ArrowRight, BookOpen, ClipboardList, Compass, LayoutGrid } from 'lucide-react'
 import CategoryCard from '../../components/commerce/CategoryCard.tsx'
 import HelpBanner from '../../components/commerce/HelpBanner.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import Img from '../../components/ui/Img.tsx'
-import PageHeader from '../../components/ui/PageHeader.tsx'
+import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
 import { buttonArrow } from '../../components/ui/button.ts'
-import { demoCategories } from '../../data/demoCategories.ts'
+import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { applications } from '../../data/homeContent.ts'
 import { brandStoryImage } from '../../data/images.ts'
 import ApplicationCard from '../Applications/ApplicationCard.tsx'
@@ -22,7 +22,18 @@ const paths = [
 ]
 
 export default function SolutionsPage() {
+  const ready = useContentReady('solutions')
   const cms = useContent('solutions', 'SolutionsPage')
+  const { categories } = useCatalog()
+
+  if (!ready) {
+    return (
+      <>
+        <title>Find Products — VELTO</title>
+        <PageHeaderSkeleton aside />
+      </>
+    )
+  }
   return (
     <>
       <title>{cms("field-1", "Find Products — VELTO")}</title>
@@ -52,7 +63,7 @@ export default function SolutionsPage() {
               </span>
               <span className="text-[0.8125rem] leading-snug">
                 <span className="block font-bold text-ink">{applications.length} {cms("field-10", " applications")}</span>
-                <span className="text-muted">{demoCategories.length} {cms("field-11", " product categories")}</span>
+                <span className="text-muted">{categories.length} {cms("field-11", " product categories")}</span>
               </span>
             </div>
           </div>
@@ -119,7 +130,7 @@ export default function SolutionsPage() {
           }
         />
         <ul className="mt-[var(--heading-gap)] grid grid-cols-2 gap-[var(--grid-gap)] md:grid-cols-4 lg:gap-[var(--grid-gap-lg)]">
-          {demoCategories.map((c, i) => (
+          {categories.map((c, i) => (
             <Reveal as="li" key={c.slug} delay={(i % 4) * 0.06}>
               <CategoryCard category={c} />
             </Reveal>

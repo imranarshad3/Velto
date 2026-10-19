@@ -1,4 +1,4 @@
-import { useContent } from '../../features/cms/context.ts'
+import { useContent, useContentReady } from '../../features/cms/context.ts'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,7 +7,7 @@ import { ArrowRight, CircleAlert, CircleCheck, ClipboardList, LifeBuoy, LoaderCi
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
-import PageHeader from '../../components/ui/PageHeader.tsx'
+import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import { contactSchema, contactTopicLabels, contactTopics, type ContactInput, type ContactMessage } from '../../features/contact/schema.ts'
 import { QuoteApiError, sendContactMessage } from '../../features/quotes/api.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
@@ -21,6 +21,7 @@ const shortcuts = [
 const order = ['fullName', 'email', 'phone', 'topic', 'message', 'consent'] as const
 
 export default function ContactPage() {
+  const ready = useContentReady('contact')
   const cms = useContent('contact', 'ContactPage')
   const auth = useAppAuth()
   const [params] = useSearchParams()
@@ -73,6 +74,15 @@ export default function ContactPage() {
     }
   }
   const err = (f: keyof ContactInput) => errors[f]?.message as string | undefined
+
+  if (!ready) {
+    return (
+      <>
+        <title>Contact — VELTO</title>
+        <PageHeaderSkeleton aside />
+      </>
+    )
+  }
 
   return (
     <>

@@ -1,8 +1,11 @@
 import { createContext, useContext } from 'react'
 import type { CatalogProduct } from '../../data/catalog.ts'
+import type { Category } from '../../data/demoCategories.ts'
 
 export interface CatalogState {
   products: CatalogProduct[]
+  /** Visible categories in admin-defined order (bundled DEMO list until the API answers). */
+  categories: Category[]
   /** `demo` = bundled DEMO catalogue; `live` = verified catalogue served by the API. */
   source: 'demo' | 'live'
   status: 'loading' | 'ready'

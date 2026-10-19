@@ -41,6 +41,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const titleId = `${product.id}-title`
   const category = categories.get(product.categorySlug)
+  const categoryLabel = product.categoryName ?? category?.name
   const Icon = category?.icon
   const list = layout === 'list'
   const price = cardPrice(product)
@@ -210,7 +211,7 @@ export default function ProductCard({
         "
       >
         {/* CATEGORY */}
-        {category && (
+        {categoryLabel && (
           <p
             className="
               text-[0.6875rem] font-semibold
@@ -218,7 +219,7 @@ export default function ProductCard({
               @[18rem]:text-[0.75rem]
             "
           >
-            {category.name}
+            {categoryLabel}
           </p>
         )}
 
