@@ -1,4 +1,4 @@
-import { imageSizeStyle } from '../../features/cms/imageSizing.ts'
+import { imageSizeStyle } from "../../features/cms/imageSizing.ts";
 import { useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import type { Category } from "../../data/demoCategories.ts";
@@ -113,7 +113,7 @@ export default function CategoryCard({
         {image && (
           <img
             src={image.src}
-              style={imageSizeStyle(image.displaySize)}
+            style={imageSizeStyle(image.displaySize)}
             alt=""
             width={image.width}
             height={image.height}
