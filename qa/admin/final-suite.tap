@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: tests/admin.test.ts
+ok 1 - tests/admin.test.ts
+  ---
+  duration_ms: 1058.098044
+  type: 'test'
+  ...
+# Subtest: tests/aiProduct.test.ts
+ok 2 - tests/aiProduct.test.ts
+  ---
+  duration_ms: 964.591614
+  type: 'test'
+  ...
+# Subtest: tests/analytics.test.ts
+ok 3 - tests/analytics.test.ts
+  ---
+  duration_ms: 886.469726
+  type: 'test'
+  ...
+# Subtest: tests/auth.test.ts
+ok 4 - tests/auth.test.ts
+  ---
+  duration_ms: 871.220663
+  type: 'test'
+  ...
+# Subtest: tests/cms-caching-performance.test.ts
+ok 5 - tests/cms-caching-performance.test.ts
+  ---
+  duration_ms: 646.647789
+  type: 'test'
+  ...
+# Subtest: tests/cms-draft-recovery.test.ts
+ok 6 - tests/cms-draft-recovery.test.ts
+  ---
+  duration_ms: 397.167417
+  type: 'test'
+  ...
+# Subtest: tests/cms-image-sizing.test.ts
+ok 7 - tests/cms-image-sizing.test.ts
+  ---
+  duration_ms: 571.416638
+  type: 'test'
+  ...
+# Subtest: tests/order-tracking.test.ts
+ok 8 - tests/order-tracking.test.ts
+  ---
+  duration_ms: 177.281536
+  type: 'test'
+  ...
+# Subtest: tests/order-view.test.ts
+ok 9 - tests/order-view.test.ts
+  ---
+  duration_ms: 189.36543
+  type: 'test'
+  ...
+# Subtest: tests/orders.test.ts
+ok 10 - tests/orders.test.ts
+  ---
+  duration_ms: 983.295829
+  type: 'test'
+  ...
+# Subtest: tests/product-editor.test.ts
+ok 11 - tests/product-editor.test.ts
+  ---
+  duration_ms: 572.964741
+  type: 'test'
+  ...
+# Subtest: tests/protected-admin.test.ts
+ok 12 - tests/protected-admin.test.ts
+  ---
+  duration_ms: 512.507419
+  type: 'test'
+  ...
+# Subtest: tests/quotes.test.ts
+ok 13 - tests/quotes.test.ts
+  ---
+  duration_ms: 840.492956
+  type: 'test'
+  ...
+# Subtest: tests/resources.test.ts
+ok 14 - tests/resources.test.ts
+  ---
+  duration_ms: 1007.655405
+  type: 'test'
+  ...
+# Subtest: tests/supabase.integration.test.ts
+ok 15 - tests/supabase.integration.test.ts
+  ---
+  duration_ms: 722.68989
+  type: 'test'
+  ...
+# Subtest: tests/team.test.ts
+ok 16 - tests/team.test.ts
+  ---
+  duration_ms: 786.689257
+  type: 'test'
+  ...
+# Subtest: tests/workspace.test.ts
+ok 17 - tests/workspace.test.ts
+  ---
+  duration_ms: 785.877159
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12006.584771

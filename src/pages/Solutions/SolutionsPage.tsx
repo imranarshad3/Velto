@@ -56,7 +56,7 @@ export default function SolutionsPage() {
         aside={
           <div className="relative w-[clamp(20rem,30vw,28rem)]">
             <div className="aspect-[5/4] overflow-hidden rounded-[var(--radius-panel)] bg-forest-dark shadow-[var(--shadow-float)]">
-              <Img cmsImage={{ page: 'solutions', field: 'SolutionsPage.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} priority className="size-full object-cover" />
+              <Img fit="contain" cmsImage={{ page: 'solutions', field: 'SolutionsPage.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} priority className="size-full object-contain" />
             </div>
             <div className="glass absolute bottom-6 left-6 flex items-center gap-3 rounded-[var(--radius-card)] px-4 py-3 shadow-[var(--shadow-card)]">
               <span className="grid size-10 place-items-center rounded-xl bg-forest-soft text-forest">
@@ -133,7 +133,7 @@ export default function SolutionsPage() {
         <ul className="mt-[var(--heading-gap)] grid grid-cols-2 gap-[var(--grid-gap)] md:grid-cols-4 lg:gap-[var(--grid-gap-lg)]">
           {categories.map((c, i) => (
             <Reveal as="li" key={c.slug} delay={(i % 4) * 0.06}>
-              <CategoryCard category={c} />
+              <CategoryCard category={c} presentation="editorial" />
             </Reveal>
           ))}
         </ul>

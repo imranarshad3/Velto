@@ -1,4 +1,4 @@
-# VELTO (formerly NOVARO)
+# VELTO
 
 Construction-chemicals storefront: catalogue, product details, quote basket, multi-product quote requests,
 customer accounts and a staff admin area. React + Vite + TypeScript, Tailwind CSS v4, Clerk (identity),

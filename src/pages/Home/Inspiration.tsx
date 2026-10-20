@@ -25,10 +25,10 @@ export default function Inspiration() {
           {inspiration.map((item, index) => (
             <Reveal as="li" key={item.title} delay={index * 0.08} className="min-w-0">
               <figure className="group relative isolate h-full overflow-hidden rounded-[var(--radius-card)] bg-sand-deep shadow-[var(--shadow-soft)]">
-                <div className="aspect-[4/3] sm:aspect-[16/11]">
-                  <Img image={item.image} className="size-full object-cover transition-transform duration-700 ease-[var(--ease-premium)] group-hover:scale-105 motion-reduce:group-hover:scale-100" />
+                <div>
+                  <Img image={item.image} uncropped />
                 </div>
-                <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-forest-deep/90 via-forest-deep/50 to-transparent p-[clamp(1rem,2.5vw,1.75rem)] pt-16 text-white">
+                <figcaption className="bg-forest-deep p-[clamp(1rem,2.5vw,1.75rem)] text-white">
                   <span className="text-[0.6875rem] font-bold tracking-[0.18em] text-gold uppercase">0{index + 1}</span>
                   <span className={`mt-1 block font-display leading-tight text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)]`}>{item.title}</span>
                   <span className="mt-1 block text-[0.875rem] text-white/80">{item.caption}</span>

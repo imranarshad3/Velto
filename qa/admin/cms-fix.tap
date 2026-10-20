@@ -1,0 +1,85 @@
+TAP version 13
+# Subtest: CMS Caching, ETag, and Invalidation
+    # Subtest: returns ETag and supports 304 Not Modified on unchanged content
+    ok 1 - returns ETag and supports 304 Not Modified on unchanged content
+      ---
+      duration_ms: 58.553122
+      type: 'test'
+      ...
+    # Subtest: invalidates cache and updates ETag when content is published
+    ok 2 - invalidates cache and updates ETag when content is published
+      ---
+      duration_ms: 23.153252
+      type: 'test'
+      ...
+    1..2
+ok 1 - CMS Caching, ETag, and Invalidation
+  ---
+  duration_ms: 83.968474
+  type: 'suite'
+  ...
+# Subtest: CMS local draft recovery
+    # Subtest: restores unsaved content only against the same server revision
+    ok 1 - restores unsaved content only against the same server revision
+      ---
+      duration_ms: 3.609811
+      type: 'test'
+      ...
+    # Subtest: clears saved drafts and ignores corrupt storage entries
+    ok 2 - clears saved drafts and ignores corrupt storage entries
+      ---
+      duration_ms: 0.719521
+      type: 'test'
+      ...
+    1..2
+ok 2 - CMS local draft recovery
+  ---
+  duration_ms: 7.536633
+  type: 'suite'
+  ...
+# Subtest: CMS image sizing
+    # Subtest: fills fixed art-directed frames even when saved CMS sizing would leave empty bands
+    ok 1 - fills fixed art-directed frames even when saved CMS sizing would leave empty bands
+      ---
+      duration_ms: 3.755303
+      type: 'test'
+      ...
+    # Subtest: accepts bounded relative lengths and rejects unsafe or unsupported values
+    ok 2 - accepts bounded relative lengths and rejects unsafe or unsupported values
+      ---
+      duration_ms: 1.619324
+      type: 'test'
+      ...
+    # Subtest: allows dimensions only for known image fields, including custom sections
+    ok 3 - allows dimensions only for known image fields, including custom sections
+      ---
+      duration_ms: 62.108571
+      type: 'test'
+      ...
+    # Subtest: sizes collection images by field identity without mutating source data
+    ok 4 - sizes collection images by field identity without mutating source data
+      ---
+      duration_ms: 0.927752
+      type: 'test'
+      ...
+    # Subtest: drops retired fields from content saved before their removal, but still rejects unknown ones
+    ok 5 - drops retired fields from content saved before their removal, but still rejects unknown ones
+      ---
+      duration_ms: 2.668294
+      type: 'test'
+      ...
+    1..5
+ok 3 - CMS image sizing
+  ---
+  duration_ms: 75.720427
+  type: 'suite'
+  ...
+1..3
+# tests 9
+# suites 3
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1045.841597

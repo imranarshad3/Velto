@@ -45,7 +45,7 @@ function trackingOf(order: OrderRow) {
     number: order.tracking_number ?? null,
     carrier: order.carrier ?? null,
     carrierReference: order.carrier_reference ?? null,
-    estimatedDelivery: order.status === 'cancelled' ? null : deliveryWindow(order.created_at, order.estimated_delivery),
+    estimatedDelivery: order.status === 'cancelled' ? null : deliveryWindow(order.estimated_delivery),
   }
 }
 
@@ -318,7 +318,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
           return apiError(429, 'rate_limited', 'Too many requests. Please wait a few minutes and try again.')
         }
         const parsed = orderInput.safeParse(body)
-        if (!parsed.success) return apiError(422, 'invalid', 'Check your delivery details and quantities.')
+        if (!parsed.success) return apiError(422, 'invalid', 'Please check your delivery details and cart quantities, then try again.')
         const p = parsed.data
         const { data, error } = await db.rpc('place_cod_order', { p_user: auth.userId, p_key: p.requestKey, p_customer: p.customer, p_items: p.items, p_expected: p.expectedTotal })
         if (error) {

@@ -38,6 +38,7 @@ const testOrders = [
     total: 2800,
     currency: 'PKR',
     status: 'shipped',
+    estimated_delivery: '2026-10-25',
     created_at: new Date().toISOString(),
   },
 ]
@@ -332,7 +333,7 @@ describe('Orders API security & authorization', () => {
     assert.equal(body.order.reference, 'VEL-0000000000000001')
     assert.equal(body.order.isOwner, true)
     assert.equal(body.order.customer.email, 'cust_a@example.com')
-    assert.ok(body.order.tracking.estimatedDelivery.earliest)
+    assert.equal(body.order.tracking.estimatedDelivery, null)
     assert.equal(body.order.timeline[0].status, 'placed')
   })
 
@@ -366,6 +367,7 @@ describe('Orders API security & authorization', () => {
     const body = await res.json()
     assert.equal(body.order.reference, 'VEL-0000000000000002')
     assert.equal(body.order.status, 'shipped')
+    assert.equal(body.order.tracking.estimatedDelivery.earliest, '2026-10-25')
   })
 
   it('rejects guest tracking with wrong contact info (prevents enumeration)', async () => {

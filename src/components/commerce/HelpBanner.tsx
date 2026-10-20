@@ -34,10 +34,9 @@ export default function HelpBanner({ premium = true }: { premium?: boolean }) {
               </Link>
             </div>
           </div>
-          <div className="relative order-first aspect-[4/3] bg-forest-dark md:order-none md:aspect-auto md:min-h-[24rem]">
-            <Img image={professionalImage} className="absolute inset-0 size-full object-cover object-[center_30%]" />
+          <div className="relative order-first self-center bg-forest-dark md:order-none">
+            <Img image={professionalImage} uncropped />
             {premium && <div className="assistance-image-caption"><span className="text-[0.625rem] font-bold tracking-[0.2em] text-gold uppercase">Project help</span><p className="mt-2 font-display text-[1.5rem] leading-tight">Get help with your next project.</p></div>}
-            <div aria-hidden="true" className="absolute inset-0 hidden bg-[linear-gradient(90deg,var(--color-forest-deep),transparent_45%)] md:block" />
           </div>
         </div>
       </Reveal>

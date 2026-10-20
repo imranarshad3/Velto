@@ -122,13 +122,11 @@ export default function ProductCard({
         {product.image ? (
           <Img
             image={product.image}
+            fit="contain"
             className="
     absolute inset-0 block
     h-full w-full max-w-none
-    object-cover object-center
-    transition-transform duration-700
-    group-hover:scale-[1.025]
-    motion-reduce:group-hover:scale-100
+    object-contain object-center
   "
           />
         ) : (
