@@ -24,7 +24,7 @@ export const applicationDetails: Record<string, ApplicationDetail> = {
       { title: 'Grout and seal', text: 'Fill the gaps between tiles with grout. Seal the edges and joins.' },
     ],
     categories: ['waterproofing', 'tile-adhesives', 'grouts-sealants'],
-    image: img('/images/categories/tile-adhesives.webp', 366, 234, 'Illustrative concept: notched trowel spreading tile adhesive'),
+    image: img('/images/categories/tile-adhesives.webp', 1536, 1024, 'Illustrative concept: notched trowel spreading tile adhesive'),
   },
   kitchens: {
     intro: 'Kitchen walls and floors need to handle daily use and cleaning. Plan the tile glue, grout and sealant together.',
@@ -35,7 +35,7 @@ export const applicationDetails: Record<string, ApplicationDetail> = {
       { title: 'Seal perimeter joints', text: 'Seal the edges around worktops, sinks and corners.' },
     ],
     categories: ['tile-adhesives', 'grouts-sealants', 'surface-treatments'],
-    image: img('/images/categories/grouts-sealants.webp', 351, 234, 'Illustrative concept: gloved hand pressing grout into tile joints'),
+    image: img('/images/categories/grouts-sealants.webp', 1536, 1024, 'Illustrative concept: gloved hand pressing grout into tile joints'),
   },
   roofs: {
     intro: 'Flat roofs and terraces face sun and rain. Fix any damage, then add a full waterproof layer.',
@@ -46,7 +46,7 @@ export const applicationDetails: Record<string, ApplicationDetail> = {
       { title: 'Protect the finish', text: 'Add a top layer if the area needs more protection or people will walk on it.' },
     ],
     categories: ['concrete-repair', 'waterproofing', 'surface-treatments'],
-    image: img('/images/categories/waterproofing.webp', 420, 234, 'Illustrative concept: roller applying blue waterproofing coating'),
+    image: img('/images/categories/waterproofing.webp', 1536, 1024, 'Illustrative concept: roller applying blue waterproofing coating'),
   },
   floors: {
     intro: 'Good floors start underneath: repair and level the base before tiling or applying a seamless finish.',
@@ -57,7 +57,7 @@ export const applicationDetails: Record<string, ApplicationDetail> = {
       { title: 'Seal joints', text: 'Keep the floor joints clear and seal them as directed.' },
     ],
     categories: ['concrete-repair', 'flooring-solutions', 'tile-adhesives'],
-    image: img('/images/categories/flooring-solutions.webp', 363, 234, 'Illustrative concept: glossy seamless floor in an industrial hall'),
+    image: img('/images/categories/flooring-solutions.webp', 1536, 1024, 'Illustrative concept: glossy seamless floor in an industrial hall'),
   },
   pools: {
     intro: 'Pools hold water all the time. The waterproof layer, tile glue and grout must work together.',
@@ -68,7 +68,7 @@ export const applicationDetails: Record<string, ApplicationDetail> = {
       { title: 'Grout the joints', text: 'Choose grout made for pools and other areas that hold water.' },
     ],
     categories: ['waterproofing', 'tile-adhesives', 'grouts-sealants'],
-    image: img('/images/banners/waterproofing-crop.webp', 448, 380, 'Illustrative concept: roller applying a waterproofing coat'),
+    image: img('/images/banners/waterproofing-crop.webp', 1536, 1024, 'Illustrative concept: roller applying a waterproofing coat'),
   },
   'exterior-walls': {
     intro: 'Outside walls face sun and rain. Fix damage first, then protect and seal the wall.',
@@ -79,7 +79,7 @@ export const applicationDetails: Record<string, ApplicationDetail> = {
       { title: 'Seal joints', text: 'Seal the joins between the wall and other materials.' },
     ],
     categories: ['concrete-repair', 'surface-treatments', 'grouts-sealants'],
-    image: img('/images/categories/surface-treatments.webp', 582, 234, 'Illustrative concept: roller applying a coating to a wall'),
+    image: img('/images/categories/surface-treatments.webp', 1536, 1024, 'Illustrative concept: roller applying a coating to a wall'),
   },
 }
 

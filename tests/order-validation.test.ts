@@ -16,11 +16,11 @@ describe('checkout validation messages', () => {
     assert.equal(result.success, false)
     if (result.success) return
     const messages = Object.fromEntries(result.error.issues.map((issue) => [issue.path[0], issue.message]))
-    assert.equal(messages.name, 'Enter your full name (at least 2 characters).')
+    assert.equal(messages.name, 'Please enter your full name.')
     assert.equal(messages.email, 'Enter your email address.')
-    assert.match(messages.phone, /Enter a phone number using/)
-    assert.equal(messages.address, 'Enter your street address (at least 10 characters).')
-    assert.equal(messages.city, 'Enter your city (at least 2 characters).')
+    assert.equal(messages.phone, 'Please enter a phone number we can reach you on.')
+    assert.equal(messages.address, 'Please enter your delivery address.')
+    assert.equal(messages.city, 'Please enter your city name.')
   })
 
   it('gives a useful example for malformed email and phone values', () => {
@@ -37,7 +37,13 @@ describe('checkout validation messages', () => {
     if (result.success) return
     const messages = Object.fromEntries(result.error.issues.map((issue) => [issue.path[0], issue.message]))
     assert.match(messages.email, /name@example\.com/)
-    assert.match(messages.phone, /digits, \+, spaces, parentheses, and hyphens/)
+    assert.match(messages.phone, /0300 1234567/)
+  })
+
+  it('explains what is missing from an incomplete delivery address', () => {
+    const result = orderInput.shape.customer.shape.address.safeParse('House 12')
+    assert.equal(result.success, false)
+    if (!result.success) assert.match(result.error.issues[0].message, /house or building number, street and area/)
   })
 
   it('accepts a valid Pakistan delivery address and phone number', () => {

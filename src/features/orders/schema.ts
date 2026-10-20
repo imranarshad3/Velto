@@ -5,19 +5,22 @@ export const orderInput = z.object({
   requestKey: z.uuid('Your checkout session expired. Refresh the page and try again.'),
   customer: z.object({
     name: z.string({ error: 'Enter your full name.' }).trim()
-      .min(2, 'Enter your full name (at least 2 characters).')
+      .min(2, 'Please enter your full name.')
       .max(120, 'Your name must be 120 characters or fewer.'),
     email: z.string({ error: 'Enter your email address.' }).trim()
       .min(1, 'Enter your email address.')
       .max(200, 'Your email address must be 200 characters or fewer.')
       .pipe(z.email('Enter a valid email address, like name@example.com.')),
-    phone: z.string({ error: 'Enter your phone number.' }).trim()
-      .regex(/^(?=.*\d)[+0-9 ()-]{7,25}$/, 'Enter a phone number using 7–25 characters. You may use digits, +, spaces, parentheses, and hyphens.'),
+    phone: z.string({ error: 'Please enter a phone number we can reach you on.' }).trim()
+      .min(1, 'Please enter a phone number we can reach you on.')
+      .pipe(z.string().regex(/^(?=.*\d)[+0-9 ()-]{7,25}$/, 'Check your phone number, for example 0300 1234567.')),
     address: z.string({ error: 'Enter your street address.' }).trim()
-      .min(10, 'Enter your street address (at least 10 characters).')
-      .max(500, 'Your street address must be 500 characters or fewer.'),
+      .min(1, 'Please enter your delivery address.')
+      .pipe(z.string()
+        .min(10, 'Add your house or building number, street and area so we can find you.')
+        .max(500, 'Please shorten your address and keep the house, street and area details.')),
     city: z.string({ error: 'Enter your city.' }).trim()
-      .min(2, 'Enter your city (at least 2 characters).')
+      .min(2, 'Please enter your city name.')
       .max(100, 'Your city must be 100 characters or fewer.'),
     country: z.literal('Pakistan', { error: 'Delivery is currently available in Pakistan only.' }),
   }),

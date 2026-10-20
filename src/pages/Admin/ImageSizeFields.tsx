@@ -8,6 +8,13 @@ export default function ImageSizeFields({ fieldKey, size, disabled, onChange }: 
   const current = size ?? { width: '', height: '' }
   const hasSizing = Boolean(current.width || current.height || current.fit || current.position || current.ratio)
   const helpId = `image-size-${fieldKey}-help`
+  const naturalLayout = ['WhyChoose.image-src', 'ProfessionalsBanner.image-src', 'ApplicationSolutions.image-src', 'AboutPage.image-src'].includes(fieldKey)
+    || /^(ApplicationDetails|Inspiration)\.data\..+\.image\.src$/.test(fieldKey)
+  if (naturalLayout) return <div className="rounded-xl border border-border p-3">
+    <p className="text-sm font-semibold">Full image · automatic proportions</p>
+    <p className="mt-2 text-xs leading-relaxed text-muted">This photo is shown completely. Its height adjusts to its original proportions on every screen, so it stays clear without cropping or empty bands.</p>
+    {hasSizing && <button type="button" disabled={disabled} className={buttonClass('ghost', 'sm', 'mt-2')} onClick={() => onChange({ width: '', height: '' })}>Clear unused frame settings</button>}
+  </div>
   return <fieldset disabled={disabled} className="rounded-xl border border-border p-3">
     <legend className="px-1 text-sm font-semibold">Image size and crop</legend>
     <div role="group" aria-label="Image size presets" className="mb-4 flex flex-wrap gap-2">

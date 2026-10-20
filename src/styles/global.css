@@ -206,8 +206,7 @@
 .assistance-steps li { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: rgb(255 255 255 / 0.8); }
 .assistance-steps li > span:first-child { font-size: 1.125rem; }
 .premium-assistance .container-page > div > div:last-child { margin: 0.75rem; overflow: hidden; border-radius: 0.875rem; }
-.premium-assistance .container-page > div > div:last-child > div[aria-hidden] { background: linear-gradient(0deg, rgb(21 43 64 / 0.9), transparent 65%); display: block; }
-.assistance-image-caption { position: absolute; z-index: 1; bottom: 2rem; left: 2rem; right: 2rem; max-width: 22rem; }
+.assistance-image-caption { padding: 1.5rem; max-width: 22rem; }
 @media (min-width: 64rem) {
   .area-editorial-header > .container-page > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); margin-top: 2rem; }
   .area-image-composition { min-height: 30rem; }
@@ -227,7 +226,8 @@
 .edge-image-media { padding: 0 !important; }
 .edge-image-media > div { border-radius: 0 !important; }
 .edge-image-copy { padding-block: clamp(2rem, 5vw, 4.5rem); }
-.application-editorial .edge-image-media > div { min-height: 100%; }
+.application-editorial .edge-image-media { display: grid; align-items: center; }
+.application-editorial .edge-image-media > div { min-height: 0; height: auto; }
 .solutions-edge-header { background: radial-gradient(ellipse at 70% 45%, rgb(221 209 187 / 0.36), transparent 52%), var(--color-cream); }
 
 /* Inset the home brand story so it reads as a feature card, with space before
@@ -259,10 +259,13 @@
   grid-row: 1;
   min-height: 0;
   padding: 0 !important;
+  display: grid;
+  align-items: center;
 }
 .why-choose-section .edge-image-media > div {
-  height: 100%;
-  min-height: clamp(27rem, 38vw, 34rem);
+  width: 100%;
+  height: auto;
+  min-height: 0;
   aspect-ratio: auto;
   border-radius: 0 !important;
   box-shadow: none;
@@ -288,8 +291,8 @@
   .why-choose-section .edge-image-copy { grid-row: 2; padding: clamp(1.5rem, 5vw, 2.5rem); }
   .why-choose-section .edge-image-media > div {
     min-height: 0;
-    aspect-ratio: 4 / 3;
-    max-height: 26rem;
+    aspect-ratio: auto;
+    max-height: none;
   }
 }
 @media (min-width: 64rem) {

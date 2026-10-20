@@ -81,8 +81,8 @@ export default function ApplicationDetailPage() {
           </div>
           <div className="animate-rise relative [--delay:0.1s]">
             <div aria-hidden="true" className="absolute -right-3 -bottom-3 hidden h-3/4 w-3/4 rounded-[var(--radius-panel)] bg-copper-soft sm:block" />
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-panel)] bg-sand-deep shadow-[var(--shadow-float)]">
-              <Img image={detail.image} priority className="size-full object-cover" />
+            <div className="relative overflow-hidden rounded-[var(--radius-panel)] bg-sand-deep shadow-[var(--shadow-float)]">
+              <Img image={detail.image} priority uncropped />
             </div>
             <span className="glass absolute top-4 left-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.8125rem] font-semibold text-forest shadow-[var(--shadow-soft)]">
               <Icon aria-hidden="true" className="size-4" />
@@ -129,7 +129,7 @@ export default function ApplicationDetailPage() {
           <ul className="mt-[var(--heading-gap)] grid grid-cols-2 gap-[var(--grid-gap)] md:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
             {categories.map((category, i) => (
               <Reveal as="li" key={category.slug} delay={i * 0.08}>
-                <CategoryCard category={category} className="sm:aspect-[4/3]" />
+                <CategoryCard category={category} presentation="editorial" />
               </Reveal>
             ))}
           </ul>

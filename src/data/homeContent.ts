@@ -60,8 +60,8 @@ export const inspiration: InspirationItem[] = [
     image: {
       src: '/images/hero/architecture.webp',
       alt: 'Illustrative concept: modern two-storey house with landscaped garden',
-      width: 426,
-      height: 234,
+      width: 1536,
+      height: 1024,
     },
   },
   {
@@ -70,8 +70,8 @@ export const inspiration: InspirationItem[] = [
     image: {
       src: '/images/categories/flooring-solutions.webp',
       alt: 'Illustrative concept: glossy seamless floor in an industrial hall',
-      width: 363,
-      height: 234,
+      width: 1536,
+      height: 1024,
     },
   },
   {
@@ -80,8 +80,8 @@ export const inspiration: InspirationItem[] = [
     image: {
       src: '/images/categories/concrete-repair.webp',
       alt: 'Illustrative concept: trowel patching a damaged concrete surface',
-      width: 357,
-      height: 234,
+      width: 1536,
+      height: 1024,
     },
   },
 ]
