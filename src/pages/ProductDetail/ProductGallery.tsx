@@ -7,7 +7,7 @@ export interface GallerySlide {
   caption: string
   /** Undefined renders a labelled placeholder. */
   image?: ImageAsset
-  /** Photographs fill the frame; packshots sit on the stage at a modest size. */
+  /** Photographs and packshots both retain their full composition. */
   fill?: boolean
 }
 
@@ -16,12 +16,9 @@ interface ProductGalleryProps {
   productName: string
 }
 
-/**
- * Packshots are small concept crops (≈236 px), so they are capped at ~1.6× their natural size on a sand stage
- * (multiply blends their light backdrop away). Photographs fill the frame.
- */
-const packshot = 'h-full w-full max-h-full object-cover'
-const photo = 'absolute inset-0 size-full object-cover'
+/** Keep labels and product edges visible in the gallery and enlarged viewer. */
+const packshot = 'h-full w-full max-h-[75dvh] object-contain'
+const photo = 'absolute inset-0 size-full object-contain'
 
 function SlideImage({ slide, priority }: { slide: GallerySlide; priority?: boolean }) {
   const [failed, setFailed] = useState(false)
@@ -125,7 +122,7 @@ export default function ProductGallery({ slides, productName }: ProductGalleryPr
                 className={`relative grid aspect-square w-full place-items-center overflow-hidden rounded-xl border-2 bg-sand transition-[border-color,opacity] ${i === index ? 'border-forest' : 'border-transparent opacity-75 hover:opacity-100'}`}
               >
                 {s.image ? (
-                  <img src={s.image.src} alt="" width={s.image.width} height={s.image.height} loading="lazy" decoding="async" className={s.fill ? 'absolute inset-0 size-full object-cover' : 'size-full object-contain'} />
+                  <img src={s.image.src} alt="" width={s.image.width} height={s.image.height} loading="lazy" decoding="async" className="size-full object-contain" />
                 ) : (
                   <ImageOff aria-hidden="true" className="size-6 text-muted" />
                 )}

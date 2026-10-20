@@ -1,0 +1,60 @@
+TAP version 13
+# [admin] invitation check skipped: supabase open invites failed (PGRST205)
+# Subtest: admin invitations
+    # Subtest: only admins can view the team or invite
+    ok 1 - only admins can view the team or invite
+      ---
+      duration_ms: 40.90473
+      type: 'test'
+      ...
+    # Subtest: validates the email and emails a sign-up invitation
+    ok 2 - validates the email and emails a sign-up invitation
+      ---
+      duration_ms: 9.722194
+      type: 'test'
+      ...
+    # Subtest: grants admin only to a user whose verified email matches
+    ok 3 - grants admin only to a user whose verified email matches
+      ---
+      duration_ms: 4.462076
+      type: 'test'
+      ...
+    # Subtest: does not grant access from revoked or expired invitations
+    ok 4 - does not grant access from revoked or expired invitations
+      ---
+      duration_ms: 2.980582
+      type: 'test'
+      ...
+    # Subtest: refuses to invite an existing admin
+    ok 5 - refuses to invite an existing admin
+      ---
+      duration_ms: 1.840421
+      type: 'test'
+      ...
+    # Subtest: removes other admins but never yourself or the last admin
+    ok 6 - removes other admins but never yourself or the last admin
+      ---
+      duration_ms: 2.734577
+      type: 'test'
+      ...
+    # Subtest: keeps the admin check working when invitations cannot be read
+    ok 7 - keeps the admin check working when invitations cannot be read
+      ---
+      duration_ms: 1.819838
+      type: 'test'
+      ...
+    1..7
+ok 1 - admin invitations
+  ---
+  duration_ms: 66.749274
+  type: 'suite'
+  ...
+1..1
+# tests 7
+# suites 1
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 623.103093

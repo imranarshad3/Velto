@@ -89,6 +89,11 @@ export function JourneyBar({ status, timeline = [], labelled = false }: { status
         })}
       </div>
       {labelled && (
+        <p className="mt-4 text-[0.875rem] font-semibold text-ink sm:hidden">
+          {cancelled ? 'Order cancelled' : `Step ${Math.max(1, current + 1)} of ${fulfilmentSteps.length}: ${statusLabels[status] ?? status}`}
+        </p>
+      )}
+      {labelled && (
         <ol className="mt-4 hidden grid-cols-6 gap-2 sm:grid">
           {fulfilmentSteps.map((s, i) => (
             <li key={s} className={`min-w-0 text-[0.75rem] leading-snug ${i === 0 ? 'text-left' : i === fulfilmentSteps.length - 1 ? 'text-right' : 'text-center'}`}>

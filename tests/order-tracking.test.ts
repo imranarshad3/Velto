@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { customerTimeline, deliveryWindow, nextStatuses, progressOf } from '../src/features/orders/tracking.js'
+import { customerTimeline, deliveryWindow, nextStatuses, nextUpdateDescriptions, progressOf } from '../src/features/orders/tracking.js'
 import { orderMetrics } from '../src/features/orders/orderView.js'
 import type { Order } from '../src/features/orders/schema.js'
 
@@ -26,12 +26,15 @@ test('customer timeline keeps status changes and public notes only', () => {
   ])
 })
 
-test('delivery window prefers the scheduled date', () => {
-  assert.deepEqual(deliveryWindow('2026-10-01T00:00:00Z', '2026-10-05'), { earliest: '2026-10-05', latest: '2026-10-05', exact: true })
-  const w = deliveryWindow('2026-10-01T00:00:00Z')
-  assert.equal(w.exact, false)
-  assert.equal(w.earliest.slice(0, 10), '2026-10-03')
-  assert.equal(w.latest.slice(0, 10), '2026-10-05')
+test('tracking shows only an admin-scheduled delivery estimate', () => {
+  assert.deepEqual(deliveryWindow('2026-10-05'), { earliest: '2026-10-05', latest: '2026-10-05', exact: true })
+  assert.equal(deliveryWindow(), null)
+})
+
+test('every customer-visible order status explains what happens next', () => {
+  for (const status of ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled']) {
+    assert.ok(nextUpdateDescriptions[status], `missing next-step guidance for ${status}`)
+  }
 })
 
 test('metrics count collected revenue from delivered orders only', () => {

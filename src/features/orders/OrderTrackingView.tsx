@@ -2,7 +2,7 @@ import { CalendarClock, CircleHelp, CreditCard, MapPin, Package, RefreshCw, Truc
 import { Link } from 'react-router'
 import type { Order } from './schema.ts'
 import { orderDate, orderDay, orderMoney, unitsOf } from './orderView.ts'
-import { customerTimeline, statusDescriptions, statusLabels } from './tracking.ts'
+import { customerTimeline, nextUpdateDescriptions, statusDescriptions, statusLabels } from './tracking.ts'
 import { CopyCode, JourneyBar, TrackingTimeline } from './TrackingUI.tsx'
 import { useRelativeTime } from './useLivePoll.ts'
 
@@ -14,7 +14,7 @@ function eta(order: Order) {
   }
   if (order.status === 'cancelled') return { label: 'Delivery', value: 'Cancelled' }
   const w = order.tracking?.estimatedDelivery
-  if (!w) return { label: 'Estimated delivery', value: 'To be scheduled' }
+  if (!w) return { label: 'Estimated delivery', value: 'Not scheduled yet' }
   return { label: w.exact ? 'Scheduled delivery' : 'Estimated delivery', value: w.exact ? orderDay(w.earliest) : `${orderDay(w.earliest)} – ${orderDay(w.latest)}` }
 }
 
@@ -35,6 +35,9 @@ export default function OrderTrackingView({ order, updatedAt, onRefresh, refresh
             <p className="text-[0.75rem] font-semibold tracking-[0.16em] text-white/65 uppercase">Order {order.reference}</p>
             <h2 id="track-status" className="mt-2 font-display text-[clamp(2rem,1.6rem+1.8vw,3rem)] leading-[1.05]">{statusLabels[order.status] ?? order.status}</h2>
             <p className="mt-2 max-w-[34rem] text-[0.9375rem] leading-relaxed text-white/80">{statusDescriptions[order.status]}</p>
+            <p className="mt-4 max-w-[38rem] rounded-xl border border-white/15 bg-white/[0.08] px-4 py-3 text-[0.875rem] leading-relaxed text-white/90">
+              <span className="font-semibold text-white">Next update: </span>{nextUpdateDescriptions[order.status] ?? 'Check this page for the latest order status.'}
+            </p>
           </div>
           {onRefresh && (
             <div className="flex items-center gap-2 text-[0.8125rem] text-white/70">

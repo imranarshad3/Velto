@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { imageSizeStyle, sizeContentImages, validImageDimension } from '../src/features/cms/imageSizing.js'
+import { imageFrameStyle, imageSizeStyle, sizeContentImages, validImageDimension } from '../src/features/cms/imageSizing.js'
 import { defaultContent } from '../src/features/cms/registry.js'
 import { validContent } from '../src/features/cms/schema.js'
 import { addSection, removeSection } from '../src/features/cms/sections.js'
 
 describe('CMS image sizing', () => {
+  it('fills fixed art-directed frames even when saved CMS sizing would leave empty bands', () => {
+    assert.deepEqual(imageFrameStyle, { width: '100%', height: '100%', maxWidth: '100%', aspectRatio: 'auto' })
+  })
   it('accepts bounded relative lengths and rejects unsafe or unsupported values', () => {
     for (const value of ['', '0.25rem', '24rem', '120rem', '100%', '50.5%']) assert.ok(validImageDimension(value, 'width'), value)
     for (const value of ['0rem', '-2rem', '121rem', '101%', 'NaNrem', '20px', 'calc(100% + 1rem)', '1rem;display:none']) assert.equal(validImageDimension(value, 'width'), false, value)
@@ -14,18 +17,23 @@ describe('CMS image sizing', () => {
     assert.equal(imageSizeStyle({ width: '999rem', height: '' }), undefined)
     assert.deepEqual(imageSizeStyle({ width: '24rem', height: '' }), { width: '24rem', maxWidth: '100%', height: 'auto', aspectRatio: 'auto' })
     assert.equal(imageSizeStyle({ width: '100%', height: '18rem' })?.height, '18rem')
+    assert.deepEqual(imageSizeStyle({ width: '100%', height: '', fit: 'cover', position: 'top', ratio: 'square' }), {
+      width: '100%', maxWidth: '100%', height: 'auto', objectFit: 'cover', objectPosition: 'center top', aspectRatio: '1 / 1',
+    })
   })
 
   it('allows dimensions only for known image fields, including custom sections', () => {
     const original = defaultContent('home')
     assert.ok(validContent('home', original))
     assert.ok(validContent('home', { ...original, imageSizes: { 'Hero.image-src': { width: '100%', height: '30rem' } } }))
+    assert.ok(validContent('home', { ...original, imageSizes: { 'Hero.image-src': { width: '100%', height: '', fit: 'cover', position: 'top', ratio: 'square' } } }))
     for (const key of ['unknown', 'Hero.field-1']) {
       assert.equal(validContent('home', { ...original, imageSizes: { [key]: { width: '24rem', height: '' } } }), null)
     }
     const sanitized = validContent('home', { ...original, imageSizes: { ['__proto__']: { width: '24rem', height: '' } } })
     assert.ok(!sanitized || !Object.hasOwn(sanitized.imageSizes ?? {}, '__proto__'), 'prototype keys are rejected or discarded')
     assert.equal(validContent('home', { ...original, imageSizes: { 'Hero.image-src': { width: '24px', height: '' } } }), null)
+    assert.equal(validContent('home', { ...original, imageSizes: { 'Hero.image-src': { width: '', height: '', fit: 'stretch' } } }), null)
     const section = { id: `custom-${crypto.randomUUID()}`, type: 'image-text' as const }
     const draft = addSection(original, section)
     draft.imageSizes = { [`${section.id}.image-src`]: { width: '75%', height: '20rem' } }

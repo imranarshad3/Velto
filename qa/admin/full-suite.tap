@@ -1,0 +1,1059 @@
+TAP version 13
+# Subtest: admin authorisation
+    # Subtest: rejects guests, invalid sessions and non-admin customers on every route
+    ok 1 - rejects guests, invalid sessions and non-admin customers on every route
+      ---
+      duration_ms: 166.363043
+      type: 'test'
+      ...
+    # Subtest: reports admin status only from the server-side membership
+    ok 2 - reports admin status only from the server-side membership
+      ---
+      duration_ms: 6.146693
+      type: 'test'
+      ...
+    # Subtest: supports the rewritten ?path= form
+    ok 3 - supports the rewritten ?path= form
+      ---
+      duration_ms: 2.855073
+      type: 'test'
+      ...
+    1..3
+ok 1 - admin authorisation
+  ---
+  duration_ms: 178.530945
+  type: 'suite'
+  ...
+# Subtest: admin quotes
+    # Subtest: lists, filters, searches and updates with history and audit
+    ok 1 - lists, filters, searches and updates with history and audit
+      ---
+      duration_ms: 101.58453
+      type: 'test'
+      ...
+    1..1
+ok 2 - admin quotes
+  ---
+  duration_ms: 102.089495
+  type: 'suite'
+  ...
+# Subtest: admin products and public catalogue
+    # Subtest: creates, validates and publishes products; prices public only when verified
+    ok 1 - creates, validates and publishes products; prices public only when verified
+      ---
+      duration_ms: 64.826084
+      type: 'test'
+      ...
+    # Subtest: rejects duplicates and unsafe input
+    ok 2 - rejects duplicates and unsafe input
+      ---
+      duration_ms: 87.415463
+      type: 'test'
+      ...
+    1..2
+ok 3 - admin products and public catalogue
+  ---
+  duration_ms: 157.560676
+  type: 'suite'
+  ...
+# Subtest: admin customers, messages and overview
+    # Subtest: aggregates customers, manages messages and reports totals
+    ok 1 - aggregates customers, manages messages and reports totals
+      ---
+      duration_ms: 26.037587
+      type: 'test'
+      ...
+    1..1
+ok 4 - admin customers, messages and overview
+  ---
+  duration_ms: 26.473048
+  type: 'suite'
+  ...
+# Subtest: product status and delete
+    # Subtest: moves a product between published, draft and archived
+    ok 1 - moves a product between published, draft and archived
+      ---
+      duration_ms: 18.145396
+      type: 'test'
+      ...
+    # Subtest: keeps archive state through edits and un-archives on publish
+    ok 2 - keeps archive state through edits and un-archives on publish
+      ---
+      duration_ms: 20.593483
+      type: 'test'
+      ...
+    # Subtest: validates status values and unknown products
+    ok 3 - validates status values and unknown products
+      ---
+      duration_ms: 4.139101
+      type: 'test'
+      ...
+    # Subtest: never exposes the archived flag publicly
+    ok 4 - never exposes the archived flag publicly
+      ---
+      duration_ms: 0.913617
+      type: 'test'
+      ...
+    # Subtest: deletes unused products and refuses products in open quote requests
+    ok 5 - deletes unused products and refuses products in open quote requests
+      ---
+      duration_ms: 14.282809
+      type: 'test'
+      ...
+    1..5
+ok 5 - product status and delete
+  ---
+  duration_ms: 70.929401
+  type: 'suite'
+  ...
+# Subtest: categories
+    # Subtest: lists built-in categories with product counts and serves visible ones publicly in order
+    ok 1 - lists built-in categories with product counts and serves visible ones publicly in order
+      ---
+      duration_ms: 15.942341
+      type: 'test'
+      ...
+    # Subtest: creates, renames (propagating to products), hides and reorders categories
+    ok 2 - creates, renames (propagating to products), hides and reorders categories
+      ---
+      duration_ms: 22.22815
+      type: 'test'
+      ...
+    # Subtest: saving a product with a new category creates it
+    ok 3 - saving a product with a new category creates it
+      ---
+      duration_ms: 4.210737
+      type: 'test'
+      ...
+    # Subtest: refuses deleting a category with products unless they are moved
+    ok 4 - refuses deleting a category with products unless they are moved
+      ---
+      duration_ms: 12.981482
+      type: 'test'
+      ...
+    1..4
+ok 6 - categories
+  ---
+  duration_ms: 67.929788
+  type: 'suite'
+  ...
+# Subtest: valid vision response is validated and image is decoded and normalized
+ok 7 - valid vision response is validated and image is decoded and normalized
+  ---
+  duration_ms: 165.665758
+  type: 'test'
+  ...
+# Subtest: rejects unavailable config, invalid images and excessive bytes before provider calls
+ok 8 - rejects unavailable config, invalid images and excessive bytes before provider calls
+  ---
+  duration_ms: 16.719326
+  type: 'test'
+  ...
+# Subtest: provider errors, malformed drafts, truncated output and operational fields fail safely
+ok 9 - provider errors, malformed drafts, truncated output and operational fields fail safely
+  ---
+  duration_ms: 50.027393
+  type: 'test'
+  ...
+# Subtest: timeout returns a recoverable error
+ok 10 - timeout returns a recoverable error
+  ---
+  duration_ms: 19.285148
+  type: 'test'
+  ...
+# Subtest: merge preserves manual data, live edits, operational fields and existing slugs
+ok 11 - merge preserves manual data, live edits, operational fields and existing slugs
+  ---
+  duration_ms: 5.426154
+  type: 'test'
+  ...
+# Subtest: AI API enforces auth, origin, schema, limits and does not save a product
+ok 12 - AI API enforces auth, origin, schema, limits and does not save a product
+  ---
+  duration_ms: 61.019505
+  type: 'test'
+  ...
+# Subtest: Ollama fallback runs once for provider errors, never for bad input
+ok 13 - Ollama fallback runs once for provider errors, never for bad input
+  ---
+  duration_ms: 27.006329
+  type: 'test'
+  ...
+# Subtest: near-miss model output is normalized instead of failing; fenced JSON is accepted
+ok 14 - near-miss model output is normalized instead of failing; fenced JSON is accepted
+  ---
+  duration_ms: 21.317234
+  type: 'test'
+  ...
+# Subtest: product view tracking
+    # Subtest: counts a real visitor once per product per day
+    ok 1 - counts a real visitor once per product per day
+      ---
+      duration_ms: 137.173901
+      type: 'test'
+      ...
+    # Subtest: ignores bots, scripted clients and cross-site beacons
+    ok 2 - ignores bots, scripted clients and cross-site beacons
+      ---
+      duration_ms: 11.94778
+      type: 'test'
+      ...
+    # Subtest: rejects malformed slugs and ignores unknown products
+    ok 3 - rejects malformed slugs and ignores unknown products
+      ---
+      duration_ms: 5.800732
+      type: 'test'
+      ...
+    # Subtest: rate limits views per IP without revealing it
+    ok 4 - rate limits views per IP without revealing it
+      ---
+      duration_ms: 169.040658
+      type: 'test'
+      ...
+    # Subtest: rejects non-JSON requests
+    ok 5 - rejects non-JSON requests
+      ---
+      duration_ms: 7.627849
+      type: 'test'
+      ...
+    1..5
+ok 15 - product view tracking
+  ---
+  duration_ms: 334.843762
+  type: 'suite'
+  ...
+# Subtest: admin analytics endpoint
+    # Subtest: requires a signed-in admin
+    ok 1 - requires a signed-in admin
+      ---
+      duration_ms: 2.229271
+      type: 'test'
+      ...
+    # Subtest: reports quote demand separately from sales
+    ok 2 - reports quote demand separately from sales
+      ---
+      duration_ms: 15.072274
+      type: 'test'
+      ...
+    # Subtest: falls back to 30 days for an unknown range
+    ok 3 - falls back to 30 days for an unknown range
+      ---
+      duration_ms: 1.620194
+      type: 'test'
+      ...
+    1..3
+ok 16 - admin analytics endpoint
+  ---
+  duration_ms: 19.694472
+  type: 'suite'
+  ...
+# Subtest: buildProductAnalytics
+    # Subtest: filters by range, ranks by views and fills the daily series
+    ok 1 - filters by range, ranks by views and fills the daily series
+      ---
+      duration_ms: 1.108427
+      type: 'test'
+      ...
+    # Subtest: computes trend (last 7 vs previous 7 days) and quote rate
+    ok 2 - computes trend (last 7 vs previous 7 days) and quote rate
+      ---
+      duration_ms: 1.06278
+      type: 'test'
+      ...
+    # Subtest: includes everything for all time
+    ok 3 - includes everything for all time
+      ---
+      duration_ms: 1.030199
+      type: 'test'
+      ...
+    1..3
+ok 17 - buildProductAnalytics
+  ---
+  duration_ms: 3.78164
+  type: 'suite'
+  ...
+# Subtest: Clerk session verification
+    # Subtest: accepts a token minted immediately after sign-in
+    ok 1 - accepts a token minted immediately after sign-in
+      ---
+      duration_ms: 70.852809
+      type: 'test'
+      ...
+    # Subtest: accepts the API’s own origin as authorized party (127.0.0.1, other ports, previews)
+    ok 2 - accepts the API’s own origin as authorized party (127.0.0.1, other ports, previews)
+      ---
+      duration_ms: 29.653751
+      type: 'test'
+      ...
+    # Subtest: rejects a token issued for another site — as "rejected", not "expired"
+    ok 3 - rejects a token issued for another site — as "rejected", not "expired"
+      ---
+      duration_ms: 7.162768
+      type: 'test'
+      ...
+    # Subtest: classifies a genuinely expired token as expired
+    ok 4 - classifies a genuinely expired token as expired
+      ---
+      duration_ms: 11.80743
+      type: 'test'
+      ...
+    # Subtest: rejects a token signed by a different Clerk instance
+    ok 5 - rejects a token signed by a different Clerk instance
+      ---
+      duration_ms: 15.722575
+      type: 'test'
+      ...
+    # Subtest: reports missing server keys as unconfigured, never as an expired session
+    ok 6 - reports missing server keys as unconfigured, never as an expired session
+      ---
+      duration_ms: 6.41121
+      type: 'test'
+      ...
+    1..6
+ok 18 - Clerk session verification
+  ---
+  duration_ms: 145.080221
+  type: 'suite'
+  ...
+# Subtest: auth failure responses
+    # Subtest: {"kind":"invalid","reason":"expired"} → 401 session_invalid
+    ok 1 - {"kind":"invalid","reason":"expired"} → 401 session_invalid
+      ---
+      duration_ms: 15.739101
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid"} → 401 session_invalid
+    ok 2 - {"kind":"invalid"} → 401 session_invalid
+      ---
+      duration_ms: 1.604394
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid","reason":"rejected"} → 401 session_rejected
+    ok 3 - {"kind":"invalid","reason":"rejected"} → 401 session_rejected
+      ---
+      duration_ms: 1.026514
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid","reason":"unconfigured"} → 503 auth_unavailable
+    ok 4 - {"kind":"invalid","reason":"unconfigured"} → 503 auth_unavailable
+      ---
+      duration_ms: 2.606978
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid","reason":"unavailable"} → 503 auth_unavailable
+    ok 5 - {"kind":"invalid","reason":"unavailable"} → 503 auth_unavailable
+      ---
+      duration_ms: 3.311326
+      type: 'test'
+      ...
+    # Subtest: a valid session gets its own (empty) quote list, and the verifier receives the request origin
+    ok 6 - a valid session gets its own (empty) quote list, and the verifier receives the request origin
+      ---
+      duration_ms: 2.550904
+      type: 'test'
+      ...
+    1..6
+ok 19 - auth failure responses
+  ---
+  duration_ms: 27.81322
+  type: 'suite'
+  ...
+# Subtest: CMS Caching, ETag, and Invalidation
+    # Subtest: returns ETag and supports 304 Not Modified on unchanged content
+    ok 1 - returns ETag and supports 304 Not Modified on unchanged content
+      ---
+      duration_ms: 112.044692
+      type: 'test'
+      ...
+    # Subtest: invalidates cache and updates ETag when content is published
+    ok 2 - invalidates cache and updates ETag when content is published
+      ---
+      duration_ms: 32.034947
+      type: 'test'
+      ...
+    1..2
+ok 20 - CMS Caching, ETag, and Invalidation
+  ---
+  duration_ms: 148.281425
+  type: 'suite'
+  ...
+# Subtest: CMS local draft recovery
+    # Subtest: restores unsaved content only against the same server revision
+    ok 1 - restores unsaved content only against the same server revision
+      ---
+      duration_ms: 4.051709
+      type: 'test'
+      ...
+    # Subtest: clears saved drafts and ignores corrupt storage entries
+    ok 2 - clears saved drafts and ignores corrupt storage entries
+      ---
+      duration_ms: 0.722718
+      type: 'test'
+      ...
+    1..2
+ok 21 - CMS local draft recovery
+  ---
+  duration_ms: 7.657743
+  type: 'suite'
+  ...
+# Subtest: CMS image sizing
+    # Subtest: fills fixed art-directed frames even when saved CMS sizing would leave empty bands
+    ok 1 - fills fixed art-directed frames even when saved CMS sizing would leave empty bands
+      ---
+      duration_ms: 3.472748
+      type: 'test'
+      ...
+    # Subtest: accepts bounded relative lengths and rejects unsafe or unsupported values
+    ok 2 - accepts bounded relative lengths and rejects unsafe or unsupported values
+      ---
+      duration_ms: 1.693297
+      type: 'test'
+      ...
+    # Subtest: allows dimensions only for known image fields, including custom sections
+    ok 3 - allows dimensions only for known image fields, including custom sections
+      ---
+      duration_ms: 44.25193
+      type: 'test'
+      ...
+    # Subtest: sizes collection images by field identity without mutating source data
+    ok 4 - sizes collection images by field identity without mutating source data
+      ---
+      duration_ms: 0.785775
+      type: 'test'
+      ...
+    # Subtest: drops retired fields from content saved before their removal, but still rejects unknown ones
+    ok 5 - drops retired fields from content saved before their removal, but still rejects unknown ones
+      ---
+      duration_ms: 4.055653
+      type: 'test'
+      ...
+    1..5
+ok 22 - CMS image sizing
+  ---
+  duration_ms: 57.945616
+  type: 'suite'
+  ...
+# Subtest: admins can only move orders forward or cancel open ones
+ok 23 - admins can only move orders forward or cancel open ones
+  ---
+  duration_ms: 3.756683
+  type: 'test'
+  ...
+# Subtest: customer timeline keeps status changes and public notes only
+ok 24 - customer timeline keeps status changes and public notes only
+  ---
+  duration_ms: 1.044371
+  type: 'test'
+  ...
+# Subtest: delivery window prefers the scheduled date
+ok 25 - delivery window prefers the scheduled date
+  ---
+  duration_ms: 1.893869
+  type: 'test'
+  ...
+# Subtest: metrics count collected revenue from delivered orders only
+ok 26 - metrics count collected revenue from delivered orders only
+  ---
+  duration_ms: 1.535188
+  type: 'test'
+  ...
+# Subtest: order search matches reference, customer and product; combines with status
+ok 27 - order search matches reference, customer and product; combines with status
+  ---
+  duration_ms: 6.890164
+  type: 'test'
+  ...
+# Subtest: order sorting keeps original data intact and sorts numeric totals and dates
+ok 28 - order sorting keeps original data intact and sorts numeric totals and dates
+  ---
+  duration_ms: 5.84463
+  type: 'test'
+  ...
+# Subtest: Orders API security & authorization
+    # Subtest: rejects unauthenticated requests with 401 sign_in_required
+    ok 1 - rejects unauthenticated requests with 401 sign_in_required
+      ---
+      duration_ms: 14.95151
+      type: 'test'
+      ...
+    # Subtest: rejects expired tokens with 401 session_invalid
+    ok 2 - rejects expired tokens with 401 session_invalid
+      ---
+      duration_ms: 2.211717
+      type: 'test'
+      ...
+    # Subtest: blocks disallowed cross-browser origins on mutations
+    ok 3 - blocks disallowed cross-browser origins on mutations
+      ---
+      duration_ms: 3.407165
+      type: 'test'
+      ...
+    # Subtest: enforces customer isolation: customer A only receives their own orders
+    ok 4 - enforces customer isolation: customer A only receives their own orders
+      ---
+      duration_ms: 3.686575
+      type: 'test'
+      ...
+    # Subtest: prevents non-admin customer from accessing ?admin=1
+    ok 5 - prevents non-admin customer from accessing ?admin=1
+      ---
+      duration_ms: 3.118304
+      type: 'test'
+      ...
+    # Subtest: prevents non-admin customer from calling PATCH /api/orders
+    ok 6 - prevents non-admin customer from calling PATCH /api/orders
+      ---
+      duration_ms: 1.630901
+      type: 'test'
+      ...
+    # Subtest: BFLA defense: blocks team member with editor role from accessing GET /api/orders?admin=1
+    ok 7 - BFLA defense: blocks team member with editor role from accessing GET /api/orders?admin=1
+      ---
+      duration_ms: 2.549479
+      type: 'test'
+      ...
+    # Subtest: BFLA defense: blocks team member with editor role from calling PATCH /api/orders
+    ok 8 - BFLA defense: blocks team member with editor role from calling PATCH /api/orders
+      ---
+      duration_ms: 1.590945
+      type: 'test'
+      ...
+    # Subtest: allows administrator to view all orders via GET /api/orders?admin=1
+    ok 9 - allows administrator to view all orders via GET /api/orders?admin=1
+      ---
+      duration_ms: 4.567327
+      type: 'test'
+      ...
+    # Subtest: allows administrator to update order status via PATCH /api/orders
+    ok 10 - allows administrator to update order status via PATCH /api/orders
+      ---
+      duration_ms: 9.46547
+      type: 'test'
+      ...
+    # Subtest: rejects invalid order status in PATCH
+    ok 11 - rejects invalid order status in PATCH
+      ---
+      duration_ms: 2.2316
+      type: 'test'
+      ...
+    # Subtest: enforces rate limits on GET and POST requests
+    ok 12 - enforces rate limits on GET and POST requests
+      ---
+      duration_ms: 2.633921
+      type: 'test'
+      ...
+    # Subtest: validates customer and items schema in POST /api/orders
+    ok 13 - validates customer and items schema in POST /api/orders
+      ---
+      duration_ms: 4.22305
+      type: 'test'
+      ...
+    # Subtest: allows authenticated customer to track own order by reference without contact
+    ok 14 - allows authenticated customer to track own order by reference without contact
+      ---
+      duration_ms: 1.396614
+      type: 'test'
+      ...
+    # Subtest: allows guest client to track order with valid reference and matching email
+    ok 15 - allows guest client to track order with valid reference and matching email
+      ---
+      duration_ms: 3.279127
+      type: 'test'
+      ...
+    # Subtest: allows guest client to track order with matching phone digits
+    ok 16 - allows guest client to track order with matching phone digits
+      ---
+      duration_ms: 3.032484
+      type: 'test'
+      ...
+    # Subtest: rejects guest tracking with wrong contact info (prevents enumeration)
+    ok 17 - rejects guest tracking with wrong contact info (prevents enumeration)
+      ---
+      duration_ms: 2.351501
+      type: 'test'
+      ...
+    # Subtest: requires contact verification for guest tracking without contact
+    ok 18 - requires contact verification for guest tracking without contact
+      ---
+      duration_ms: 3.164594
+      type: 'test'
+      ...
+    # Subtest: enforces rate limits on tracking requests
+    ok 19 - enforces rate limits on tracking requests
+      ---
+      duration_ms: 2.210036
+      type: 'test'
+      ...
+    1..19
+ok 29 - Orders API security & authorization
+  ---
+  duration_ms: 77.181198
+  type: 'suite'
+  ...
+# Subtest: single order detail access
+    # Subtest: returns exactly the requested order for admin, and preserves customer isolation
+    ok 1 - returns exactly the requested order for admin, and preserves customer isolation
+      ---
+      duration_ms: 3.953273
+      type: 'test'
+      ...
+    1..1
+ok 30 - single order detail access
+  ---
+  duration_ms: 4.271656
+  type: 'suite'
+  ...
+# Subtest: order tracking updates
+    # Subtest: passes shipment details to the database and returns the refreshed order
+    ok 1 - passes shipment details to the database and returns the refreshed order
+      ---
+      duration_ms: 4.29466
+      type: 'test'
+      ...
+    # Subtest: returns 409 when the order changed since it was loaded
+    ok 2 - returns 409 when the order changed since it was loaded
+      ---
+      duration_ms: 1.770054
+      type: 'test'
+      ...
+    # Subtest: rejects closed orders, bad courier references and far-future dates
+    ok 3 - rejects closed orders, bad courier references and far-future dates
+      ---
+      duration_ms: 5.392675
+      type: 'test'
+      ...
+    # Subtest: customer views hide staff identities and internal notes
+    ok 4 - customer views hide staff identities and internal notes
+      ---
+      duration_ms: 5.364161
+      type: 'test'
+      ...
+    # Subtest: guests can track by tracking ID; wildcard or malformed references never match
+    ok 5 - guests can track by tracking ID; wildcard or malformed references never match
+      ---
+      duration_ms: 7.08792
+      type: 'test'
+      ...
+    1..5
+ok 31 - order tracking updates
+  ---
+  duration_ms: 24.598674
+  type: 'suite'
+  ...
+# Subtest: product editor accepts eight gallery images and custom categories; rejects nine or unsafe URLs
+ok 32 - product editor accepts eight gallery images and custom categories; rejects nine or unsafe URLs
+  ---
+  duration_ms: 17.414519
+  type: 'test'
+  ...
+# Subtest: selling price is mandatory, positive and always PKR; inventory is a nonnegative integer
+ok 33 - selling price is mandatory, positive and always PKR; inventory is a nonnegative integer
+  ---
+  duration_ms: 3.78916
+  type: 'test'
+  ...
+# Subtest: custom category filters survive URL parsing and are exposed to shoppers
+ok 34 - custom category filters survive URL parsing and are exposed to shoppers
+  ---
+  duration_ms: 3.726172
+  type: 'test'
+  ...
+# Subtest: AI can suggest custom categories without assigning stock or price
+ok 35 - AI can suggest custom categories without assigning stock or price
+  ---
+  duration_ms: 5.55255
+  type: 'test'
+  ...
+# Subtest: protected admins cannot be removed by another admin or themselves
+ok 36 - protected admins cannot be removed by another admin or themselves
+  ---
+  duration_ms: 12.584078
+  type: 'test'
+  ...
+# Subtest: project cancellation is an accepted status
+ok 37 - project cancellation is an accepted status
+  ---
+  duration_ms: 4.963719
+  type: 'test'
+  ...
+# Subtest: POST /api/quotes
+    # Subtest: accepts a guest quote, returns a one-time token and stores only its keyed hash
+    ok 1 - accepts a guest quote, returns a one-time token and stores only its keyed hash
+      ---
+      duration_ms: 102.071987
+      type: 'test'
+      ...
+    # Subtest: assigns ownership only from the verified token and ignores forged body identity
+    ok 2 - assigns ownership only from the verified token and ignores forged body identity
+      ---
+      duration_ms: 9.627522
+      type: 'test'
+      ...
+    # Subtest: treats forged identity fields from guests as guest submissions
+    ok 3 - treats forged identity fields from guests as guest submissions
+      ---
+      duration_ms: 6.533583
+      type: 'test'
+      ...
+    # Subtest: rejects an expired/invalid Clerk session without saving
+    ok 4 - rejects an expired/invalid Clerk session without saving
+      ---
+      duration_ms: 9.345416
+      type: 'test'
+      ...
+    # Subtest: returns field errors for invalid input
+    ok 5 - returns field errors for invalid input
+      ---
+      duration_ms: 5.064665
+      type: 'test'
+      ...
+    # Subtest: rejects oversized descriptions and unknown products
+    ok 6 - rejects oversized descriptions and unknown products
+      ---
+      duration_ms: 4.047404
+      type: 'test'
+      ...
+    # Subtest: rejects duplicate products and more than 20 items
+    ok 7 - rejects duplicate products and more than 20 items
+      ---
+      duration_ms: 2.6301
+      type: 'test'
+      ...
+    # Subtest: stores items in order and allows general enquiries without items
+    ok 8 - stores items in order and allows general enquiries without items
+      ---
+      duration_ms: 5.784066
+      type: 'test'
+      ...
+    # Subtest: rejects honeypot and too-fast submissions
+    ok 9 - rejects honeypot and too-fast submissions
+      ---
+      duration_ms: 5.702632
+      type: 'test'
+      ...
+    # Subtest: enforces body size, content type and JSON validity
+    ok 10 - enforces body size, content type and JSON validity
+      ---
+      duration_ms: 3.067236
+      type: 'test'
+      ...
+    # Subtest: rate limits repeated submissions from one IP
+    ok 11 - rate limits repeated submissions from one IP
+      ---
+      duration_ms: 15.612771
+      type: 'test'
+      ...
+    # Subtest: blocks disallowed browser origins
+    ok 12 - blocks disallowed browser origins
+      ---
+      duration_ms: 2.302534
+      type: 'test'
+      ...
+    # Subtest: blocks disallowed browser origins even when allowedOrigins is unconfigured
+    ok 13 - blocks disallowed browser origins even when allowedOrigins is unconfigured
+      ---
+      duration_ms: 2.541374
+      type: 'test'
+      ...
+    # Subtest: requires the human check when configured
+    ok 14 - requires the human check when configured
+      ---
+      duration_ms: 2.385112
+      type: 'test'
+      ...
+    # Subtest: answers 503 when no database is configured
+    ok 15 - answers 503 when no database is configured
+      ---
+      duration_ms: 1.524416
+      type: 'test'
+      ...
+    # Subtest: hides internal errors and never logs PII
+    ok 16 - hides internal errors and never logs PII
+      ---
+      duration_ms: 4.546746
+      type: 'test'
+      ...
+    1..16
+ok 38 - POST /api/quotes
+  ---
+  duration_ms: 189.462501
+  type: 'suite'
+  ...
+# Subtest: GET /api/my/quotes
+    # Subtest: requires a signed-in user
+    ok 1 - requires a signed-in user
+      ---
+      duration_ms: 1.303511
+      type: 'test'
+      ...
+    # Subtest: returns only the caller’s quotes, without private fields
+    ok 2 - returns only the caller’s quotes, without private fields
+      ---
+      duration_ms: 9.338601
+      type: 'test'
+      ...
+    1..2
+ok 39 - GET /api/my/quotes
+  ---
+  duration_ms: 11.045331
+  type: 'suite'
+  ...
+# Subtest: POST /api/quotes/status (guest lookup)
+    # Subtest: requires both the reference and the secret token
+    ok 1 - requires both the reference and the secret token
+      ---
+      duration_ms: 6.915813
+      type: 'test'
+      ...
+    # Subtest: does not let signed-in quotes be looked up as guest quotes
+    ok 2 - does not let signed-in quotes be looked up as guest quotes
+      ---
+      duration_ms: 8.839362
+      type: 'test'
+      ...
+    # Subtest: rate limits lookups per IP
+    ok 3 - rate limits lookups per IP
+      ---
+      duration_ms: 3.723621
+      type: 'test'
+      ...
+    1..3
+ok 40 - POST /api/quotes/status (guest lookup)
+  ---
+  duration_ms: 19.911315
+  type: 'suite'
+  ...
+# Subtest: GET /api/my/quotes/:reference
+    # Subtest: returns the owner’s full request with its status history
+    ok 1 - returns the owner’s full request with its status history
+      ---
+      duration_ms: 2.441582
+      type: 'test'
+      ...
+    # Subtest: hides other users’ and guest quotes behind the same 404
+    ok 2 - hides other users’ and guest quotes behind the same 404
+      ---
+      duration_ms: 2.636623
+      type: 'test'
+      ...
+    1..2
+ok 41 - GET /api/my/quotes/:reference
+  ---
+  duration_ms: 5.308796
+  type: 'suite'
+  ...
+# Subtest: /api/my/wishlist
+    # Subtest: stores per-user lists, dropping unknown products and duplicates
+    ok 1 - stores per-user lists, dropping unknown products and duplicates
+      ---
+      duration_ms: 2.852197
+      type: 'test'
+      ...
+    # Subtest: requires sign-in and validates input
+    ok 2 - requires sign-in and validates input
+      ---
+      duration_ms: 1.737268
+      type: 'test'
+      ...
+    1..2
+ok 42 - /api/my/wishlist
+  ---
+  duration_ms: 4.858628
+  type: 'suite'
+  ...
+# Subtest: dev-only fake auth
+    # Subtest: cannot be enabled on Vercel or in production
+    ok 1 - cannot be enabled on Vercel or in production
+      ---
+      duration_ms: 154.276441
+      type: 'test'
+      ...
+    1..1
+ok 43 - dev-only fake auth
+  ---
+  duration_ms: 154.420703
+  type: 'suite'
+  ...
+# Subtest: POST /api/contact
+    # Subtest: stores a valid message; owner only from a verified session
+    ok 1 - stores a valid message; owner only from a verified session
+      ---
+      duration_ms: 3.857442
+      type: 'test'
+      ...
+    # Subtest: validates, rejects bots and rate limits
+    ok 2 - validates, rejects bots and rate limits
+      ---
+      duration_ms: 4.25861
+      type: 'test'
+      ...
+    1..2
+ok 44 - POST /api/contact
+  ---
+  duration_ms: 8.360661
+  type: 'suite'
+  ...
+# Subtest: resource center: admin management
+    # Subtest: requires an admin for every management route
+    ok 1 - requires an admin for every management route
+      ---
+      duration_ms: 116.383788
+      type: 'test'
+      ...
+    # Subtest: accepts PDFs only, up to 20 MB
+    ok 2 - accepts PDFs only, up to 20 MB
+      ---
+      duration_ms: 18.938603
+      type: 'test'
+      ...
+    # Subtest: refuses a resource whose upload never arrived or links unknown products
+    ok 3 - refuses a resource whose upload never arrived or links unknown products
+      ---
+      duration_ms: 21.915949
+      type: 'test'
+      ...
+    # Subtest: publishes, lists, downloads and deletes a document
+    ok 4 - publishes, lists, downloads and deletes a document
+      ---
+      duration_ms: 10.16734
+      type: 'test'
+      ...
+    # Subtest: replaces the file on edit
+    ok 5 - replaces the file on edit
+      ---
+      duration_ms: 12.23887
+      type: 'test'
+      ...
+    1..5
+ok 45 - resource center: admin management
+  ---
+  duration_ms: 184.171464
+  type: 'suite'
+  ...
+# Subtest: coverage data
+    # Subtest: validates and stores coverage per product
+    ok 1 - validates and stores coverage per product
+      ---
+      duration_ms: 10.165494
+      type: 'test'
+      ...
+    # Subtest: is public only for verified products
+    ok 2 - is public only for verified products
+      ---
+      duration_ms: 7.826384
+      type: 'test'
+      ...
+    1..2
+ok 46 - coverage data
+  ---
+  duration_ms: 25.547372
+  type: 'suite'
+  ...
+# Subtest: Supabase store (PostgREST)
+ok 47 - Supabase store (PostgREST) # SKIP
+  ---
+  duration_ms: 1.344652
+  type: 'suite'
+  ...
+# [admin] invitation check skipped: supabase open invites failed (PGRST205)
+# Subtest: admin invitations
+    # Subtest: only admins can view the team or invite
+    ok 1 - only admins can view the team or invite
+      ---
+      duration_ms: 82.466531
+      type: 'test'
+      ...
+    # Subtest: validates the email and emails a sign-up invitation
+    ok 2 - validates the email and emails a sign-up invitation
+      ---
+      duration_ms: 18.69851
+      type: 'test'
+      ...
+    # Subtest: grants admin only to a user whose verified email matches
+    ok 3 - grants admin only to a user whose verified email matches
+      ---
+      duration_ms: 11.557275
+      type: 'test'
+      ...
+    # Subtest: does not grant access from revoked or expired invitations
+    ok 4 - does not grant access from revoked or expired invitations
+      ---
+      duration_ms: 10.623558
+      type: 'test'
+      ...
+    # Subtest: refuses to invite an existing admin
+    ok 5 - refuses to invite an existing admin
+      ---
+      duration_ms: 1.755465
+      type: 'test'
+      ...
+    # Subtest: removes other admins but never yourself or the last admin
+    ok 6 - removes other admins but never yourself or the last admin
+      ---
+      duration_ms: 5.720068
+      type: 'test'
+      ...
+    # Subtest: keeps the admin check working when invitations cannot be read
+    ok 7 - keeps the admin check working when invitations cannot be read
+      ---
+      duration_ms: 6.24016
+      type: 'test'
+      ...
+    1..7
+ok 48 - admin invitations
+  ---
+  duration_ms: 140.571546
+  type: 'suite'
+  ...
+# Subtest: CMS/CRM workspace
+    # Subtest: keeps added sections private until published and restores them from revisions
+    ok 1 - keeps added sections private until published and restores them from revisions
+      ---
+      duration_ms: 164.572302
+      type: 'test'
+      ...
+    # Subtest: validates section types, unique IDs, limits, URLs and fixed page layouts
+    ok 2 - validates section types, unique IDs, limits, URLs and fixed page layouts
+      ---
+      duration_ms: 57.304607
+      type: 'test'
+      ...
+    # Subtest: enforces team roles on the server
+    ok 3 - enforces team roles on the server
+      ---
+      duration_ms: 8.2625
+      type: 'test'
+      ...
+    # Subtest: saves drafts, publishes to the storefront and restores revisions
+    ok 4 - saves drafts, publishes to the storefront and restores revisions
+      ---
+      duration_ms: 12.814176
+      type: 'test'
+      ...
+    # Subtest: uploads, replaces and validates media
+    ok 5 - uploads, replaces and validates media
+      ---
+      duration_ms: 12.76451
+      type: 'test'
+      ...
+    # Subtest: tracks lead stages, assignment and history
+    ok 6 - tracks lead stages, assignment and history
+      ---
+      duration_ms: 14.005788
+      type: 'test'
+      ...
+    1..6
+ok 49 - CMS/CRM workspace
+  ---
+  duration_ms: 273.282319
+  type: 'suite'
+  ...
+1..49
+# tests 141
+# suites 29
+# pass 141
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4221.573215

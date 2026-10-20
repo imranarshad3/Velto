@@ -61,7 +61,7 @@ export default function CategoryPreview() {
           aria-label="Product categories"
           aria-describedby="category-scroll-hint"
           tabIndex={0}
-          className="mt-4 -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-[var(--grid-gap)] overflow-x-auto px-[var(--page-gutter)] pt-1 pb-3 md:mx-0 md:mt-[var(--heading-gap)] md:grid md:grid-cols-4 md:overflow-visible md:p-0"
+          className="mt-4 -mx-[var(--page-gutter)] flex snap-x snap-mandatory scroll-px-[var(--page-gutter)] gap-[var(--grid-gap)] overflow-x-auto px-[var(--page-gutter)] pt-1 pb-3 md:mx-0 md:mt-[var(--heading-gap)] md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:p-0"
         >
           {loading &&
             [0, 1, 2, 3].map((i) => (

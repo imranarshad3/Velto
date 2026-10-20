@@ -44,7 +44,7 @@ export default function ApplicationsPage() {
           <div className="area-image-composition">
             {preview.map(({ application, image }, i) => (
               <Link to={`/applications/${application.slug}`} key={application.slug} className={`area-image-card group ${i === 0 ? 'area-image-main' : ''}`}>
-                <Img image={image} priority className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transform-none" />
+                <Img image={image} priority fit="contain" className="absolute inset-0 size-full object-contain" />
                 <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-forest-deep/85 via-forest-deep/10 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 text-white">
                   <span><span className="mb-1 block text-[0.625rem] font-semibold tracking-[0.2em] text-gold uppercase">Shop this area</span><span className="font-display text-[1.5rem]">{application.name}</span></span>

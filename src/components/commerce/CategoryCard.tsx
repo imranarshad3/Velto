@@ -1,4 +1,5 @@
 import { imageSizeStyle } from "../../features/cms/imageSizing.ts";
+import { resolveImageAsset } from "../../data/images.ts";
 import { useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import type { Category } from "../../data/demoCategories.ts";
@@ -58,7 +59,7 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   const Icon = category.icon;
   const [imageFailed, setImageFailed] = useState(false);
-  const image = imageFailed ? undefined : category.image;
+  const image = imageFailed || !category.image ? undefined : resolveImageAsset(category.image);
 
   if (presentation === "editorial")
     return (
@@ -68,20 +69,20 @@ export default function CategoryCard({
         className={`group flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-colors hover:border-forest/40 ${className}`}
       >
         <div
-          className="aspect-[16/10] overflow-hidden"
+          className="aspect-[3/2] overflow-hidden bg-sand"
           style={image ? undefined : textures[category.texture]}
         >
           {image && (
             <img
               src={image.src}
-              style={imageSizeStyle(image.displaySize)}
+              style={{ ...imageSizeStyle(image.displaySize), width: '100%', height: '100%', objectFit: 'contain', aspectRatio: 'auto' }}
               alt=""
               width={image.width}
               height={image.height}
               onError={() => setImageFailed(true)}
               loading="lazy"
               decoding="async"
-              className="size-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+              className="block size-full object-contain"
             />
           )}
         </div>
