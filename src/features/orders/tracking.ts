@@ -25,6 +25,17 @@ export const statusDescriptions: Record<string, string> = {
   cancelled: 'This order was cancelled. No payment is due.',
 }
 
+/** What a customer should expect next, without promising an unconfirmed delivery time. */
+export const nextUpdateDescriptions: Record<string, string> = {
+  placed: 'Your order is waiting for confirmation.',
+  confirmed: 'Your order is scheduled for preparation.',
+  processing: 'Shipment details will appear here when your order ships.',
+  shipped: 'Use the tracking ID and courier details below to follow the shipment.',
+  out_for_delivery: 'Keep your phone nearby in case the courier needs delivery directions.',
+  delivered: 'Your order is complete.',
+  cancelled: 'This order is closed. No payment is due.',
+}
+
 export const isTerminal = (status: string) => status === 'delivered' || status === 'cancelled'
 export const stepIndex = (status: string) => (fulfilmentSteps as readonly string[]).indexOf(status)
 
@@ -79,12 +90,10 @@ export function stepTimes(timeline: TimelineEvent[]) {
   return times
 }
 
-const DAY = 86_400_000
-/** Delivery window: the admin's estimate when set, otherwise the standard 2–4 day window from order date. */
-export function deliveryWindow(createdAt: string, estimated?: string | null) {
-  if (estimated) return { earliest: estimated, latest: estimated, exact: true }
-  const created = Date.parse(createdAt)
-  return { earliest: new Date(created + 2 * DAY).toISOString(), latest: new Date(created + 4 * DAY).toISOString(), exact: false }
+/** A delivery estimate is shown only after an administrator schedules one. */
+export function deliveryWindow(estimated?: string | null) {
+  if (!estimated) return null
+  return { earliest: estimated, latest: estimated, exact: true }
 }
 
 export const REFERENCE_PATTERN = /^VEL-[A-Z0-9]{16}$/

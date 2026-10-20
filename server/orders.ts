@@ -45,7 +45,7 @@ function trackingOf(order: OrderRow) {
     number: order.tracking_number ?? null,
     carrier: order.carrier ?? null,
     carrierReference: order.carrier_reference ?? null,
-    estimatedDelivery: order.status === 'cancelled' ? null : deliveryWindow(order.created_at, order.estimated_delivery),
+    estimatedDelivery: order.status === 'cancelled' ? null : deliveryWindow(order.estimated_delivery),
   }
 }
 

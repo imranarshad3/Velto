@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Banknote, ChevronRight, ClipboardList, Package, RefreshCw, TrendingUp, Truck, X } from 'lucide-react'
+import { Banknote, BellRing, ChevronRight, ClipboardList, Package, RefreshCw, TrendingUp, Truck, X } from 'lucide-react'
 import type { AdminOrder } from './schema.ts'
 import { orderDate, orderMetrics, orderMoney, unitsOf, visibleOrders } from './orderView.ts'
 import { fulfilmentSteps, statusLabels } from './tracking.ts'
@@ -33,6 +33,7 @@ export default function AdminOrderWorkspace({ orders, reload }: { orders: AdminO
   const [sort, setSort] = useState('newest')
   const [page, setPage] = useState(1)
   const m = orderMetrics(orders)
+  const awaitingConfirmation = orders.filter(order => order.status === 'placed')
   const filtered = visibleOrders(orders, search, status, sort, range)
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE))
   const current = Math.min(page, pages)
@@ -43,6 +44,21 @@ export default function AdminOrderWorkspace({ orders, reload }: { orders: AdminO
 
   return (
     <div className="flex min-w-0 flex-col gap-[var(--grid-gap)]">
+      {awaitingConfirmation.length > 0 && (
+        <section aria-labelledby="new-orders-title" className="flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-card)] border border-copper/30 bg-copper-soft/60 p-4 sm:p-5">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-surface text-copper ring-1 ring-copper/20"><BellRing aria-hidden="true" className="size-5" /></span>
+            <div className="min-w-0">
+              <h2 id="new-orders-title" className="font-semibold text-ink">{awaitingConfirmation.length} {awaitingConfirmation.length === 1 ? 'new order' : 'new orders'} awaiting confirmation</h2>
+              <p className="mt-0.5 text-[0.875rem] leading-relaxed text-muted">Review these orders and confirm the ones you can fulfil. This alert stays here until their status changes.</p>
+            </div>
+          </div>
+          <button type="button" onClick={() => set(setStatus)('placed')} className={buttonClass('secondary', 'sm', 'shrink-0')}>
+            Review new orders <ChevronRight aria-hidden="true" className="size-4" />
+          </button>
+        </section>
+      )}
+
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-[var(--grid-gap)]">
         <StatCard icon={ClipboardList} label="Open orders" value={m.open} hint={`${compact(m.openValue)} awaiting delivery`} />
         <StatCard icon={Banknote} tone="copper" label="Collected (delivered)" value={compact(m.collected)} hint="Cash on Delivery received" />
