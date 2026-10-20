@@ -145,7 +145,8 @@ function WebsiteEditor({initial}: {initial:string}) {
   const [slug, setSlug] = useState(initial), [section, setSection] = useState(pageDefinitions.find(p=>p.id===initial)!.sections[0].id)
   const [page, setPage] = useState<ContentPage | null>(null), [draft, setDraft] = useState<PageContent | null>(null)
   const [loadedDraftKey, setLoadedDraftKey] = useState('')
-  const [error, setError] = useState(''), [notice, setNotice] = useState(''), [busy, setBusy] = useState(false)
+  const [error, setError] = useState(''), [notice, setNotice] = useState(''), [draftConflict, setDraftConflict] = useState(''), [busy, setBusy] = useState(false)
+  const [recoveryBaseVersion, setRecoveryBaseVersion] = useState<number | null>(null)
   const [device, setDevice] = useState<PreviewDevice>('desktop')
   const [show, setShow] = useState({sections: true, editor: true, preview: true}), [focus, setFocus] = useState(false)
   const [sizes, setSizes] = useState(readSizes), [resizing, setResizing] = useState(false)
@@ -169,22 +170,34 @@ function WebsiteEditor({initial}: {initial:string}) {
   const resetHistory = () => { past.current = []; future.current = []; lastEdit.current = null; syncStack() }
   useEffect(() => {
     let active = true
-    setPage(null); setDraft(null); setLoadedDraftKey(''); setError(''); setHistory(null); setNotice(''); resetHistory()
+    setPage(null); setDraft(null); setLoadedDraftKey(''); setError(''); setHistory(null); setNotice(''); setDraftConflict(''); setRecoveryBaseVersion(null); resetHistory()
     void getTokenRef.current().then(async t => { if (!t) throw new Error('Please sign in again.'); return workspaceApi.page(t, slug) }).then(({page}) => {
       if (active) {
-        const local = readLocalDraft(draftKey, page.version)
-        const recovered = local && validContent(slug, local) ? local : null
+        const local = readLocalDraft(draftKey)
+        const recovered = local && validContent(slug, local.content) ? local.content : null
         setPage(page); setDraft(recovered ?? page.draft); setLoadedDraftKey(draftKey)
-        if (recovered) setNotice('Recovered your unsaved local draft. Save draft to keep it on this account.')
+        setRecoveryBaseVersion(recovered ? local!.version : page.version)
+        if (recovered && local!.version !== page.version) {
+          setDraftConflict(`Recovered your unsaved edits from version ${local!.version}; the server is now at version ${page.version}. Review the draft before saving. Saving will replace the newer server draft.`)
+        } else if (recovered) setNotice('Recovered your unsaved local draft. Save draft to keep it on this account.')
       }
     }).catch(e => {if (active) setError(message(e))})
     return () => {active = false}
   }, [draftKey, slug])
   useEffect(() => {
     if (!page || page.slug !== slug || loadedDraftKey !== draftKey || !draft) return
-    if (dirty) writeLocalDraft(draftKey, page.version, draft)
+    if (dirty) writeLocalDraft(draftKey, recoveryBaseVersion ?? page.version, draft)
     else clearLocalDraft(draftKey)
-  }, [draftKey, loadedDraftKey, slug, page, draft, dirty])
+  }, [draftKey, loadedDraftKey, slug, page, draft, dirty, recoveryBaseVersion])
+  useEffect(() => {
+    if (!page || loadedDraftKey !== draftKey || !dirty) return
+    const preserveDraft = () => {
+      const current = draftRef.current
+      if (current) writeLocalDraft(draftKey, recoveryBaseVersion ?? page.version, current)
+    }
+    window.addEventListener('pagehide', preserveDraft)
+    return () => window.removeEventListener('pagehide', preserveDraft)
+  }, [draftKey, loadedDraftKey, page, dirty, recoveryBaseVersion])
   /** Apply an edit to the latest draft and record an undo step. */
   const commit = (next: (d: PageContent) => PageContent, key?: string) => {
     const current = draftRef.current
@@ -195,13 +208,16 @@ function WebsiteEditor({initial}: {initial:string}) {
     future.current = []
     const value = next(current)
     draftRef.current = value
+    if (page && loadedDraftKey === draftKey) writeLocalDraft(draftKey, recoveryBaseVersion ?? page.version, value)
     setDraft(value); syncStack()
   }
   const step = (from: typeof past, to: typeof past) => {
     const current = draftRef.current, target = from.current.at(-1)
     if (!current || !target) return
     from.current = from.current.slice(0, -1); to.current = [...to.current, current]; lastEdit.current = null
-    draftRef.current = target; setDraft(target); syncStack()
+    draftRef.current = target
+    if (page && loadedDraftKey === draftKey) writeLocalDraft(draftKey, recoveryBaseVersion ?? page.version, target)
+    setDraft(target); syncStack()
   }
   const undo = () => step(past, future), redo = () => step(future, past)
   useEffect(() => {
@@ -219,13 +235,14 @@ function WebsiteEditor({initial}: {initial:string}) {
     if (!page || !draft || busy) return
     if (action === 'unpublish' && !window.confirm('Remove published overrides? The storefront will use its original fallback content.')) return
     if (action === 'restore' && dirty && !window.confirm('Replace unsaved changes with this revision?')) return
+    if ((action === 'save' || action === 'publish') && recoveryBaseVersion !== null && recoveryBaseVersion !== page.version && !window.confirm(`Your recovered draft is based on version ${recoveryBaseVersion}, but the server is now at version ${page.version}. Saving will replace the newer server draft. Continue?`)) return
     if ((action === 'save' || action === 'publish') && !validContent(slug, draft)) { setError('Check image dimensions, section fields and URLs. Use valid rem sizes or width percentages, and site paths or HTTPS URLs.'); return }
     setBusy(true); setError(''); setNotice('')
     try {
       let current = page
       if ((action === 'publish' && (dirty || page.version === 0))) current = (await workspaceApi.mutate(await token(), slug, page.version, 'save', draft)).page
       const result = await workspaceApi.mutate(await token(), slug, current.version, action, action === 'save' ? draft : undefined, revisionId)
-      setPage(result.page); setDraft(result.page.draft); setHistory(null)
+      setPage(result.page); setDraft(result.page.draft); setRecoveryBaseVersion(result.page.version); setDraftConflict(''); setHistory(null)
       clearLocalDraft(draftKey)
       if (action === 'restore') resetHistory()
       setNotice(action === 'publish' ? 'Published. The storefront now uses this content.' : action === 'restore' ? 'Revision restored to draft. Preview and publish when ready.' : action === 'unpublish' ? 'Unpublished. Original storefront content is active.' : 'Draft saved.')
@@ -283,7 +300,7 @@ function WebsiteEditor({initial}: {initial:string}) {
         <button type="button" disabled={!draft || busy} className={buttonClass('primary','sm')} onClick={() => void mutate('publish')}><Send size={16}/> {busy ? 'Saving…' : 'Publish'}</button>
       </div>
     </header>
-    {(error || notice) && <p role={error ? 'alert' : 'status'} className={`shrink-0 px-4 py-2.5 text-sm ${error ? 'bg-danger-soft text-danger' : 'bg-forest-soft text-forest'}`}>{error || notice}</p>}
+    {(error || draftConflict || notice) && <p role={error ? 'alert' : 'status'} className={`shrink-0 px-4 py-2.5 text-sm ${error ? 'bg-danger-soft text-danger' : draftConflict ? 'bg-copper-soft text-copper' : 'bg-forest-soft text-forest'}`}>{error || draftConflict || notice}</p>}
     {!draft && !error && <p role="status" className="p-8 text-muted">Loading content…</p>}
     {draft && <div
       className={`grid gap-px max-lg:gap-4 max-lg:p-3 lg:min-h-0 lg:flex-1 ${resizing ? 'select-none' : 'transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none'}`}
@@ -329,12 +346,12 @@ function WebsiteEditor({initial}: {initial:string}) {
               ? <div key={field.key} className="grid gap-3"><ImageField field={field} value={draft.fields[field.key] ?? field.value} media={media} busy={busy}
                   onBrowse={() => {void token().then(workspaceApi.media).then(r => setMedia(r.media)).catch(e => setError(message(e)))}}
                   onPick={item => pickImage(field.key, item, !!item && !item.id)} onUpload={file => uploadImage(field.key, file)}/>
-                {field.key === 'WhyChoose.image-src' ? <p className="text-xs font-normal text-muted">This image fills its frame automatically to prevent blank space.</p> : <ImageSizeFields fieldKey={field.key} size={draft.imageSizes?.[field.key]} disabled={busy} onChange={size => commit(d => {
+                <ImageSizeFields fieldKey={field.key} size={draft.imageSizes?.[field.key]} disabled={busy} onChange={size => commit(d => {
                   const imageSizes = {...d.imageSizes}
-                  if (size.width || size.height) imageSizes[field.key] = size
+                  if (size.width || size.height || size.fit || size.position || size.ratio) imageSizes[field.key] = size
                   else delete imageSizes[field.key]
                   return {...d, imageSizes}
-                }, `size:${field.key}`)}/>}
+                }, `size:${field.key}`)}/>
                 </div>
               : <label key={field.key} className="block text-sm font-semibold">{editorFieldLabel(definition.label, sectionLabel ?? '', field, fields[fieldIndex - 1]?.kind === 'link' || fields[fieldIndex + 1]?.kind === 'link')}
                 {field.kind === 'text' ? <><textarea aria-label={editorFieldLabel(definition.label, sectionLabel ?? '', field, fields[fieldIndex - 1]?.kind === 'link' || fields[fieldIndex + 1]?.kind === 'link')} rows={(draft.fields[field.key] ?? field.value).length > 140 ? 4 : 2} className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)} maxLength={6000}/><span className="mt-1 block text-xs font-normal text-muted">Text shown in the {sectionLabel} section.</span></> : <><input aria-label={editorFieldLabel(definition.label, sectionLabel ?? '', field)} className={`${inputClass} mt-2 font-normal`} value={draft.fields[field.key] ?? field.value} onChange={e => change(field.key,e.target.value)}/><span className="mt-1 block text-xs font-normal text-muted">Site path or HTTPS link for this button.</span></>}

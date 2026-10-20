@@ -2,7 +2,7 @@ import type { PageContent } from './types.ts'
 
 const KEY_PREFIX = 'velto-cms-unsaved:'
 
-interface LocalDraft {
+export interface LocalDraft {
   version: number
   content: PageContent
 }
@@ -11,11 +11,11 @@ function storage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | null {
   try { return (globalThis as typeof globalThis & { localStorage?: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> }).localStorage ?? null } catch { return null }
 }
 
-export function readLocalDraft(identity: string, version: number, target = storage()): PageContent | null {
+export function readLocalDraft(identity: string, target = storage()): LocalDraft | null {
   if (!target) return null
   try {
     const value = JSON.parse(target.getItem(KEY_PREFIX + identity) ?? 'null') as LocalDraft | null
-    return value && value.version === version && value.content && typeof value.content === 'object' ? value.content : null
+    return value && Number.isInteger(value.version) && value.version >= 0 && value.content && typeof value.content === 'object' ? value : null
   } catch { return null }
 }
 

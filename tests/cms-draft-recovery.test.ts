@@ -13,15 +13,15 @@ function memoryStorage() {
 }
 
 describe('CMS local draft recovery', () => {
-  it('restores unsaved content only against the same server revision', () => {
+  it('recovers unsaved content even when the server revision changed', () => {
     const store = memoryStorage()
     const draft = defaultContent('home')
     draft.fields['Hero.field-2'] = 'Recovered headline'
     writeLocalDraft('admin-A:home', 4, draft, store)
 
-    assert.equal(readLocalDraft('admin-A:home', 4, store)?.fields['Hero.field-2'], 'Recovered headline')
-    assert.equal(readLocalDraft('admin-A:home', 5, store), null)
-    assert.equal(readLocalDraft('admin-B:home', 4, store), null)
+    assert.equal(readLocalDraft('admin-A:home', store)?.content.fields['Hero.field-2'], 'Recovered headline')
+    assert.equal(readLocalDraft('admin-A:home', store)?.version, 4)
+    assert.equal(readLocalDraft('admin-B:home', store), null)
   })
 
   it('clears saved drafts and ignores corrupt storage entries', () => {
@@ -29,8 +29,8 @@ describe('CMS local draft recovery', () => {
     const draft = defaultContent('home')
     writeLocalDraft('admin-A:home', 0, draft, store)
     clearLocalDraft('admin-A:home', store)
-    assert.equal(readLocalDraft('admin-A:home', 0, store), null)
+    assert.equal(readLocalDraft('admin-A:home', store), null)
     store.setItem('velto-cms-unsaved:admin-A:home', '{bad json')
-    assert.equal(readLocalDraft('admin-A:home', 0, store), null)
+    assert.equal(readLocalDraft('admin-A:home', store), null)
   })
 })

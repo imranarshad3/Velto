@@ -24,7 +24,7 @@ export default function Img({ image, className = '', alt = image.alt, priority =
   return (
     <img
       src={image.src}
-      style={fit ? imageFrameStyle : cmsStyle ?? imageSizeStyle(image.displaySize)}
+      style={fit ? { ...imageFrameStyle, ...cmsStyle } : cmsStyle ?? imageSizeStyle(image.displaySize)}
       alt={alt}
       width={image.width}
       height={image.height}

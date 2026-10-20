@@ -6,7 +6,7 @@ import { leadStages } from './types.js'
 import { safeImage, safeLink } from './safeUrl.js'
 export { safeImage, safeLink }
 const retiredFields = new Set(['home:FeaturedProducts.field-7'])
-export const pageContentSchema = z.object({ imageSizes: z.record(z.string().max(160).regex(/^[A-Za-z0-9][A-Za-z0-9.-]*$/), z.object({ width: z.string().max(12).refine(v => validImageDimension(v, 'width')), height: z.string().max(12).refine(v => validImageDimension(v, 'height')) }).strict()).optional(), sections: z.array(z.object({ id: z.string().regex(/^custom-[a-f0-9-]{36}$/), type: z.enum(['text', 'image-text', 'cta']) }).strict()).max(20).optional(), fields: z.record(z.string().max(160), z.string().max(6000)), order: z.array(z.string()).max(40), hidden: z.array(z.string()).max(40) }).strict()
+export const pageContentSchema = z.object({ imageSizes: z.record(z.string().max(160).regex(/^[A-Za-z0-9][A-Za-z0-9.-]*$/), z.object({ width: z.string().max(12).refine(v => validImageDimension(v, 'width')), height: z.string().max(12).refine(v => validImageDimension(v, 'height')), fit: z.enum(['contain', 'cover']).optional(), position: z.enum(['center', 'top', 'right', 'bottom', 'left']).optional(), ratio: z.enum(['square', 'landscape', 'portrait']).optional() }).strict()).optional(), sections: z.array(z.object({ id: z.string().regex(/^custom-[a-f0-9-]{36}$/), type: z.enum(['text', 'image-text', 'cta']) }).strict()).max(20).optional(), fields: z.record(z.string().max(160), z.string().max(6000)), order: z.array(z.string()).max(40), hidden: z.array(z.string()).max(40) }).strict()
 export function validContent(slug: string, input: unknown) {
   const result = pageContentSchema.safeParse(input)
   const page = pageDefinitions.find(p => p.id === slug)

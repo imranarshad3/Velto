@@ -30,8 +30,9 @@ function writeFlag(value: string | null) {
 export default function RouteErrorPage() {
   const error = useRouteError()
   const chunkError = isChunkLoadError(error)
-  // Reload once per URL so a stale chunk recovers automatically without looping.
-  const willReload = chunkError && readFlag() !== window.location.href
+  const isCmsEditor = window.location.pathname === '/admin/website' || window.location.pathname.startsWith('/admin/website/')
+  // Keep the CMS editor's recovery flow in control; a silent retry can unmount unsaved work.
+  const willReload = chunkError && !isCmsEditor && readFlag() !== window.location.href
 
   useEffect(() => {
     if (willReload) {
@@ -56,7 +57,9 @@ export default function RouteErrorPage() {
         </h1>
         <p className="mt-3 text-muted">
           {chunkError
-            ? 'The site may have just been updated or your connection dropped. Reloading usually fixes it.'
+            ? isCmsEditor
+              ? 'The editor could not load a page module. Your changes are backed up in this browser; reload when you’re ready to restore them.'
+              : 'The site may have just been updated or your connection dropped. Reloading usually fixes it.'
             : 'Please try again. If the problem continues, return to the homepage.'}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
