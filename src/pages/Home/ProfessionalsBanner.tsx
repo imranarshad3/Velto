@@ -63,8 +63,8 @@ export default function ProfessionalsBanner() {
             </div>
           </div>
 
-          <div className="relative grid items-center lg:order-2">
-            <div className="relative w-full overflow-hidden bg-forest-dark">
+          <div className="relative min-w-0 lg:order-2">
+            <div className="relative aspect-[3/2] w-full overflow-hidden bg-forest-dark lg:h-full lg:aspect-auto">
               <Img cmsImage={{ page: 'home', field: 'ProfessionalsBanner.image-src' }}
                 image={{
                   ...professionalImage,
@@ -77,7 +77,8 @@ export default function ProfessionalsBanner() {
                     "Illustrative concept: contractor in safety gear levelling a floor surface",
                   ),
                 }}
-                uncropped
+                fit="cover"
+                className="absolute inset-0 size-full object-cover"
               />
             </div>
           </div>

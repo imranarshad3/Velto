@@ -1,4 +1,31 @@
-# Storefront image and validation follow-up — 2026-10-20
+# Storefront image and validation follow-up
+
+## 2026-10-21 — Fill image frames without empty bands
+
+This update supersedes the earlier uncropped framing preference below. The user
+requested edge-to-edge photos and consistent card heights. Existing CMS uploads
+are retained; cover fitting crops their edges as needed, without stretching.
+
+| Case | Expected | Actual | Status |
+|---|---|---|---|
+| F01 — Why Choose desktop | Photo fills its entire column, without navy bands | At 1920px, image, wrapper and column were all 637×851; screenshot visually confirmed full-height cover fitting | PASS |
+| F02 — Professionals desktop | Photo fills the column beside the copy | At 1920px, image, wrapper and column were all 605×682; loaded photo visually confirmed | PASS |
+| F03 — Responsive homepage photos | Images match their frames; no horizontal overflow | Checked 360, 390, 768, 891, 1024, 1440 and 1920 widths. Why Choose, Professionals and Application Solutions used cover fitting with matching image/frame sizes. At 390px these were 333×222, 335×223 and 335×223 | PASS |
+| F04 — Category cards | No top/bottom or side bands | At 891px all three images and their frames measured 381×254 with cover fitting | PASS |
+| F05 — Application cards and collage | Consistent card images, including Floors; collage fills its frames | At 891px all six card image frames measured 381×477. Collage images matched 444×400 and two 328×193 frames, all cover fit | PASS |
+| F06 — Project help photo | Responsive photo fills its redesigned panel | At 891px image and frame both measured 785×491 with cover fitting | PASS |
+| F07 — CMS whitespace | Editor fills viewport without a blank outer page below | At 1440×900 document dimensions were exactly 1440×900; main panel height was 839. Screenshot confirmed independent editor panels extend to the viewport bottom | PASS |
+| F08 — CMS photo controls | Explain cropping and expose focal position | Why Choose displayed “Edge-to-edge photo” and Center/Top/Right/Bottom/Left focus options. No CMS content was changed or published | PASS |
+
+Evidence: browser DOM measurements and screenshots in the task transcript.
+TypeScript, Vite production build, lint on the changed TSX files and 14 targeted
+tests passed (0 failures/skips). Tests cover image assets, CMS image sizing,
+draft recovery and checkout validation. This is not a new complete admin audit.
+
+The preceding committed changes also removed eight local assets after source and
+published content/catalog reference checks. No cloud storage was deleted.
+
+## Historical checks — 2026-10-20
 
 Scope: the five reported homepage, Solutions, About and checkout observations,
 plus shared product images and assistance banners. This is a focused follow-up,

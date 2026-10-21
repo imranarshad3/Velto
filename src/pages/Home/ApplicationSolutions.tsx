@@ -37,9 +37,11 @@ export default function ApplicationSolutions() {
 
         {/* Waterproofing spotlight: full-height image panel beside the tiles on desktop. */}
         <Reveal delay={0.1} className="edge-image-media min-w-0">
-          <div className="relative overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep text-white shadow-[var(--shadow-float)]">
-            <Img uncropped cmsImage={{ page: 'home', field: 'ApplicationSolutions.image-src' }} image={{ ...waterproofingImage, src: cms('image-src', "/images/banners/waterproofing-crop.webp"), alt: cms('image-alt', "Illustrative concept: roller applying a blue waterproofing coat to a rooftop") }} />
-            <div className="application-spotlight-copy p-[clamp(1.25rem,3.5vw,2.25rem)]">
+          <div className="relative flex flex-col overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep text-white shadow-[var(--shadow-float)]">
+            <div className="relative aspect-[3/2] lg:min-h-[18rem] lg:flex-1 lg:aspect-auto">
+              <Img fit="cover" cmsImage={{ page: 'home', field: 'ApplicationSolutions.image-src' }} image={{ ...waterproofingImage, src: cms('image-src', "/images/banners/waterproofing-crop.webp"), alt: cms('image-alt', "Illustrative concept: roller applying a blue waterproofing coat to a rooftop") }} className="absolute inset-0 size-full object-cover" />
+            </div>
+            <div className="application-spotlight-copy shrink-0 p-[clamp(1.25rem,3.5vw,2.25rem)]">
               <p className="text-[0.75rem] font-bold tracking-[0.18em] text-gold uppercase">{cms("field-4", "Waterproofing products")}</p>
               <h3 className="mt-2 font-display text-[clamp(1.5rem,1.2rem+1.3vw,2.25rem)] leading-tight">
                 {cms("field-5", "Waterproof roofs, basements and terraces")}</h3>

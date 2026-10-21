@@ -217,8 +217,8 @@
 .edge-image-media { padding: 0 !important; }
 .edge-image-media > div { border-radius: 0 !important; }
 .edge-image-copy { padding-block: clamp(2rem, 5vw, 4.5rem); }
-.application-editorial .edge-image-media { display: grid; align-items: center; }
-.application-editorial .edge-image-media > div { min-height: 0; height: auto; }
+.application-editorial .edge-image-media { display: grid; align-items: stretch; }
+.application-editorial .edge-image-media > div { min-height: 0; height: 100%; }
 .solutions-edge-header { background: radial-gradient(ellipse at 70% 45%, rgb(221 209 187 / 0.36), transparent 52%), var(--color-cream); }
 
 /* Inset the home brand story so it reads as a feature card, with space before
@@ -251,12 +251,12 @@
   min-height: 0;
   padding: 0 !important;
   display: grid;
-  align-items: center;
+  align-items: stretch;
 }
 .why-choose-section .edge-image-media > div {
   width: 100%;
-  height: auto;
-  min-height: 0;
+  height: 100%;
+  min-height: 28rem;
   aspect-ratio: auto;
   border-radius: 0 !important;
   box-shadow: none;
@@ -281,8 +281,9 @@
   .why-choose-section .edge-image-media { grid-row: 1; }
   .why-choose-section .edge-image-copy { grid-row: 2; padding: clamp(1.5rem, 5vw, 2.5rem); }
   .why-choose-section .edge-image-media > div {
+    height: auto;
     min-height: 0;
-    aspect-ratio: auto;
+    aspect-ratio: 3 / 2;
     max-height: none;
   }
 }

@@ -52,9 +52,9 @@ export default function WhyChoose() {
         </div>
 
         <Reveal delay={0.12} className="edge-image-media relative min-w-0 pr-[clamp(0.75rem,2vw,1.5rem)] pb-[clamp(0.75rem,2vw,1.5rem)]">
-          {/* Offset gold frame behind the image. */}
+          {/* The photo fills the text-height column on desktop and its own frame on mobile. */}
           <div className="relative w-full overflow-hidden bg-forest-deep">
-            <Img uncropped cmsImage={{ page: 'home', field: 'WhyChoose.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} />
+            <Img fit="cover" cmsImage={{ page: 'home', field: 'WhyChoose.image-src' }} image={{ ...brandStoryImage, src: cms('image-src', "/images/banners/brand-story-crop.webp"), alt: cms('image-alt', "Illustrative concept: contemporary concrete and timber building at dusk") }} className="absolute inset-0 size-full object-cover" />
             <span className="glass-dark absolute bottom-3 left-3 rounded-full px-3 py-1 text-[0.6875rem] font-semibold tracking-[0.12em] text-white uppercase">
               {cms("field-7", "Illustrative")}</span>
           </div>
