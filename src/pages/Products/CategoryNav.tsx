@@ -10,7 +10,7 @@ const allProducts: Category = {
   name: 'All Products',
   icon: LayoutGrid,
   texture: 'tile',
-  image: { src: '/images/hero/concept-products.webp', alt: '', width: 504, height: 234 },
+  image: { src: '/images/categories/all-products.webp', alt: '', width: 1122, height: 1402 },
 }
 
 export default function CategoryNav({ query }: { query: CatalogQuery }) {
