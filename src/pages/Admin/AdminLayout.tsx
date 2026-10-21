@@ -156,7 +156,7 @@ export default function AdminLayout() {
   if (role && role !== 'admin' && location.pathname.replace(/\/$/, '') === '/admin' && allowed[0]) return <Navigate to={allowed[0].to} replace />
 
   return (
-    <div className={`min-h-[calc(100dvh-var(--header-height))] bg-canvas transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none lg:grid ${collapsed ? 'lg:grid-cols-[0rem_minmax(0,1fr)]' : 'lg:grid-cols-[15.5rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)]'}`}>
+    <div className={`min-h-[calc(100dvh-var(--header-height))] bg-canvas transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none lg:grid ${fullBleed ? 'lg:h-[calc(100dvh-var(--header-height)-1px)] lg:min-h-0 lg:overflow-hidden' : ''} ${collapsed ? 'lg:grid-cols-[0rem_minmax(0,1fr)]' : 'lg:grid-cols-[15.5rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)]'}`}>
       <meta name="robots" content="noindex" />
       <aside inert={collapsed ? true : undefined} className={`relative isolate overflow-clip bg-forest-deep text-white lg:sticky lg:top-[calc(var(--header-height)+1px)] lg:h-[calc(100dvh-var(--header-height)-1px)] lg:overflow-y-auto lg:self-start ${collapsed ? 'invisible' : ''}`}>
         <div className="flex h-full flex-col lg:min-w-[15.5rem] lg:px-4 lg:py-6">
@@ -176,13 +176,13 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      <div className={`relative min-w-0 ${fullBleed ? '' : 'px-[var(--page-gutter)] pt-[clamp(1.25rem,3vw,2.5rem)] pb-[clamp(3rem,6vw,5rem)] lg:px-[clamp(1.75rem,3vw,3.5rem)]'}`}>
+      <div className={`relative min-w-0 ${fullBleed ? 'min-h-0 lg:h-full lg:overflow-clip' : 'px-[var(--page-gutter)] pt-[clamp(1.25rem,3vw,2.5rem)] pb-[clamp(3rem,6vw,5rem)] lg:px-[clamp(1.75rem,3vw,3.5rem)]'}`}>
         {collapsed && !fullBleed && (
           <button type="button" onClick={toggleSidebar} aria-label="Expand admin sidebar" className="fixed bottom-6 left-4 z-30 hidden size-11 place-items-center rounded-full bg-forest-deep text-white shadow-[var(--shadow-float)] hover:bg-forest lg:grid">
             <PanelLeftOpen aria-hidden="true" className="size-5" />
           </button>
         )}
-        <div className={fullBleed ? '' : 'mx-auto w-full max-w-[96rem]'}>
+        <div className={fullBleed ? 'lg:h-full' : 'mx-auto w-full max-w-[96rem]'}>
           <Outlet />
         </div>
       </div>

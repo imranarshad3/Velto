@@ -34,16 +34,17 @@ export default function ApplicationCard({
       className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-soft)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-premium)] hover:-translate-y-1 hover:border-forest/25 hover:shadow-[var(--shadow-lift)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       {/* Image frame */}
-      <div className="relative isolate w-full shrink-0 overflow-hidden bg-sand-deep">
+      <div className="relative isolate aspect-[4/5] w-full shrink-0 overflow-hidden bg-sand-deep">
         {detail?.image?.src ? (
           <Img
             image={detail.image}
             alt=""
-            uncropped
+            fit="cover"
+            className="absolute inset-0 size-full object-cover"
           />
         ) : (
           <div
-            className="grid aspect-[3/2] place-items-center"
+            className="absolute inset-0 grid place-items-center"
             aria-hidden="true"
           >
             <Icon className="size-12 text-forest/50" />

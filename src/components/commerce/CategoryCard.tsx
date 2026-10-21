@@ -75,14 +75,14 @@ export default function CategoryCard({
           {image && (
             <img
               src={image.src}
-              style={{ ...imageSizeStyle(image.displaySize), width: '100%', height: '100%', objectFit: 'contain', aspectRatio: 'auto' }}
+              style={{ ...imageSizeStyle(image.displaySize), width: '100%', height: '100%', objectFit: 'cover', aspectRatio: 'auto' }}
               alt=""
               width={image.width}
               height={image.height}
               onError={() => setImageFailed(true)}
               loading="lazy"
               decoding="async"
-              className="block size-full object-contain"
+              className="block size-full object-cover"
             />
           )}
         </div>

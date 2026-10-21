@@ -279,11 +279,11 @@ function WebsiteEditor({initial}: {initial:string}) {
     show.editor && show.preview ? '0.75rem' : '0rem',
     show.preview ? 'minmax(0,1fr)' : '0rem',
   ].join(' ')
-  const pane = (visible: boolean) => `min-w-0 overflow-hidden bg-canvas lg:flex lg:flex-col ${visible ? 'flex flex-col' : 'hidden lg:invisible'}`
+  const pane = (visible: boolean) => `min-h-0 min-w-0 overflow-hidden bg-canvas lg:flex lg:flex-col ${visible ? 'flex flex-col' : 'hidden lg:invisible'}`
 
-  return <div className={`flex flex-col bg-cream/40 lg:h-[calc(100dvh-var(--header-height))] lg:overflow-hidden ${focus ? 'overflow-hidden' : ''}`}>
+  return <div className={`flex flex-col bg-cream/40 lg:h-full lg:min-h-0 lg:overflow-hidden ${focus ? 'overflow-hidden' : ''}`}>
     <title>Website Editor — VELTO</title>
-    <header inert={focus || undefined} className="sticky top-[var(--header-height)] z-20 flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-border bg-canvas/95 px-3 py-2 backdrop-blur lg:static">
+    <header inert={focus || undefined} className="sticky top-[var(--header-height)] z-20 flex shrink-0 flex-wrap items-center gap-x-2 gap-y-2 border-b border-border bg-canvas/95 px-3 py-2 backdrop-blur lg:static">
       <div className="flex items-center gap-1 border-r border-border pr-2">
         {desktop && <Toggle pressed={!sidebarCollapsed} label={sidebarCollapsed ? 'Show admin sidebar' : 'Hide admin sidebar'} onClick={toggleSidebar}>{sidebarCollapsed ? <PanelLeftOpen size={18}/> : <PanelLeftClose size={18}/>}</Toggle>}
         <Toggle pressed={show.sections} label="Sections panel" onClick={() => toggle('sections')}><Rows3 size={18}/></Toggle>
@@ -303,7 +303,7 @@ function WebsiteEditor({initial}: {initial:string}) {
     {(error || draftConflict || notice) && <p role={error ? 'alert' : 'status'} className={`shrink-0 px-4 py-2.5 text-sm ${error ? 'bg-danger-soft text-danger' : draftConflict ? 'bg-copper-soft text-copper' : 'bg-forest-soft text-forest'}`}>{error || draftConflict || notice}</p>}
     {!draft && !error && <p role="status" className="p-8 text-muted">Loading content…</p>}
     {draft && <div
-      className={`grid gap-px max-lg:gap-4 max-lg:p-3 lg:min-h-0 lg:flex-1 ${resizing ? 'select-none' : 'transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none'}`}
+      className={`grid gap-px max-lg:gap-4 max-lg:p-3 lg:min-h-0 lg:flex-1 lg:grid-rows-[minmax(0,1fr)] ${resizing ? 'select-none' : 'transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none'}`}
       style={desktop ? {gridTemplateColumns: columns} : undefined}
     >
       {/* Sections */}

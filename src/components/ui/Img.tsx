@@ -19,7 +19,7 @@ interface ImgProps {
   /** Above-the-fold image: eager load with high fetch priority. */
   priority?: boolean;
   /** Fill a fixed media frame without CMS sizing conflicts. */
-  fit?: boolean | "contain";
+  fit?: boolean | "contain" | "cover";
   /** Show the complete image in normal flow; stale CMS frame sizes must not add blank bands. */
   uncropped?: boolean;
 }
@@ -50,7 +50,7 @@ export default function Img({
   const imageStyle: CSSProperties = uncropped
     ? { width: "100%", height: "auto", maxWidth: "100%", aspectRatio: "auto", objectFit: "contain", display: "block" }
     : fit
-      ? { ...sizing, ...imageFrameStyle, objectFit: fit === "contain" ? "contain" : sizing.objectFit ?? "cover", objectPosition: sizing.objectPosition ?? "center", display: "block" }
+      ? { ...sizing, ...imageFrameStyle, objectFit: typeof fit === "string" ? fit : sizing.objectFit ?? "cover", objectPosition: sizing.objectPosition ?? "center", display: "block" }
       : sizing;
 
   return (
