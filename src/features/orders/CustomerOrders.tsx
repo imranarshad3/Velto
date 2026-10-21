@@ -24,7 +24,7 @@ function OrderCard({ order }: { order: Order }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="font-mono text-[0.9375rem] font-bold tracking-wide break-all text-ink">
-              <Link to={`/account/orders/${order.id}`} className="after:absolute after:inset-0 focus-visible:outline-none after:focus-visible:rounded-[var(--radius-card)] after:focus-visible:outline-[0.1875rem] after:focus-visible:outline-offset-2 after:focus-visible:outline-copper">
+              <Link to={`/account/orders/${order.id}`} className="after:absolute after:inset-0 focus-visible:outline-none after:focus-visible:rounded-[var(--radius-card)] after:focus-visible:outline-[0.1875rem] after:focus-visible:outline-offset-2 after:focus-visible:outline-forest">
                 {order.reference}
               </Link>
             </h2>

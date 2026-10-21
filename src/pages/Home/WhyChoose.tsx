@@ -1,8 +1,6 @@
 import { useContentData } from '../../features/cms/context.ts'
 import { useContent } from '../../features/cms/context.ts'
-import { ArrowRight } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import Img from '../../components/ui/Img.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import { whyChooseFeatures as defaultwhyChooseFeatures } from '../../data/homeContent.ts'
@@ -17,36 +15,30 @@ export default function WhyChoose() {
       <div className="edge-image-grid container-page grid gap-[clamp(2.5rem,5vw,5rem)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
         <div className="edge-image-copy min-w-0">
           <Reveal>
-            <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
-              <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
+            <p className="border-t border-white/20 pt-5 text-[0.875rem] font-medium text-white/65">
               {cms("field-1", "The VELTO difference")}</p>
-            <h2 id="why-title" className="mt-4 font-display text-[clamp(2.25rem,1.5rem+3vw,4rem)] leading-[1.02] tracking-[-0.015em]">
-              {cms("field-2", "Why Choose ")}<span className="text-gold">{cms("field-3", "VELTO?")}</span>
+            <h2 id="why-title" className="mt-3 font-display text-[clamp(2.25rem,1.5rem+2.8vw,3.75rem)]">
+              {cms("field-2", "Why Choose")}<span>{cms("field-3", "VELTO?")}</span>
             </h2>
-            <p className="mt-5 max-w-[34rem] font-display text-[clamp(1.25rem,1.05rem+0.8vw,1.75rem)] leading-snug text-white/85">
+            <p className="mt-5 max-w-[34rem] text-[clamp(1.0625rem,1rem+0.4vw,1.3125rem)] leading-relaxed text-white/80">
               {cms("field-4", "Find the right product for the work you need to do.")}</p>
           </Reveal>
 
-          <ol className="mt-[var(--heading-gap)] grid gap-x-8 sm:grid-cols-2">
+          <ul className="mt-[var(--heading-gap)] grid gap-x-8 sm:grid-cols-2">
             {whyChooseFeatures.map(({ title, text, icon: Icon }, index) => (
               <Reveal as="li" key={title} delay={0.06 + index * 0.07} className="flex min-w-0 gap-4 border-t border-white/12 py-5">
-                <span aria-hidden="true" className="font-display text-[1.75rem] leading-none text-gold/90 tabular-nums">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
+                <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-gold" />
                 <span className="min-w-0">
-                  <span className="flex items-center gap-2 text-[1rem] font-semibold">
-                    <Icon aria-hidden="true" className="size-4 shrink-0 text-gold" />
-                    {title}
-                  </span>
+                  <span className="block text-[1rem] font-semibold">{title}</span>
                   <span className="mt-1 block text-[0.875rem] leading-relaxed text-white/70">{text}</span>
                 </span>
               </Reveal>
             ))}
-          </ol>
+          </ul>
 
           <Reveal delay={0.3}>
             <ButtonLink to={cms("field-5", "/about")} variant="outline-light" size="lg" className="mt-6">
-              {cms("field-6", "Our Story ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-6", "Our Story")}
             </ButtonLink>
           </Reveal>
         </div>

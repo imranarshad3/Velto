@@ -1,10 +1,9 @@
 import { useContentData } from '../../features/cms/context.ts'
 import { useContent } from '../../features/cms/context.ts'
 import { Link } from 'react-router'
-import { ArrowRight } from 'lucide-react'
 import { footerColumns as defaultfooterColumns, legalNav as defaultlegalNav } from '../../data/navigation.ts'
 import Logo from '../ui/Logo.tsx'
-import { buttonArrow, buttonClass } from '../ui/button.ts'
+import { buttonClass } from '../ui/button.ts'
 
 const year = new Date().getFullYear()
 
@@ -21,13 +20,13 @@ export default function Footer() {
         <div className="max-w-[26rem]">
           <Logo className="text-white [&_span]:text-white" />
           <p className="mt-6 font-display text-[clamp(1.5rem,1.3rem+0.8vw,2rem)] leading-tight text-white">
-            {cms("field-1", "Construction chemistry, ")}<span className="text-emerald-muted">{cms("field-2", "chosen with confidence.")}</span>
+            {cms("field-1", "Construction chemistry,")} <span>{cms("field-2", "chosen with confidence.")}</span>
           </p>
           <p className="mt-3 text-[0.9375rem] leading-relaxed text-white/65">
             {cms("field-3", "VELTO brings together building and repair products from ULTRA Chemicals.")}</p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link to={cms("field-4", "/quote")} className={buttonClass('light', 'md')}>
-              {cms("field-5", "Get a price")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-5", "Get a price")}
             </Link>
             <Link to={cms("field-6", "/contact")} className={buttonClass('outline-light', 'md')}>
               {cms("field-7", "Contact us")}</Link>
@@ -36,7 +35,7 @@ export default function Footer() {
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h2 className="text-[0.75rem] font-bold tracking-[0.2em] text-emerald-muted uppercase">{column.title}</h2>
+              <h2 className="text-[0.75rem] font-bold tracking-[0.08em] text-emerald-muted uppercase">{column.title}</h2>
               <ul className="mt-3">
                 {column.links.map((link) => (
                   <li key={link.to}>

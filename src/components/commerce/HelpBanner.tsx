@@ -1,7 +1,7 @@
-import { ArrowRight, Headset } from 'lucide-react'
+import { Headset } from 'lucide-react'
 import { Link } from 'react-router'
 import { professionalImage } from '../../data/images.ts'
-import { buttonArrow, buttonClass } from '../ui/button.ts'
+import { buttonClass } from '../ui/button.ts'
 import Img from '../ui/Img.tsx'
 import Reveal from '../ui/Reveal.tsx'
 
@@ -12,7 +12,7 @@ export default function HelpBanner({ premium = true }: { premium?: boolean }) {
       <Reveal className="container-page">
         <div className="relative isolate grid overflow-hidden rounded-[var(--radius-panel)] border border-forest/15 bg-forest-deep text-white shadow-[var(--shadow-float)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           <div className="order-2 flex min-w-0 flex-col justify-center p-[clamp(1.5rem,4vw,3.5rem)] lg:order-1">
-            <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
+            <p className="text-[0.875rem] font-medium text-white/65">
               <Headset aria-hidden="true" className="size-4" />
               Project help
             </p>
@@ -27,7 +27,7 @@ export default function HelpBanner({ premium = true }: { premium?: boolean }) {
             </ol>}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/quote" className={buttonClass('light', 'lg')}>
-                Get a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                Get a price
               </Link>
               <Link to="/resources" className={buttonClass('outline-light', 'lg')}>
                 Product guides

@@ -8,7 +8,6 @@ import Img from '../../components/ui/Img.tsx'
 import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { applications } from '../../data/homeContent.ts'
 import { brandStoryImage } from '../../data/images.ts'
@@ -47,7 +46,7 @@ export default function SolutionsPage() {
         actions={
           <>
             <ButtonLink to={cms("field-6", "/applications")} size="lg">
-              {cms("field-7", "Start from the job ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-7", "Start from the job")}
             </ButtonLink>
             <ButtonLink to={`${cms("field-8", "/products").split('#')[0]}#product-results`} variant="secondary" size="lg">
               {cms("field-9", "Browse products")}</ButtonLink>
@@ -80,9 +79,6 @@ export default function SolutionsPage() {
                 to={to}
                 className="group relative flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-premium)] hover:-translate-y-1 hover:border-forest/25 hover:shadow-[var(--shadow-lift)] motion-reduce:hover:translate-y-0"
               >
-                <span aria-hidden="true" className="absolute top-4 right-5 font-display text-[3rem] leading-none text-sand-deep transition-colors duration-300 group-hover:text-copper-soft">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
                 <span className="relative grid size-12 place-items-center rounded-2xl bg-forest-soft text-forest transition-colors duration-300 group-hover:bg-forest group-hover:text-white">
                   <Icon aria-hidden="true" className="size-6" />
                 </span>
@@ -105,7 +101,7 @@ export default function SolutionsPage() {
             title={cms("field-15", "Shop by area")}
             action={
               <ButtonLink to={cms("field-16", "/applications")} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
-                {cms("field-17", "All applications ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                {cms("field-17", "All applications")}
               </ButtonLink>
             }
           />
@@ -126,7 +122,7 @@ export default function SolutionsPage() {
           title={cms("field-19", "Shop by product type")}
           action={
             <ButtonLink to={`${cms("field-20", "/products").split('#')[0]}#product-results`} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
-              {cms("field-21", "All products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-21", "All products")}
             </ButtonLink>
           }
         />

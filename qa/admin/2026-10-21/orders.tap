@@ -1,0 +1,254 @@
+TAP version 13
+# Subtest: admins can only move orders forward or cancel open ones
+ok 1 - admins can only move orders forward or cancel open ones
+  ---
+  duration_ms: 3.582649
+  type: 'test'
+  ...
+# Subtest: customer timeline keeps status changes and public notes only
+ok 2 - customer timeline keeps status changes and public notes only
+  ---
+  duration_ms: 0.712082
+  type: 'test'
+  ...
+# Subtest: tracking shows only an admin-scheduled delivery estimate
+ok 3 - tracking shows only an admin-scheduled delivery estimate
+  ---
+  duration_ms: 0.889309
+  type: 'test'
+  ...
+# Subtest: every customer-visible order status explains what happens next
+ok 4 - every customer-visible order status explains what happens next
+  ---
+  duration_ms: 0.449802
+  type: 'test'
+  ...
+# Subtest: metrics count collected revenue from delivered orders only
+ok 5 - metrics count collected revenue from delivered orders only
+  ---
+  duration_ms: 1.569402
+  type: 'test'
+  ...
+# Subtest: order search matches reference, customer and product; combines with status
+ok 6 - order search matches reference, customer and product; combines with status
+  ---
+  duration_ms: 1.076946
+  type: 'test'
+  ...
+# Subtest: order sorting keeps original data intact and sorts numeric totals and dates
+ok 7 - order sorting keeps original data intact and sorts numeric totals and dates
+  ---
+  duration_ms: 0.707417
+  type: 'test'
+  ...
+# Subtest: Orders API security & authorization
+    # Subtest: rejects unauthenticated requests with 401 sign_in_required
+    ok 1 - rejects unauthenticated requests with 401 sign_in_required
+      ---
+      duration_ms: 13.754468
+      type: 'test'
+      ...
+    # Subtest: rejects expired tokens with 401 session_invalid
+    ok 2 - rejects expired tokens with 401 session_invalid
+      ---
+      duration_ms: 2.944344
+      type: 'test'
+      ...
+    # Subtest: blocks disallowed cross-browser origins on mutations
+    ok 3 - blocks disallowed cross-browser origins on mutations
+      ---
+      duration_ms: 4.109624
+      type: 'test'
+      ...
+    # Subtest: enforces customer isolation: customer A only receives their own orders
+    ok 4 - enforces customer isolation: customer A only receives their own orders
+      ---
+      duration_ms: 3.714273
+      type: 'test'
+      ...
+    # Subtest: prevents non-admin customer from accessing ?admin=1
+    ok 5 - prevents non-admin customer from accessing ?admin=1
+      ---
+      duration_ms: 2.254428
+      type: 'test'
+      ...
+    # Subtest: prevents non-admin customer from calling PATCH /api/orders
+    ok 6 - prevents non-admin customer from calling PATCH /api/orders
+      ---
+      duration_ms: 1.789714
+      type: 'test'
+      ...
+    # Subtest: BFLA defense: blocks team member with editor role from accessing GET /api/orders?admin=1
+    ok 7 - BFLA defense: blocks team member with editor role from accessing GET /api/orders?admin=1
+      ---
+      duration_ms: 2.300317
+      type: 'test'
+      ...
+    # Subtest: BFLA defense: blocks team member with editor role from calling PATCH /api/orders
+    ok 8 - BFLA defense: blocks team member with editor role from calling PATCH /api/orders
+      ---
+      duration_ms: 1.49831
+      type: 'test'
+      ...
+    # Subtest: allows administrator to view all orders via GET /api/orders?admin=1
+    ok 9 - allows administrator to view all orders via GET /api/orders?admin=1
+      ---
+      duration_ms: 2.649125
+      type: 'test'
+      ...
+    # Subtest: allows administrator to update order status via PATCH /api/orders
+    ok 10 - allows administrator to update order status via PATCH /api/orders
+      ---
+      duration_ms: 8.304108
+      type: 'test'
+      ...
+    # Subtest: rejects invalid order status in PATCH
+    ok 11 - rejects invalid order status in PATCH
+      ---
+      duration_ms: 1.575943
+      type: 'test'
+      ...
+    # Subtest: enforces rate limits on GET and POST requests
+    ok 12 - enforces rate limits on GET and POST requests
+      ---
+      duration_ms: 2.108603
+      type: 'test'
+      ...
+    # Subtest: validates customer and items schema in POST /api/orders
+    ok 13 - validates customer and items schema in POST /api/orders
+      ---
+      duration_ms: 3.77
+      type: 'test'
+      ...
+    # Subtest: allows authenticated customer to track own order by reference without contact
+    ok 14 - allows authenticated customer to track own order by reference without contact
+      ---
+      duration_ms: 1.329792
+      type: 'test'
+      ...
+    # Subtest: allows guest client to track order with valid reference and matching email
+    ok 15 - allows guest client to track order with valid reference and matching email
+      ---
+      duration_ms: 3.203587
+      type: 'test'
+      ...
+    # Subtest: allows guest client to track order with matching phone digits
+    ok 16 - allows guest client to track order with matching phone digits
+      ---
+      duration_ms: 2.789668
+      type: 'test'
+      ...
+    # Subtest: rejects guest tracking with wrong contact info (prevents enumeration)
+    ok 17 - rejects guest tracking with wrong contact info (prevents enumeration)
+      ---
+      duration_ms: 2.113887
+      type: 'test'
+      ...
+    # Subtest: requires contact verification for guest tracking without contact
+    ok 18 - requires contact verification for guest tracking without contact
+      ---
+      duration_ms: 2.183286
+      type: 'test'
+      ...
+    # Subtest: enforces rate limits on tracking requests
+    ok 19 - enforces rate limits on tracking requests
+      ---
+      duration_ms: 1.763631
+      type: 'test'
+      ...
+    1..19
+ok 8 - Orders API security & authorization
+  ---
+  duration_ms: 68.75255
+  type: 'suite'
+  ...
+# Subtest: single order detail access
+    # Subtest: returns exactly the requested order for admin, and preserves customer isolation
+    ok 1 - returns exactly the requested order for admin, and preserves customer isolation
+      ---
+      duration_ms: 2.343762
+      type: 'test'
+      ...
+    1..1
+ok 9 - single order detail access
+  ---
+  duration_ms: 2.581527
+  type: 'suite'
+  ...
+# Subtest: tracking staff permissions
+    # Subtest: requires editor contact verification through every tracking alias and identifier
+    ok 1 - requires editor contact verification through every tracking alias and identifier
+      ---
+      duration_ms: 13.83987
+      type: 'test'
+      ...
+    # Subtest: gives an editor only masked public tracking after contact verification
+    ok 2 - gives an editor only masked public tracking after contact verification
+      ---
+      duration_ms: 3.504311
+      type: 'test'
+      ...
+    # Subtest: preserves owner, admin, sales and legacy admin access
+    ok 3 - preserves owner, admin, sales and legacy admin access
+      ---
+      duration_ms: 13.205578
+      type: 'test'
+      ...
+    # Subtest: fails closed when either staff permission lookup fails
+    ok 4 - fails closed when either staff permission lookup fails
+      ---
+      duration_ms: 5.496123
+      type: 'test'
+      ...
+    1..4
+ok 10 - tracking staff permissions
+  ---
+  duration_ms: 36.570229
+  type: 'suite'
+  ...
+# Subtest: order tracking updates
+    # Subtest: passes shipment details to the database and returns the refreshed order
+    ok 1 - passes shipment details to the database and returns the refreshed order
+      ---
+      duration_ms: 2.650177
+      type: 'test'
+      ...
+    # Subtest: returns 409 when the order changed since it was loaded
+    ok 2 - returns 409 when the order changed since it was loaded
+      ---
+      duration_ms: 1.167021
+      type: 'test'
+      ...
+    # Subtest: rejects closed orders, bad courier references and far-future dates
+    ok 3 - rejects closed orders, bad courier references and far-future dates
+      ---
+      duration_ms: 4.021004
+      type: 'test'
+      ...
+    # Subtest: customer views hide staff identities and internal notes
+    ok 4 - customer views hide staff identities and internal notes
+      ---
+      duration_ms: 2.933168
+      type: 'test'
+      ...
+    # Subtest: guests can track by tracking ID; wildcard or malformed references never match
+    ok 5 - guests can track by tracking ID; wildcard or malformed references never match
+      ---
+      duration_ms: 3.397217
+      type: 'test'
+      ...
+    1..5
+ok 11 - order tracking updates
+  ---
+  duration_ms: 14.968657
+  type: 'suite'
+  ...
+1..11
+# tests 36
+# suites 4
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2107.983405

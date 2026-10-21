@@ -1,0 +1,108 @@
+TAP version 13
+# Subtest: Clerk session verification
+    # Subtest: accepts a token minted immediately after sign-in
+    ok 1 - accepts a token minted immediately after sign-in
+      ---
+      duration_ms: 17.162878
+      type: 'test'
+      ...
+    # Subtest: accepts the API’s own origin as authorized party (127.0.0.1, other ports, previews)
+    ok 2 - accepts the API’s own origin as authorized party (127.0.0.1, other ports, previews)
+      ---
+      duration_ms: 2.700535
+      type: 'test'
+      ...
+    # Subtest: rejects a token issued for another site — as "rejected", not "expired"
+    ok 3 - rejects a token issued for another site — as "rejected", not "expired"
+      ---
+      duration_ms: 1.756638
+      type: 'test'
+      ...
+    # Subtest: classifies a genuinely expired token as expired
+    ok 4 - classifies a genuinely expired token as expired
+      ---
+      duration_ms: 1.59964
+      type: 'test'
+      ...
+    # Subtest: rejects a token signed by a different Clerk instance
+    ok 5 - rejects a token signed by a different Clerk instance
+      ---
+      duration_ms: 1.912616
+      type: 'test'
+      ...
+    # Subtest: reports missing server keys as unconfigured, never as an expired session
+    ok 6 - reports missing server keys as unconfigured, never as an expired session
+      ---
+      duration_ms: 0.868333
+      type: 'test'
+      ...
+    1..6
+ok 1 - Clerk session verification
+  ---
+  duration_ms: 27.837945
+  type: 'suite'
+  ...
+# Subtest: auth failure responses
+    # Subtest: {"kind":"invalid","reason":"expired"} → 401 session_invalid
+    ok 1 - {"kind":"invalid","reason":"expired"} → 401 session_invalid
+      ---
+      duration_ms: 5.130787
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid"} → 401 session_invalid
+    ok 2 - {"kind":"invalid"} → 401 session_invalid
+      ---
+      duration_ms: 1.475508
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid","reason":"rejected"} → 401 session_rejected
+    ok 3 - {"kind":"invalid","reason":"rejected"} → 401 session_rejected
+      ---
+      duration_ms: 0.801912
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid","reason":"unconfigured"} → 503 auth_unavailable
+    ok 4 - {"kind":"invalid","reason":"unconfigured"} → 503 auth_unavailable
+      ---
+      duration_ms: 0.612011
+      type: 'test'
+      ...
+    # Subtest: {"kind":"invalid","reason":"unavailable"} → 503 auth_unavailable
+    ok 5 - {"kind":"invalid","reason":"unavailable"} → 503 auth_unavailable
+      ---
+      duration_ms: 0.539391
+      type: 'test'
+      ...
+    # Subtest: a valid session gets its own (empty) quote list, and the verifier receives the request origin
+    ok 6 - a valid session gets its own (empty) quote list, and the verifier receives the request origin
+      ---
+      duration_ms: 1.097439
+      type: 'test'
+      ...
+    1..6
+ok 2 - auth failure responses
+  ---
+  duration_ms: 10.187969
+  type: 'suite'
+  ...
+# Subtest: protected admins cannot be removed by another admin or themselves
+ok 3 - protected admins cannot be removed by another admin or themselves
+  ---
+  duration_ms: 0.36648
+  type: 'test'
+  ...
+# Subtest: project cancellation is an accepted status
+ok 4 - project cancellation is an accepted status
+  ---
+  duration_ms: 1.816841
+  type: 'test'
+  ...
+1..4
+# tests 14
+# suites 2
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 573.017412

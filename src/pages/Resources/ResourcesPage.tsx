@@ -73,7 +73,7 @@ export default function ResourcesPage() {
                   <div className="flex items-start justify-between gap-4">
                     <span
                       className={`grid size-12 place-items-center rounded-2xl transition-colors duration-300 ${
-                        i === 1 ? 'bg-white/10 text-mint ring-1 ring-white/15' : 'bg-copper-soft text-copper group-hover:bg-forest group-hover:text-white'
+                        i === 1 ? 'bg-white/10 text-mint ring-1 ring-white/15' : 'bg-forest-soft text-forest group-hover:bg-forest group-hover:text-white'
                       }`}
                     >
                       <Icon aria-hidden="true" className="size-6" />

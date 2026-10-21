@@ -46,7 +46,7 @@ export default function ConfirmDialog({
     >
       {open && (
         <div className="p-[clamp(1.25rem,4vw,1.75rem)]">
-          <span className="grid size-12 place-items-center rounded-full bg-copper-soft text-copper">
+          <span className="grid size-12 place-items-center rounded-full bg-forest-soft text-forest">
             <Icon aria-hidden="true" className="size-5" />
           </span>
           <h2 id="confirm-title" className="mt-4 text-[1.25rem] leading-snug font-semibold">

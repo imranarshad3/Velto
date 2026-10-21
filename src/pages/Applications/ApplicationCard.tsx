@@ -34,7 +34,7 @@ export default function ApplicationCard({
       className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-soft)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-premium)] hover:-translate-y-1 hover:border-forest/25 hover:shadow-[var(--shadow-lift)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       {/* Image frame */}
-      <div className="relative isolate aspect-[4/5] w-full shrink-0 overflow-hidden bg-sand-deep">
+      <div className="relative isolate aspect-square w-full shrink-0 overflow-hidden bg-sand-deep">
         {detail?.image?.src ? (
           <Img
             image={detail.image}
@@ -74,7 +74,7 @@ export default function ApplicationCard({
         </p>
 
         {detail && (
-          <p className="mt-auto pt-4 text-xs font-bold uppercase tracking-[0.14em] text-copper">
+          <p className="mt-auto pt-4 text-xs font-bold uppercase tracking-[0.14em] text-forest">
             {detail.steps.length} step sequence
           </p>
         )}

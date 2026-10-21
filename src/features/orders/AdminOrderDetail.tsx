@@ -56,7 +56,7 @@ function UpdatePanel({ order, save }: { order: AdminOrder; save: (u: OrderUpdate
           <legend className="text-[0.875rem] font-semibold text-ink">Choose a status</legend>
           <div className="mt-2 grid gap-2">
             {[order.status as OrderStatus, ...options].map(s => (
-              <label key={s} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-3.5 text-[0.9375rem] transition-colors has-[:checked]:border-forest has-[:checked]:bg-forest-soft/60 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-copper ${s === 'cancelled' ? 'border-danger/20 text-danger has-[:checked]:border-danger has-[:checked]:bg-danger-soft' : 'border-border'}`}>
+              <label key={s} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-3.5 text-[0.9375rem] transition-colors has-[:checked]:border-forest has-[:checked]:bg-forest-soft/60 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-forest ${s === 'cancelled' ? 'border-danger/20 text-danger has-[:checked]:border-danger has-[:checked]:bg-danger-soft' : 'border-border'}`}>
                 <input type="radio" value={s} {...register('status')} className="size-4 accent-forest" />
                 <span className="flex-1 font-semibold">{s === order.status ? `${statusLabels[s]} (current)` : statusLabels[s]}</span>
                 {s !== order.status && s !== 'cancelled' && <ArrowRight aria-hidden="true" className="size-4 text-muted" />}

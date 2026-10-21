@@ -1,7 +1,7 @@
 import { useContentData } from '../../features/cms/context.ts'
 import { useParams } from 'react-router'
 import { Link } from 'react-router'
-import { ArrowRight, Info } from 'lucide-react'
+import { Info } from 'lucide-react'
 import CategoryCard from '../../components/commerce/CategoryCard.tsx'
 import HelpBanner from '../../components/commerce/HelpBanner.tsx'
 import ProductCard from '../../components/commerce/ProductCard.tsx'
@@ -9,7 +9,6 @@ import Breadcrumb from '../../components/ui/Breadcrumb.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import Img from '../../components/ui/Img.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
 import { applicationDetails as defaultapplicationDetails, guidanceNote } from '../../data/applications.ts'
 import { demoCategories } from '../../data/demoCategories.ts'
@@ -41,8 +40,7 @@ export default function ApplicationDetailPage() {
         <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-10 pt-2 pb-[clamp(2.5rem,5vw,4.5rem)] md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center lg:gap-16">
           <div className="min-w-0">
             <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Shop by Area', to: '/applications' }, { label: application.name }]} />
-            <p className="animate-rise mt-4 flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-              <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+            <p className="animate-rise mt-4 text-[0.875rem] font-medium text-muted">
               Application
             </p>
             <h1 id="application-title" className="animate-rise mt-2 font-display text-[clamp(2.375rem,1.6rem+2.9vw,3.875rem)] leading-[1.02] tracking-[-0.015em] [--delay:0.05s]">
@@ -61,7 +59,7 @@ export default function ApplicationDetailPage() {
                           to={`/products?category=${c.slug}#product-results`}
                           className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface/80 px-4 text-[0.875rem] font-semibold text-ink shadow-[var(--shadow-soft)] transition-colors hover:border-forest/40 hover:text-forest"
                         >
-                          <CIcon aria-hidden="true" className="size-4 text-copper" />
+                          <CIcon aria-hidden="true" className="size-4 text-forest" />
                           {c.name}
                         </Link>
                       </li>
@@ -72,7 +70,7 @@ export default function ApplicationDetailPage() {
             )}
             <div className="animate-rise mt-7 flex flex-wrap gap-3 [--delay:0.15s]">
               <ButtonLink to={`/products?application=${application.slug}#product-results`} size="lg">
-                Shop {application.name.toLowerCase()} products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                Shop {application.name.toLowerCase()} products
               </ButtonLink>
               <ButtonLink to="/quote" variant="secondary" size="lg">
                 Ask for a price
@@ -97,7 +95,7 @@ export default function ApplicationDetailPage() {
           <div className="lg:sticky lg:top-[calc(var(--header-height)+2rem)] lg:self-start">
             <SectionHeading id="steps-title" eyebrow="Typical sequence" title="How the work usually goes" />
             <p className="mt-6 flex gap-3 rounded-[var(--radius-card)] border border-border bg-cream p-4 text-[0.875rem] leading-relaxed text-muted">
-              <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-copper" /> {guidanceNote}
+              <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-forest" /> {guidanceNote}
             </p>
           </div>
           <ol className="relative">
@@ -108,7 +106,7 @@ export default function ApplicationDetailPage() {
                 )}
                 <span
                   aria-hidden="true"
-                  className="relative z-10 grid size-14 place-items-center rounded-full border border-copper/30 bg-surface font-display text-[1.375rem] leading-none text-copper tabular-nums shadow-[var(--shadow-soft)] transition-colors duration-300 group-hover:bg-copper group-hover:text-white"
+                  className="relative z-10 grid size-14 place-items-center rounded-full border border-forest/25 bg-surface font-display text-[1.375rem] leading-none text-forest tabular-nums shadow-[var(--shadow-soft)] transition-colors duration-300 group-hover:bg-copper group-hover:text-ink"
                 >
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -144,7 +142,7 @@ export default function ApplicationDetailPage() {
             title={`Products for ${application.name.toLowerCase()}`}
             action={
               <ButtonLink to={`/products?application=${application.slug}#product-results`} variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
-                View all ({matching.length}) <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                View all ({matching.length})
               </ButtonLink>
             }
           />
@@ -167,7 +165,7 @@ export default function ApplicationDetailPage() {
             title="Other applications"
             action={
               <ButtonLink to="/applications" variant="ghost" className="-mr-3 px-3 text-[0.875rem]">
-                All applications <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                All applications
               </ButtonLink>
             }
           />

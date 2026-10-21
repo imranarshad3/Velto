@@ -1,7 +1,6 @@
 import { useContent } from "../../features/cms/context.ts";
-import { ArrowRight, BookOpen, ClipboardList, Compass } from "lucide-react";
+import { BookOpen, ClipboardList, Compass } from "lucide-react";
 import ButtonLink from "../../components/ui/ButtonLink.tsx";
-import { buttonArrow } from "../../components/ui/button.ts";
 import Img from "../../components/ui/Img.tsx";
 import Reveal from "../../components/ui/Reveal.tsx";
 import { professionalImage } from "../../data/images.ts";
@@ -22,7 +21,7 @@ export default function ProfessionalsBanner() {
       <Reveal className="container-page">
         <div className="relative isolate grid overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep text-white shadow-[var(--shadow-float)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <div className="flex min-w-0 flex-col justify-center p-[clamp(1.5rem,5vw,4rem)] lg:order-1">
-            <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
+            <p className="text-[0.875rem] font-medium text-white/65">
               <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
               {cms("field-1", "VELTO Professionals")}
             </p>
@@ -51,11 +50,7 @@ export default function ProfessionalsBanner() {
             </ul>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink to={cms("field-4", "/solutions")} variant="light">
-                {cms("field-5", "Explore Solutions ")}
-                <ArrowRight
-                  aria-hidden="true"
-                  className={`size-4 ${buttonArrow}`}
-                />
+                {cms("field-5", "Explore Solutions")}
               </ButtonLink>
               <ButtonLink to={cms("field-6", "/quote")} variant="outline-light">
                 {cms("field-7", "Get a price")}

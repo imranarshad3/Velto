@@ -128,11 +128,11 @@ export default function AdminLayout() {
         <meta name="robots" content="noindex" />
         <div className="surface-card relative w-full max-w-[34rem] overflow-clip px-[clamp(1.5rem,5vw,3rem)] py-[clamp(2.25rem,6vw,3.5rem)] text-center shadow-[var(--shadow-float)]">
           <span className="relative mx-auto grid size-20 place-items-center rounded-full bg-cream ring-1 ring-sand-deep">
-            <span className="grid size-14 place-items-center rounded-full bg-copper-soft text-copper ring-1 ring-copper/20">
+            <span className="grid size-14 place-items-center rounded-full bg-forest-soft text-forest ring-1 ring-forest/20">
               <ShieldAlert aria-hidden="true" className="size-6" />
             </span>
           </span>
-          <p className="mt-6 text-[0.75rem] font-semibold tracking-[0.18em] text-copper uppercase">Staff area</p>
+          <p className="mt-6 text-[0.75rem] font-semibold tracking-[0.18em] text-forest uppercase">Staff area</p>
           <h1 className="mt-2 font-display text-[clamp(1.75rem,1.4rem+1.4vw,2.25rem)] leading-tight">You don’t have access to this area</h1>
           <p className="mx-auto mt-3 max-w-[26rem] leading-relaxed text-muted">The admin area is for VELTO staff. If you need access, ask an existing administrator.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">

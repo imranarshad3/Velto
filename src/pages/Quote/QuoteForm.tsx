@@ -147,12 +147,12 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
         } aria-labelledby="quote-form-title" aria-busy={isSubmitting} className="flex min-w-0 flex-col gap-5">
         <div className="flex flex-col gap-4 pb-1 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[0.75rem] font-bold tracking-[0.18em] text-copper uppercase">Five easy steps</p>
+            <p className="text-[0.75rem] font-bold tracking-[0.18em] text-forest uppercase">Five easy steps</p>
             <h2 id="quote-form-title" className="mt-1 font-display text-[clamp(1.625rem,1.35rem+0.9vw,2.125rem)] leading-tight">
               Project price
             </h2>
             <p className="mt-1 text-[0.875rem] text-muted">
-              Fields marked <span className="text-copper">*</span> are required.
+              Fields marked <span className="text-forest">*</span> are required.
             </p>
           </div>
           {auth.enabled && auth.loaded && (
@@ -307,7 +307,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
 
           <Section step={5} title="Confirm">
             <div className="md:col-span-2">
-              <label htmlFor="consent" className="flex min-h-11 cursor-pointer items-start gap-3.5 rounded-xl border border-border bg-canvas/70 p-4 text-[0.9375rem] leading-relaxed transition-colors hover:border-forest/30 has-[:checked]:border-forest/40 has-[:checked]:bg-forest-soft/50 has-[:focus-visible]:outline-[0.1875rem] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-copper has-[[aria-invalid=true]]:border-danger/40 has-[[aria-invalid=true]]:bg-danger-soft/40">
+              <label htmlFor="consent" className="flex min-h-11 cursor-pointer items-start gap-3.5 rounded-xl border border-border bg-canvas/70 p-4 text-[0.9375rem] leading-relaxed transition-colors hover:border-forest/30 has-[:checked]:border-forest/40 has-[:checked]:bg-forest-soft/50 has-[:focus-visible]:outline-[0.1875rem] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-forest has-[[aria-invalid=true]]:border-danger/40 has-[[aria-invalid=true]]:bg-danger-soft/40">
                 <input
                   id="consent"
                   type="checkbox"
@@ -321,7 +321,7 @@ export default function QuoteForm({ initialItems, unknownProduct, onSuccess, asi
                   <Link to="/privacy" className="font-semibold text-forest underline underline-offset-2">
                     privacy policy
                   </Link>
-                  . <span className="text-copper" aria-hidden="true">*</span>
+                  . <span className="text-forest" aria-hidden="true">*</span>
                 </span>
               </label>
               {err('consent') && (

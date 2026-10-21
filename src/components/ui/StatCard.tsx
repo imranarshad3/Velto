@@ -15,8 +15,8 @@ interface StatCardProps {
 
 const tones = {
   forest: 'bg-forest-soft text-forest',
-  copper: 'bg-copper-soft text-copper',
-  gold: 'bg-[#f7ecd8] text-gold-deep',
+  copper: 'bg-forest-soft text-forest',
+  gold: 'bg-copper-soft text-copper-hover',
   ink: 'bg-sand text-ink',
 }
 

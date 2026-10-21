@@ -206,7 +206,7 @@ export default function DocumentsPage() {
                           <Icon aria-hidden="true" className="size-5" />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-[0.75rem] font-semibold tracking-[0.08em] text-copper uppercase">{d.kind ? resourceKindLabels[d.kind] : 'Supplier document'}</p>
+                          <p className="text-[0.75rem] font-semibold tracking-[0.08em] text-forest uppercase">{d.kind ? resourceKindLabels[d.kind] : 'Supplier document'}</p>
                           <h2 className="mt-0.5 text-[1.0625rem] leading-snug font-semibold text-ink">{d.title}</h2>
                         </div>
                       </div>

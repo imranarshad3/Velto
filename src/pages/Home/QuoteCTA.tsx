@@ -1,7 +1,5 @@
 import { useContent } from '../../features/cms/context.ts'
-import { ArrowRight } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import Reveal from '../../components/ui/Reveal.tsx'
 
 export default function QuoteCTA() {
@@ -12,7 +10,7 @@ export default function QuoteCTA() {
         <div className="relative isolate grid gap-8 overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep px-[clamp(1.5rem,5vw,4rem)] py-[clamp(3rem,7vw,5.5rem)] text-white shadow-[var(--shadow-card)] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center lg:gap-12">
           <div aria-hidden="true" className="absolute -top-1/2 -right-[10%] -z-10 size-[min(80vw,30rem)] rounded-full bg-copper/20 blur-3xl" />
           <div>
-          <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
+          <p className="text-[0.875rem] font-medium text-white/65">
             <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
             {cms("field-1", "Project prices")}
           </p>
@@ -26,7 +24,7 @@ export default function QuoteCTA() {
           <p className="mt-2 text-[0.875rem] leading-relaxed text-white/75">Tell us which area you are working on and roughly how big it is.</p>
           <div className="mt-6 flex flex-col gap-3">
             <ButtonLink to={cms("field-4", "/quote")} variant="light" size="lg">
-              {cms("field-5", "Get a price ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-5", "Get a price")}
             </ButtonLink>
             <ButtonLink to={cms("field-6", "/solutions")} variant="outline-light" size="lg">
               {cms("field-7", "Find products")}</ButtonLink>

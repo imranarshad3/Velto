@@ -1,5 +1,30 @@
 # Admin panel test checklist
 
+## Follow-up — 2026-10-21
+
+Current scoped results supersede the corresponding historical rows below.
+Detailed expected/actual outcomes and counts are in `ADMIN_TEST_REPORT.md`.
+
+| Feature | Executed scope | Status |
+|---|---|---|
+| Live storefront image release | All Products asset loaded at 1122×1402; homepage image frames use cover and match their wrappers | PASS |
+| CMS server flow | Real isolated PostgreSQL draft save, private draft/public publish separation, stale version rejection and revisions; 10 automated CMS/workspace cases | PASS |
+| CMS browser interruption/recovery | Existing recovery unit tests passed; fresh browser reload/save/publish flow was interrupted before execution | BLOCKED |
+| Orders/tracking | Isolated database creation, admin feed, shipment persistence, masked guest tracking and invalid transitions; 36 automated order/view/tracking cases | PASS |
+| Admin notifications | Orders page has new-order polling/toasts and awaiting-confirmation banner. Feed was verified; toast/banner browser interaction not completed | BLOCKED |
+| Checkout server flow | Invalid input and tampered prices rejected; real order creation and idempotency; four validation cases | PASS |
+| Checkout browser flow | Form submission through confirmation not completed in this run | BLOCKED |
+| Permissions | 14 auth/protected-admin cases, customer isolation, CMS roles, direct database role denials; confirmed editor tracking bypass fixed and retested | PASS |
+| Live anonymous API access | Five protected endpoints returned 401 without credentials | PASS |
+| Application card height | Image frame changed from 4:5 to square, 20% shorter at equal width; cover fit preserved; build/typecheck/lint passed | PASS for implementation; fresh visual check BLOCKED |
+| Email notifications | Explicitly deferred until sender-domain verification | SKIP |
+
+Current run: **93 checks — 88 PASS, 0 FAIL, 1 SKIP, 4 BLOCKED**.
+No production records were modified. Browser control became unavailable after
+the interruption; local database/API checks continued independently.
+
+## Historical full-admin audit
+
 Testing ran against the local development app with fake admin/customer identities and disposable in-memory data. No production data was changed. Statuses reflect the execution in `ADMIN_TEST_REPORT.md`; a passing automated suite verifies the listed test code, not an unconfigured live integration.
 
 | Feature | Routes and discovered scope | Test coverage | Status |

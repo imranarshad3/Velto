@@ -248,7 +248,7 @@ export default function ProductCard({
       whitespace-nowrap tabular-nums
       ${
         price
-          ? "text-[1.125rem] @[18rem]:text-[1.1875rem] text-[#a0522d]"
+          ? "text-[1.125rem] @[18rem]:text-[1.1875rem] text-copper-hover"
           : "text-[0.9375rem] text-forest"
       }
     `}
@@ -267,7 +267,7 @@ export default function ProductCard({
         text-[0.6875rem]
         font-semibold
         tracking-[0.08em]
-        text-copper uppercase
+        text-forest uppercase
       "
               >
                 Demo price

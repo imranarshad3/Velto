@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
-import { ArrowRight, Check, Minus, Plus, ShoppingBasket } from 'lucide-react'
+import { Check, Minus, Plus, ShoppingBasket } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
+import { buttonClass } from '../../components/ui/button.ts'
 import type { CatalogProduct } from '../../data/catalog.ts'
 import { MAX_CART_ITEMS, useCart } from '../../features/cart/cartStore.ts'
 import { cardPrice } from '../../features/catalog/price.ts'
@@ -59,7 +59,7 @@ export default function BuyBox({ product }: { product: CatalogProduct; quoteHref
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-[0.6875rem] font-semibold tracking-[0.12em] text-muted uppercase">
             Price
-            {price?.demo && <span className="rounded-sm bg-sand px-1 py-0.5 text-[0.625rem] font-bold tracking-[0.08em] text-copper">DEMO</span>}
+            {price?.demo && <span className="rounded-sm bg-sand px-1 py-0.5 text-[0.625rem] font-bold tracking-[0.08em] text-forest">DEMO</span>}
           </p>
           <p className="mt-1 font-extrabold leading-none text-ink tabular-nums">
             {price ? (
@@ -117,7 +117,7 @@ export default function BuyBox({ product }: { product: CatalogProduct; quoteHref
 
         <div className="grid grid-cols-[minmax(0,1fr)] gap-3 @[28rem]:grid-cols-2">
           {soldOut ? <p className="self-center font-semibold text-muted">Sold out</p> : <ButtonLink to={`/checkout?product=${product.slug}&qty=${quantity}`} size="lg" className="w-full px-5">
-            Buy now<span className="sr-only"> for {quantity} {unit}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+            Buy now<span className="sr-only"> for {quantity} {unit}</span>
           </ButtonLink>}
           <button disabled={soldOut} type="button" onClick={addToCart} className={buttonClass('secondary', 'lg', 'w-full px-5')}>
             <CartIcon aria-hidden="true" className="size-[1.125rem]" />

@@ -36,7 +36,7 @@ export default function LegalLayout({ title, updated, intro, sections }: LegalLa
         </nav>
         <article className="surface-card max-w-[52rem] min-w-0 rounded-[var(--radius-panel)] p-[clamp(1.25rem,4vw,3rem)]">
           <p role="note" className="flex gap-3 rounded-xl border border-copper/30 bg-copper/5 p-4 text-[0.9375rem]">
-            <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-copper" />
+            <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-forest" />
             <span>
               <strong>Draft pending legal review.</strong> This page describes how the site currently works. The operator’s legal
               name, registered address, contact details and governing law will be added once confirmed.

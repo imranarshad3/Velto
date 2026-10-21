@@ -40,7 +40,7 @@ export function PageHeaderSkeleton({ aside = false }: { aside?: boolean }) {
   )
 }
 
-/** Standard page header for utility and content pages: cream field, blueprint grid and soft brand glow. */
+/** Standard page header for utility and content pages: concrete field, blueprint grid and a quiet brand wash. */
 export default function PageHeader({ className = '', title, crumbs, eyebrow, description, actions, aside }: PageHeaderProps) {
   return (
     <section aria-labelledby="page-title" className={`relative isolate overflow-hidden border-b border-border/70 bg-cream ${className}`}>
@@ -50,12 +50,9 @@ export default function PageHeader({ className = '', title, crumbs, eyebrow, des
           <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-5">
             <div className="max-w-[46rem]">
               {eyebrow && (
-                <p className="animate-rise flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-                  <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
-                  {eyebrow}
-                </p>
+                <p className="animate-rise text-[0.875rem] font-medium text-muted">{eyebrow}</p>
               )}
-              <h1 id="page-title" className="animate-rise mt-2 font-display text-[clamp(2.375rem,1.6rem+2.9vw,3.875rem)] leading-[1.02] tracking-[-0.015em] text-ink [--delay:0.05s] sm:mt-3">
+              <h1 id="page-title" className="animate-rise mt-2 font-display text-[clamp(2.375rem,1.6rem+2.9vw,3.875rem)] text-ink [--delay:0.05s] sm:mt-3">
                 {title}
               </h1>
               {description && <div className="animate-rise mt-5 max-w-[40rem] text-[clamp(0.9375rem,0.9rem+0.3vw,1.125rem)] leading-relaxed text-muted [--delay:0.1s]">{description}</div>}

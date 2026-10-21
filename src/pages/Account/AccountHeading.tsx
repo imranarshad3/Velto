@@ -18,8 +18,7 @@ export default function AccountHeading({ title, crumbs, children, actions, eyebr
       <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'My Account', to: '/account' }, ...crumbs]} />
       <div className="mt-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="min-w-0 max-w-[44rem]">
-          <p className="animate-rise flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-            <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+          <p className="animate-rise text-[0.875rem] font-medium text-muted">
             {eyebrow}
           </p>
           <h1

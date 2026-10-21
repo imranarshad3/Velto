@@ -47,7 +47,7 @@ export default function AdminOrderWorkspace({ orders, reload }: { orders: AdminO
       {awaitingConfirmation.length > 0 && (
         <section aria-labelledby="new-orders-title" className="flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-card)] border border-copper/30 bg-copper-soft/60 p-4 sm:p-5">
           <div className="flex min-w-0 items-start gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-surface text-copper ring-1 ring-copper/20"><BellRing aria-hidden="true" className="size-5" /></span>
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-surface text-copper-hover ring-1 ring-copper/40"><BellRing aria-hidden="true" className="size-5" /></span>
             <div className="min-w-0">
               <h2 id="new-orders-title" className="font-semibold text-ink">{awaitingConfirmation.length} {awaitingConfirmation.length === 1 ? 'new order' : 'new orders'} awaiting confirmation</h2>
               <p className="mt-0.5 text-[0.875rem] leading-relaxed text-muted">Review these orders and confirm the ones you can fulfil. This alert stays here until their status changes.</p>

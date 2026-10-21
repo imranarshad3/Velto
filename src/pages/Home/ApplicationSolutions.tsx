@@ -1,9 +1,7 @@
 import { useContentData } from '../../features/cms/context.ts'
 import { useContent } from '../../features/cms/context.ts'
-import { ArrowRight } from 'lucide-react'
 import ApplicationTile from '../../components/commerce/ApplicationTile.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import Img from '../../components/ui/Img.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
@@ -32,7 +30,7 @@ export default function ApplicationSolutions() {
               </Reveal>
             ))}
           </ul>
-          <ButtonLink to="/applications" variant="ghost" className="mt-7">See all areas <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} /></ButtonLink>
+          <ButtonLink to="/applications" variant="ghost" className="mt-7">See all areas</ButtonLink>
         </div>
 
         {/* Waterproofing spotlight: full-height image panel beside the tiles on desktop. */}
@@ -42,13 +40,13 @@ export default function ApplicationSolutions() {
               <Img fit="cover" cmsImage={{ page: 'home', field: 'ApplicationSolutions.image-src' }} image={{ ...waterproofingImage, src: cms('image-src', "/images/banners/waterproofing-crop.webp"), alt: cms('image-alt', "Illustrative concept: roller applying a blue waterproofing coat to a rooftop") }} className="absolute inset-0 size-full object-cover" />
             </div>
             <div className="application-spotlight-copy shrink-0 p-[clamp(1.25rem,3.5vw,2.25rem)]">
-              <p className="text-[0.75rem] font-bold tracking-[0.18em] text-gold uppercase">{cms("field-4", "Waterproofing products")}</p>
+              <p className="text-[0.875rem] font-medium text-white/70">{cms("field-4", "Waterproofing products")}</p>
               <h3 className="mt-2 font-display text-[clamp(1.5rem,1.2rem+1.3vw,2.25rem)] leading-tight">
                 {cms("field-5", "Waterproof roofs, basements and terraces")}</h3>
               <p className="mt-3 max-w-[28rem] text-[0.9375rem] text-white/85">
                 {cms("field-6", "Find products to help keep water out.")}</p>
               <ButtonLink to={`${cms("field-7", "/products?category=waterproofing").split('#')[0]}#product-results`} variant="light" className="mt-6">
-                {cms("field-8", "See waterproofing products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                {cms("field-8", "See waterproofing products")}
               </ButtonLink>
             </div>
           </div>

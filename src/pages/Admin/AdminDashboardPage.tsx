@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import { ArrowRight, ArrowUpRight, ClipboardList, Eye, History, MessageSquareQuote, Inbox, Mail, Package, Plus, ShieldCheck, Store, Users } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import StatCard from '../../components/ui/StatCard.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { adminApi } from '../../features/admin/api.ts'
 import type { AuditEntry } from '../../features/admin/types.ts'
 import { dateTimeFormat } from '../../features/quotes/format.ts'
@@ -47,7 +46,7 @@ export default function AdminDashboardPage() {
               <Plus aria-hidden="true" className="size-4" /> New product
             </ButtonLink>
             <ButtonLink to="/admin/quotes" size="sm">
-              Review quotes <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              Review quotes
             </ButtonLink>
           </>
         }

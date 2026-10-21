@@ -73,7 +73,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
           <ul aria-label="Your shopping" className="mb-7 grid grid-cols-2 gap-3">
             <li>
               <Link to="/wishlist" className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface px-3.5 text-[0.875rem] font-semibold text-ink shadow-[var(--shadow-soft)] transition-colors hover:border-forest/40 hover:bg-forest-soft/40">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-copper-soft text-copper"><Heart aria-hidden="true" className="size-[1.125rem]" /></span>
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-forest-soft text-forest"><Heart aria-hidden="true" className="size-[1.125rem]" /></span>
                 <span className="min-w-0">Wishlist<span className="mt-0.5 block text-[0.75rem] font-medium text-muted">{wishlistCount} saved</span></span>
               </Link>
             </li>

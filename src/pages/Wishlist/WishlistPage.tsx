@@ -1,9 +1,9 @@
-import { ArrowRight, Heart, ShoppingBasket } from 'lucide-react'
+import { Heart, ShoppingBasket } from 'lucide-react'
 import ProductCard from '../../components/commerce/ProductCard.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import EmptyState from '../../components/ui/EmptyState.tsx'
 import PageHeader from '../../components/ui/PageHeader.tsx'
-import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
+import { buttonClass } from '../../components/ui/button.ts'
 import { useCart } from '../../features/cart/cartStore.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { useToasts } from '../../features/ui/toastStore.ts'
@@ -41,7 +41,7 @@ export default function WishlistPage() {
               title="No saved products yet"
               actions={
                 <ButtonLink to="/products#product-results">
-                  Browse products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                  Browse products
                 </ButtonLink>
               }
             >
@@ -51,7 +51,7 @@ export default function WishlistPage() {
             <>
               <div className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-border bg-surface p-4 shadow-[var(--shadow-soft)] sm:flex-row sm:items-center sm:justify-between sm:p-5">
                 <div className="flex min-w-0 items-center gap-4">
-                  <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-2xl bg-copper-soft text-copper">
+                  <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-2xl bg-forest-soft text-forest">
                     <Heart className="size-5" />
                   </span>
                   <div className="min-w-0">

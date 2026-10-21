@@ -190,7 +190,7 @@ function CategoryEditor({
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <label className={`${buttonClass('secondary', 'sm')} cursor-pointer focus-within:outline-[0.1875rem] focus-within:outline-offset-2 focus-within:outline-copper ${uploading ? 'pointer-events-none opacity-60' : ''}`}>
+            <label className={`${buttonClass('secondary', 'sm')} cursor-pointer focus-within:outline-[0.1875rem] focus-within:outline-offset-2 focus-within:outline-forest ${uploading ? 'pointer-events-none opacity-60' : ''}`}>
               {uploading ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <ImagePlus aria-hidden="true" className="size-4" />}
               {uploading ? 'Uploading…' : form.image ? 'Replace' : 'Upload'}
               <input

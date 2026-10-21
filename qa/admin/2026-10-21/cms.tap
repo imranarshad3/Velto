@@ -1,0 +1,91 @@
+TAP version 13
+# Subtest: CMS Caching, ETag, and Invalidation
+    # Subtest: returns ETag and supports 304 Not Modified on unchanged content
+    ok 1 - returns ETag and supports 304 Not Modified on unchanged content
+      ---
+      duration_ms: 46.246063
+      type: 'test'
+      ...
+    # Subtest: invalidates cache and updates ETag when content is published
+    ok 2 - invalidates cache and updates ETag when content is published
+      ---
+      duration_ms: 12.329784
+      type: 'test'
+      ...
+    1..2
+ok 1 - CMS Caching, ETag, and Invalidation
+  ---
+  duration_ms: 60.438406
+  type: 'suite'
+  ...
+# Subtest: CMS local draft recovery
+    # Subtest: recovers unsaved content even when the server revision changed
+    ok 1 - recovers unsaved content even when the server revision changed
+      ---
+      duration_ms: 3.423796
+      type: 'test'
+      ...
+    # Subtest: clears saved drafts and ignores corrupt storage entries
+    ok 2 - clears saved drafts and ignores corrupt storage entries
+      ---
+      duration_ms: 2.500061
+      type: 'test'
+      ...
+    1..2
+ok 2 - CMS local draft recovery
+  ---
+  duration_ms: 6.313913
+  type: 'suite'
+  ...
+# Subtest: CMS/CRM workspace
+    # Subtest: keeps added sections private until published and restores them from revisions
+    ok 1 - keeps added sections private until published and restores them from revisions
+      ---
+      duration_ms: 22.958772
+      type: 'test'
+      ...
+    # Subtest: validates section types, unique IDs, limits, URLs and fixed page layouts
+    ok 2 - validates section types, unique IDs, limits, URLs and fixed page layouts
+      ---
+      duration_ms: 13.229301
+      type: 'test'
+      ...
+    # Subtest: enforces team roles on the server
+    ok 3 - enforces team roles on the server
+      ---
+      duration_ms: 3.545062
+      type: 'test'
+      ...
+    # Subtest: saves drafts, publishes to the storefront and restores revisions
+    ok 4 - saves drafts, publishes to the storefront and restores revisions
+      ---
+      duration_ms: 8.397084
+      type: 'test'
+      ...
+    # Subtest: uploads, replaces and validates media
+    ok 5 - uploads, replaces and validates media
+      ---
+      duration_ms: 7.094067
+      type: 'test'
+      ...
+    # Subtest: tracks lead stages, assignment and history
+    ok 6 - tracks lead stages, assignment and history
+      ---
+      duration_ms: 7.569511
+      type: 'test'
+      ...
+    1..6
+ok 3 - CMS/CRM workspace
+  ---
+  duration_ms: 63.631213
+  type: 'suite'
+  ...
+1..3
+# tests 10
+# suites 3
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 761.432264

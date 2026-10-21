@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import { ArrowRight, CalendarDays, FileText, MapPin, Package } from 'lucide-react'
+import { CalendarDays, FileText, MapPin, Package } from 'lucide-react'
 import QuoteStatus from '../../components/commerce/QuoteStatus.tsx'
-import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
+import { buttonClass } from '../../components/ui/button.ts'
 import { productPath } from '../../data/catalog.ts'
 import { useCatalog } from '../../features/catalog/catalogContext.ts'
 import { dateFormat, formatItemQuantity } from '../../features/quotes/format.ts'
@@ -65,7 +65,7 @@ export default function QuoteCard({ quote, detailsHref }: QuoteCardProps) {
                   </li>
                 )
               })}
-              {extra > 0 && <li className="pl-3.5 text-[0.875rem] font-medium text-copper">+{extra} more</li>}
+              {extra > 0 && <li className="pl-3.5 text-[0.875rem] font-medium text-forest">+{extra} more</li>}
             </ul>
           ) : (
             <p className="flex items-center gap-2 font-semibold text-ink">
@@ -87,7 +87,7 @@ export default function QuoteCard({ quote, detailsHref }: QuoteCardProps) {
           <QuoteStatus status={quote.status} />
           {detailsHref && (
             <Link to={detailsHref} className={buttonClass('secondary', 'sm', 'w-fit')}>
-              View details<span className="sr-only"> for {quote.reference}</span> <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              View details<span className="sr-only"> for {quote.reference}</span>
             </Link>
           )}
         </div>

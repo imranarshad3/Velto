@@ -36,6 +36,16 @@ function maskEmail(email?: string): string {
 
 const ORDER_COLUMNS = 'id,reference,clerk_user_id,customer,items,subtotal,delivery,total,currency,payment_method,status,status_history,created_at,updated_at,tracking_number,carrier,carrier_reference,estimated_delivery'
 
+/** The same staff permissions govern order management and unmasked tracking. */
+async function orderStaffRole(db: SupabaseClient, userId: string): Promise<string | null> {
+  const { data: member, error } = await db.from('admin_members').select('clerk_user_id').eq('clerk_user_id', userId).maybeSingle()
+  if (error) throw new HttpError(503, 'unavailable', 'Could not verify team permissions.')
+  if (!member) return null
+  const { data: roleRow, error: roleError } = await db.from('workspace_roles').select('role').eq('clerk_user_id', userId).maybeSingle()
+  if (roleError) throw new HttpError(503, 'unavailable', 'Could not verify team permissions.')
+  return roleRow?.role ?? 'admin'
+}
+
 // oxlint-disable-next-line typescript/no-explicit-any
 type OrderRow = Record<string, any>
 
@@ -165,14 +175,9 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
 
       if (adminRequested || isPatch) {
         if (auth.kind !== 'user') return apiError(401, 'sign_in_required', 'Please sign in.')
-        const { data: member, error } = await db.from('admin_members').select('clerk_user_id').eq('clerk_user_id', auth.userId).maybeSingle()
-        if (error || !member) return apiError(403, 'forbidden', 'Admin access required.')
-
-        // Enforce function-level and role-based access control: editors cannot access or modify customer orders
-        const { data: roleRow, error: roleError } = await db.from('workspace_roles').select('role').eq('clerk_user_id', auth.userId).maybeSingle()
-        if (roleError) return apiError(503, 'unavailable', 'Could not verify team permissions.')
-        const role = roleRow?.role ?? 'admin'
-        if (role === 'editor') return apiError(403, 'forbidden', 'Your team role does not permit access to orders.')
+        const role = await orderStaffRole(db, auth.userId)
+        if (role === null) return apiError(403, 'forbidden', 'Admin access required.')
+        if (role !== 'admin' && role !== 'sales') return apiError(403, 'forbidden', 'Your team role does not permit access to orders.')
 
         isAdminUser = true
       }
@@ -198,8 +203,8 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
           if (order.clerk_user_id === auth.userId) {
             isOwnerOrAdmin = true
           } else {
-            const { data: member } = await trackDb.from('admin_members').select('clerk_user_id').eq('clerk_user_id', auth.userId).maybeSingle()
-            if (member) isOwnerOrAdmin = true
+            const role = await orderStaffRole(trackDb, auth.userId)
+            isOwnerOrAdmin = role === 'admin' || role === 'sales'
           }
         }
 
@@ -235,7 +240,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
             return apiError(429, 'rate_limited', 'Too many tracking requests. Please wait a few minutes and try again.')
           }
           const contact = url.searchParams.get('contact')?.trim()
-          return handleTrackLookup(trackRef, contact)
+          return await handleTrackLookup(trackRef, contact)
         }
 
         if (auth.kind === 'guest') return apiError(401, 'sign_in_required', 'Please sign in to manage your orders.')
@@ -309,7 +314,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
             contact: z.string().trim().min(3).max(200).optional(),
           }).safeParse(body)
           if (!parsedTrack.success) return apiError(422, 'invalid', 'Enter a valid order reference.')
-          return handleTrackLookup(parsedTrack.data.reference, parsedTrack.data.contact)
+          return await handleTrackLookup(parsedTrack.data.reference, parsedTrack.data.contact)
         }
 
         if (auth.kind === 'guest') return apiError(401, 'sign_in_required', 'Please sign in to manage your orders.')

@@ -445,7 +445,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
         {options.map((o) => (
           <label
             key={o}
-            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-border px-4 has-checked:border-forest has-checked:bg-forest-soft has-checked:text-forest has-focus-visible:outline-[0.1875rem] has-focus-visible:outline-copper"
+            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-border px-4 has-checked:border-forest has-checked:bg-forest-soft has-checked:text-forest has-focus-visible:outline-[0.1875rem] has-focus-visible:outline-forest"
           >
             <input
               type="checkbox"
@@ -526,7 +526,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
 
       <Section
         title="Fill in with AI"
-        icon={<Sparkles aria-hidden="true" className="size-5 text-copper" />}
+        icon={<Sparkles aria-hidden="true" className="size-5 text-forest" />}
         description="Optional. AI reads your photos and suggests the name, description and details. Price and stock are always entered by you."
       >
         <div className="sm:col-span-2">

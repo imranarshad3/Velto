@@ -175,7 +175,7 @@ export function CopyCode({ value, label }: { value: string; label: string }) {
     }
   }
   return (
-    <button type="button" onClick={() => void copy()} className="group inline-flex min-h-11 max-w-full items-center gap-2 rounded-xl border border-border bg-surface px-3 font-mono text-[0.875rem] font-semibold tracking-wide text-ink transition-colors hover:border-forest/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper">
+    <button type="button" onClick={() => void copy()} className="group inline-flex min-h-11 max-w-full items-center gap-2 rounded-xl border border-border bg-surface px-3 font-mono text-[0.875rem] font-semibold tracking-wide text-ink transition-colors hover:border-forest/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest">
       <span className="truncate">{value}</span>
       {copied ? <Check aria-hidden="true" className="size-4 text-success" /> : <Copy aria-hidden="true" className="size-4 text-muted group-hover:text-forest" />}
       <span className="sr-only" aria-live="polite">{copied ? `${label} copied` : `Copy ${label}`}</span>

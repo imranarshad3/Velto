@@ -1,7 +1,7 @@
 import { useContentData, useContentReady } from "../../features/cms/context.ts";
 import { useCallback, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
-import { ArrowRight, Heart, Menu, Search, ShoppingCart } from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart } from "lucide-react";
 import {
   storefrontNav,
   primaryNav as defaultPrimaryNav,
@@ -10,7 +10,7 @@ import { useCart } from "../../features/cart/cartStore.ts";
 import { useWishlist } from "../../features/wishlist/wishlistStore.ts";
 import Logo from "../ui/Logo.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
-import { buttonArrow, buttonClass } from "../ui/button.ts";
+import { buttonClass } from "../ui/button.ts";
 import AccountControl from "./AccountControl.tsx";
 import MobileNav from "./MobileNav.tsx";
 import ProductSearch from "./ProductSearch.tsx";
@@ -131,10 +131,6 @@ export default function Header() {
           <div className="ml-2 hidden min-[90rem]:block">
             <Link to="/quote" className={buttonClass("accent", "sm")}>
               Get a project price
-              <ArrowRight
-                aria-hidden="true"
-                className={`size-4 ${buttonArrow}`}
-              />
             </Link>
           </div>
           <div className="ml-2 hidden md:block xl:ml-3">

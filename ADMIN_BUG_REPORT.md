@@ -1,5 +1,29 @@
 # Admin bug report
 
+## Follow-up — 2026-10-21
+
+| ID | Severity | Confirmed defect | Fix | Retest |
+|---|---|---|---|---|
+| B04 | P1 | An editor in `admin_members` was denied `/api/orders?admin=1` but could request another customer's reference through tracking without contact and receive unmasked customer details. Reproduced with isolated PostgreSQL: 403 on the admin list, 200 on tracking. | `server/orders.ts` now shares membership/role resolution between order management and tracking. Only owners or admin/sales staff bypass contact checks. Permission-query errors fail closed with structured 503 responses. | Original isolated trigger now returns 422 contact-required. GET/POST aliases and tracking IDs, matching/wrong contacts, owner/editor, admin/sales, legacy admin, removed members and permission errors covered by regression tests. Combined order suite: 36 PASS. |
+| B05 | P3 | Shared application cards were taller than requested: 4:5 image frames. | `ApplicationCard.tsx` uses square frames: image area is 20% shorter at equal width, with cover fit and no stretching. | Typecheck/build/lint PASS. Fresh visual inspection remains BLOCKED because browser control became unavailable. |
+
+Security outcome: **fixed** for B04. The shared tracking handler covers GET reference
+lookup, POST tracking, action aliases and rewritten checkout-order routes. Ownership
+and authorized staff behavior remain intact; editors with verified contact retain
+the masked public tracking view. No production customer data was used in reproduction.
+
+Current run: **1 verified fixed bug**, **0 remaining confirmed security bugs in the
+tested scope**, and **1 implemented visual fix awaiting browser retest**. This does
+not claim a repository-wide security audit. The prior missing-database blocker is
+resolved for this scoped run using isolated PostgreSQL 17 and PostgREST 16.4.
+Browser CMS recovery, notification UI, checkout completion and card visuals remain
+unverified in this run. Email remains deferred by request.
+
+Evidence: `qa/admin/2026-10-21/orders.tap`, `order-database.log`, the current test
+report, and the isolated-database reproduction/retest outputs in the task transcript.
+
+## Historical defects and environment limits
+
 ## Confirmed defects and retests
 
 | ID | Severity | Defect | Fix | Retest |

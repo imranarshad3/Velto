@@ -291,7 +291,7 @@ function WebsiteEditor({initial}: {initial:string}) {
         <Toggle pressed={show.preview} label="Live preview" onClick={() => toggle('preview')} disabled={show.preview && !show.editor}><PanelsTopLeft size={18}/></Toggle>
       </div>
       <label className="flex min-w-0 items-center gap-2 text-sm font-semibold"><span className="sr-only sm:not-sr-only">Page</span><select className={`${inputClass} min-h-11 w-auto`} value={slug} disabled={busy} onChange={e => {if (dirty && !window.confirm('Discard unsaved changes?')) return; setSlug(e.target.value); setSection(pageDefinitions.find(p => p.id === e.target.value)!.sections[0].id)}}>{pageDefinitions.filter(p => p.id !== 'categories').map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
-      <span role="status" className={`rounded-full px-3 py-1.5 text-xs font-semibold ${dirty ? 'bg-copper-soft text-copper' : 'bg-forest-soft text-forest'}`}>{dirty ? 'Unsaved changes' : page?.published ? 'Published' : 'Draft'}{page ? ` · v${page.version}` : ''}</span>
+      <span role="status" className={`rounded-full px-3 py-1.5 text-xs font-semibold ${dirty ? 'bg-forest-soft text-forest' : 'bg-forest-soft text-forest'}`}>{dirty ? 'Unsaved changes' : page?.published ? 'Published' : 'Draft'}{page ? ` · v${page.version}` : ''}</span>
       <div className="ml-auto flex flex-wrap items-center gap-1.5">
         <Toggle pressed={false} label="Undo (Ctrl+Z)" onClick={undo} disabled={!stack.undo || busy}><Undo2 size={18}/></Toggle>
         <Toggle pressed={false} label="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={!stack.redo || busy}><Redo2 size={18}/></Toggle>
@@ -300,7 +300,7 @@ function WebsiteEditor({initial}: {initial:string}) {
         <button type="button" disabled={!draft || busy} className={buttonClass('primary','sm')} onClick={() => void mutate('publish')}><Send size={16}/> {busy ? 'Saving…' : 'Publish'}</button>
       </div>
     </header>
-    {(error || draftConflict || notice) && <p role={error ? 'alert' : 'status'} className={`shrink-0 px-4 py-2.5 text-sm ${error ? 'bg-danger-soft text-danger' : draftConflict ? 'bg-copper-soft text-copper' : 'bg-forest-soft text-forest'}`}>{error || draftConflict || notice}</p>}
+    {(error || draftConflict || notice) && <p role={error ? 'alert' : 'status'} className={`shrink-0 px-4 py-2.5 text-sm ${error ? 'bg-danger-soft text-danger' : draftConflict ? 'bg-forest-soft text-forest' : 'bg-forest-soft text-forest'}`}>{error || draftConflict || notice}</p>}
     {!draft && !error && <p role="status" className="p-8 text-muted">Loading content…</p>}
     {draft && <div
       className={`grid gap-px max-lg:gap-4 max-lg:p-3 lg:min-h-0 lg:flex-1 lg:grid-rows-[minmax(0,1fr)] ${resizing ? 'select-none' : 'transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none'}`}

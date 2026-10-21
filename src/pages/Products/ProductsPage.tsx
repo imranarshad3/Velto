@@ -66,7 +66,7 @@ export default function ProductsPage() {
                 )}
               </h2>
               {filterCount > 0 && (
-                <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center gap-1 px-1 text-[0.8125rem] font-semibold text-copper underline-offset-2 hover:underline">
+                <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center gap-1 px-1 text-[0.8125rem] font-semibold text-forest underline-offset-2 hover:underline">
                   <RotateCcw aria-hidden="true" className="size-3.5" />
                   Clear all
                 </button>
@@ -83,7 +83,7 @@ export default function ProductsPage() {
 
           <div className="relative flex flex-col gap-4 overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface p-[clamp(1rem,2vw,1.5rem)] shadow-[var(--shadow-card)]">
             <form role="search" onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-2">
-              <label htmlFor="product-search" className="text-[0.75rem] font-bold tracking-[0.16em] text-muted uppercase">
+              <label htmlFor="product-search" className="text-[0.875rem] font-medium text-muted">
                 Search products
               </label>
               <div className="relative">
@@ -95,7 +95,7 @@ export default function ProductsPage() {
                   onChange={(e) => update({ q: e.target.value }, { replace: true })}
                   placeholder="e.g. tile adhesive, roof waterproofing"
                   autoComplete="off"
-                  className="min-h-[3.25rem] w-full rounded-xl border border-border bg-canvas pr-12 pl-12 text-[1rem] transition-[border-color,background-color,box-shadow] duration-300 placeholder:text-muted/70 hover:border-ink/20 focus:border-forest focus:bg-surface focus:shadow-[0_0_0_0.25rem_rgb(41_76_104/0.08)] focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-copper [&::-webkit-search-cancel-button]:hidden"
+                  className="min-h-[3.25rem] w-full rounded-xl border border-border bg-canvas pr-12 pl-12 text-[1rem] transition-[border-color,background-color,box-shadow] duration-300 placeholder:text-muted/70 hover:border-ink/20 focus:border-forest focus:bg-surface focus:shadow-[0_0_0_0.25rem_rgb(41_76_104/0.08)] focus:outline-none focus-visible:outline-[0.1875rem] focus-visible:outline-forest [&::-webkit-search-cancel-button]:hidden"
                 />
                 {query.q && (
                   <button
@@ -191,7 +191,7 @@ export default function ProductsPage() {
                   </li>
                 ))}
                 <li>
-                  <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center px-2 text-[0.8125rem] font-semibold text-copper underline-offset-2 hover:underline">
+                  <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center px-2 text-[0.8125rem] font-semibold text-forest underline-offset-2 hover:underline">
                     Clear all
                   </button>
                 </li>
