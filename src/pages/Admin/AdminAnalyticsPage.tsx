@@ -113,7 +113,7 @@ export default function AdminAnalyticsPage() {
             { label: 'Quote requests', value: fmt.format(a.totals.quoteRequests), hint: <Delta current={a.totals.quoteRequests} previous={prev?.quoteRequests} range={range} />, icon: MessageSquareQuote, tone: 'copper' as const },
             { label: 'View-to-quote rate', value: quoteRate === null ? '—' : pct.format(quoteRate), hint: 'Quote requests per product view', icon: MousePointerClick, tone: 'ink' as const },
             { label: 'Products viewed', value: <>{a.totals.productsViewed}<span className="text-[0.55em] text-muted">/{a.products.length}</span></>, hint: `At least one view in ${rangeLabel(range)}`, icon: Package, tone: 'forest' as const },
-            { label: 'Verified sales', value: <span className="text-[0.6em] text-muted">No sales data</span>, hint: 'Shown once verified orders exist', icon: ShoppingBag, tone: 'ink' as const },
+            { label: 'Verified sales', value: <span className="text-[0.52em] font-semibold [font-stretch:100%] text-muted">No sales data</span>, hint: 'Shown once verified orders exist', icon: ShoppingBag, tone: 'ink' as const },
           ]
 
           return (
