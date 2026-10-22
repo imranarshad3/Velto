@@ -135,7 +135,7 @@ export default function ProductPhotoAssistant({
           </button>
           <p className="max-w-lg text-sm text-muted">
             {photos.length
-              ? "Uses the first two photos (front and back label work best). You can keep editing while it runs."
+              ? "Uses a separate, smaller copy of the first two photos. Your store photos are automatically optimized separately. Front and back labels work best."
               : "Add a product photo above to let AI suggest the name, description and details."}
           </p>
         </div>

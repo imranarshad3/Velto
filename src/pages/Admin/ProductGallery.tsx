@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
 import { inputClass } from "../../components/ui/form/Field.tsx";
-import { prepareImage } from "../../features/cms/image.ts";
+import { prepareProductPhoto } from "../../features/catalog/productImage.ts";
 import type { ImageAsset } from "../../data/images.ts";
 import { toGalleryItem, type GalleryItem } from "./gallery.ts";
 
@@ -25,6 +25,8 @@ export default function ProductGallery({
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
   const pending = useRef(false);
+  const [notes, setNotes] = useState<Record<string, string[]>>({});
+  const locked = disabled || busy;
   const full = items.length >= MAX_IMAGES;
 
   const add = async (files: FileList | null) => {
@@ -45,9 +47,11 @@ export default function ProductGallery({
     const next = [...items];
     try {
       for (const file of Array.from(files).slice(0, room)) {
-        const photo = await prepareImage(file, "original");
+        const photo = await prepareProductPhoto(file);
+        const key = crypto.randomUUID();
+        setNotes((current) => ({ ...current, [key]: photo.warnings }));
         next.push({
-          key: crypto.randomUUID(),
+          key,
           src: photo.preview,
           alt: "",
           width: photo.width,
@@ -105,7 +109,7 @@ export default function ProductGallery({
                 {i > 0 && (
                   <button
                     type="button"
-                    disabled={disabled}
+                    disabled={locked}
                     onClick={() => makeMain(i)}
                     className="flex min-h-11 flex-1 items-center justify-center gap-1.5 text-sm font-semibold text-forest hover:bg-forest-soft/60"
                   >
@@ -115,7 +119,7 @@ export default function ProductGallery({
                 )}
                 <button
                   type="button"
-                  disabled={disabled}
+                  disabled={locked}
                   onClick={() => remove(i)}
                   aria-label={`Remove ${i ? `image ${i + 1}` : "main image"}`}
                   className={`flex min-h-11 items-center justify-center gap-1.5 text-sm font-semibold text-danger hover:bg-danger-soft ${i ? "w-11 border-l border-border" : "flex-1"}`}
@@ -124,6 +128,7 @@ export default function ProductGallery({
                   {i === 0 && "Remove"}
                 </button>
               </div>
+              {notes[item.key]?.map((note) => <p key={note} role="status" className="px-3 pb-3 text-sm text-muted">{note}</p>)}
             </li>
           ))}
         </ul>
@@ -161,7 +166,7 @@ export default function ProductGallery({
           <span id="product-photos-hint" className="text-sm text-muted">
             Click to choose or drag files here. JPEG, PNG or WebP, up to 12 MB
             each, {MAX_IMAGES} images in total. The first image is shown in the
-            store listing.
+            store listing. Photos are automatically sized and optimized for the store, keeping the full product visible.
           </span>
           <input
             type="file"
@@ -183,7 +188,7 @@ export default function ProductGallery({
           Or add an existing image
           <select
             value=""
-            disabled={disabled}
+            disabled={locked}
             onChange={(e) => {
               const image = available.find((i) => i.src === e.target.value);
               if (image) onChange([...items, toGalleryItem(image)]);

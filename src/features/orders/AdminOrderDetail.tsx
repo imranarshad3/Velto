@@ -177,6 +177,17 @@ export default function AdminOrderDetail({ order, save }: { order: AdminOrder; s
           </dl>
           <a href="/track" target="_blank" rel="noopener" className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-[0.875rem] font-semibold text-forest underline-offset-4 hover:underline">Open tracking page<ExternalLink aria-hidden="true" className="size-3.5" /></a>
         </Panel>
+        {'origin' in order && (
+          <Panel id="order-origin-title" title="Ordered from">
+            <p className="flex items-start gap-2 font-semibold text-ink"><MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+              {order.origin && (order.origin.city || order.origin.countryCode)
+                ? [order.origin.city, order.origin.countryCode ? new Intl.DisplayNames(['en'], { type: 'region' }).of(order.origin.countryCode) : null].filter(Boolean).join(', ')
+                : 'Not recorded'}
+            </p>
+            <p className="mt-2 text-sm text-muted">Approximate location when the order was placed. VPNs and mobile networks may show a different city. Use the delivery address for shipping.</p>
+            <p className="mt-2 text-xs font-semibold text-forest">Admin only</p>
+          </Panel>
+        )}
       </div>
     </div>
   )

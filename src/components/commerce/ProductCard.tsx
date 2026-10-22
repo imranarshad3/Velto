@@ -107,29 +107,25 @@ export default function ProductCard({
         ${list ? "flex-col sm:flex-row" : "flex-col"}
       `}
     >
-      {/* PRODUCT IMAGE - FULL BLEED FRAME, GUTTERED CONTENTS, NEVER CROPPED */}
+      {/* Preserve the complete photo in grid cards; keep list thumbnails compact. */}
       <div
         className={`
           relative shrink-0 overflow-hidden
-          border-b border-border/60 bg-sand
+          border-b border-border/60 bg-white
           ${
             list
               ? "aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(12rem,30%,17rem)] sm:border-r sm:border-b-0"
-              : "aspect-square w-full"
+              : product.image ? "w-full" : "aspect-square w-full"
           }
         `}
       >
         {product.image ? (
-          /* The gutter keeps the whole image clear of the frame edge and the overlay
-             controls; `fit="contain"` fills this padded box without crop or stretch. */
-          <div className="absolute inset-0">
+          <div className={list ? "absolute inset-0" : "w-full"}>
             <Img
               image={product.image}
-              fit="contain"
-              className="
-                block h-full w-full max-w-none
-                object-contain object-center
-              "
+              uncropped={!list}
+              fit={list ? "contain" : false}
+              className={list ? "block size-full object-contain object-center" : "block h-auto w-full"}
             />
           </div>
         ) : (

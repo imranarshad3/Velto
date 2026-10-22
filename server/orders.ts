@@ -8,6 +8,7 @@ import { sessionInvalid } from './quotes/handlers.js'
 import { orderInput } from '../src/features/orders/schema.js'
 import { customerTimeline, deliveryWindow, orderStatuses, REFERENCE_PATTERN, TRACKING_PATTERN, type HistoryEvent } from '../src/features/orders/tracking.js'
 import { createClerkDirectory, withDevDirectory, type UserDirectory } from './quotes/directory.js'
+import { orderOriginSchema, requestOrderOrigin } from './orderOrigin.js'
 
 const WINDOW_SECONDS = 600
 const ORDER_LIMITS = { ordersPerUser: 30, ordersPerIp: 60, getPerUser: 300, trackPerIp: 60 }
@@ -126,6 +127,7 @@ export interface OrdersHandlerDeps {
   allowedOrigins?: string[]
   hashSecret?: string
   directory?: UserDirectory | null
+  trustVercelLocation?: boolean
 }
 
 export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
@@ -172,6 +174,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
       const adminRequested = url.searchParams.get('admin') === '1'
       const isPatch = request.method === 'PATCH'
       let isAdminUser = false
+      let canViewOrigin = false
 
       if (adminRequested || isPatch) {
         if (auth.kind !== 'user') return apiError(401, 'sign_in_required', 'Please sign in.')
@@ -180,6 +183,7 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         if (role !== 'admin' && role !== 'sales') return apiError(403, 'forbidden', 'Your team role does not permit access to orders.')
 
         isAdminUser = true
+        canViewOrigin = role === 'admin'
       }
 
       const trackDb = db
@@ -266,7 +270,15 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
             // Names are a convenience; the log still shows "Team member".
           }
         }
-        return json({ orders: rows.map((o) => adminView(o, names)) })
+        const views = rows.map((o) => adminView(o, names))
+        // Location is only fetched for an authorized admin opening one order.
+        if (canViewOrigin && orderId && rows[0]) {
+          const { data: location, error: locationError } = await db.from('order_origins').select('city,country_code').eq('order_id', orderId).maybeSingle()
+          if (locationError && !['42P01', 'PGRST205'].includes(locationError.code)) throw new Error('order_origin_read')
+          const parsed = orderOriginSchema.safeParse(location ? { city: location.city, countryCode: location.country_code } : null)
+          return json({ orders: views.map((o) => ({ ...o, origin: parsed.success ? parsed.data : null })) })
+        }
+        return json({ orders: views })
       }
 
       if (request.method === 'PATCH') {
@@ -325,13 +337,17 @@ export function createOrdersHandler(deps: OrdersHandlerDeps = {}) {
         const parsed = orderInput.safeParse(body)
         if (!parsed.success) return apiError(422, 'invalid', 'Please check your delivery details and cart quantities, then try again.')
         const p = parsed.data
-        const { data, error } = await db.rpc('place_cod_order', { p_user: auth.userId, p_key: p.requestKey, p_customer: p.customer, p_items: p.items, p_expected: p.expectedTotal })
+        const args = { p_user: auth.userId, p_key: p.requestKey, p_customer: p.customer, p_items: p.items, p_expected: p.expectedTotal }
+        const origin = requestOrderOrigin(request, deps.trustVercelLocation ?? env.VERCEL === '1')
+        let { data, error } = await db.rpc('place_cod_order_with_origin', { ...args, p_origin: origin })
+        // Keep checkout available during a rollout where the new migration is not installed yet.
+        if (error?.code === 'PGRST202') ({ data, error } = await db.rpc('place_cod_order', args))
         if (error) {
           if (/price_changed|product_unavailable|insufficient_stock/.test(error.message)) return apiError(409, 'cart_changed', 'A price, product or available quantity changed. Refresh your cart before ordering.')
           if (/order_limit/.test(error.message)) return apiError(429, 'order_limit', 'Daily order limit reached. Please contact us.')
           throw new Error('orders_create')
         }
-        return json({ order: data }, 201)
+        return json({ order: customerView(data as OrderRow, true) }, 201)
       }
 
       return apiError(405, 'method', 'Method not allowed.')

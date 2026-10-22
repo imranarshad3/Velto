@@ -15,6 +15,7 @@ const sections: LegalSection[] = [
           <li><strong>Accounts:</strong> if you create one, Clerk handles sign-in and processes your name, email and sign-in details. We store your account ID with your price requests and saved products.</li>
           <li><strong>Wishlist and cart:</strong> saved in your browser’s local storage; if you are signed in, your wishlist is also saved to your account.</li>
           <li><strong>Security data:</strong> to prevent abuse we count requests using a keyed one-way hash of your IP address or account ID. We do not store raw IP addresses for this purpose.</li>
+          <li><strong>Orders:</strong> your delivery and contact details, ordered products and quantities, and order status. When available, we also record the approximate city and country provided by our hosting service when you place an order, so administrators can review where orders come from. This is not precise GPS location; raw IP addresses are not stored with this location record.</li>
         </ul>
       </>
     ),
@@ -43,8 +44,8 @@ const sections: LegalSection[] = [
         <p>We do not sell your information. We use service providers to operate the site:</p>
         <ul>
           <li>Clerk — account sign-in and session management.</li>
-          <li>Supabase — database hosting for price requests, messages and saved products.</li>
-          <li>Vercel — website hosting.</li>
+          <li>Supabase — database hosting for orders, price requests, messages and saved products.</li>
+          <li>Vercel — website hosting and approximate request location.</li>
           <li>Google Fonts — web fonts; your browser requests fonts from Google’s servers.</li>
           <li>Cloudflare Turnstile — bot checks on forms, if enabled.</li>
         </ul>
@@ -82,7 +83,7 @@ export default function PrivacyPage() {
   return (
     <LegalLayout
       title="Privacy Policy"
-      updated="13 October 2026"
+      updated="23 October 2026"
       intro={<p>This policy explains what information VELTO collects when you use this website, why we collect it and how it is protected.</p>}
       sections={sections}
     />

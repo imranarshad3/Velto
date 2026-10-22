@@ -41,4 +41,5 @@ export interface OrderItem {slug:string;name:string;quantity:number;unitPrice:nu
 export interface OrderTracking {number:string|null;carrier:string|null;carrierReference:string|null;estimatedDelivery:{earliest:string;latest:string;exact:boolean}|null}
 export interface Order {id:string;reference:string;customer:OrderInput['customer'];items:OrderItem[];subtotal:number;delivery:number;total:number;currency:string;status:string;created_at:string;updated_at?:string;payment_method?:string;tracking?:OrderTracking;timeline?:TimelineEvent[];isOwner?:boolean}
 export interface OrderActivity {kind:'status'|'update';from:string|null;to:string|null;at:string;note:string|null;notePublic:boolean;carrier:string|null;carrierReference:string|null;eta:string|null;actor:string}
-export interface AdminOrder extends Order {activity:OrderActivity[]}
+export interface OrderOrigin {city:string|null;countryCode:string|null}
+export interface AdminOrder extends Order {activity:OrderActivity[];origin?:OrderOrigin|null}

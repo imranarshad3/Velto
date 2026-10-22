@@ -510,7 +510,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
           <ProductGallery
             items={gallery}
             library={library}
-            disabled={saving}
+            disabled={saving || photoBusy}
             onBusy={setPhotoBusy}
             onChange={setGallery}
           />
@@ -533,7 +533,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
           <ProductPhotoAssistant
             photos={gallery}
             category={form.categorySlug}
-            disabled={saving}
+            disabled={saving || photoBusy}
             onBusy={setPhotoBusy}
             onDraft={(draft, replace) => {
               setForm((current) =>
