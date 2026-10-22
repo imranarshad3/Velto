@@ -85,7 +85,7 @@ export default function ProductCard({
   };
 
   const step =
-    "grid size-11 shrink-0 place-items-center text-ink transition-colors hover:bg-sand disabled:cursor-not-allowed disabled:text-muted/50 disabled:hover:bg-transparent";
+    "grid h-12 w-11 shrink-0 place-items-center text-ink transition-colors hover:bg-sand disabled:cursor-not-allowed disabled:text-muted/50 disabled:hover:bg-transparent";
 
   return (
     <article
@@ -107,7 +107,8 @@ export default function ProductCard({
         ${list ? "flex-col sm:flex-row" : "flex-col"}
       `}
     >
-      {/* Preserve the complete photo in grid cards; keep list thumbnails compact. */}
+      {/* Fixed-ratio frame; the photo is contained inside it, so every card has the
+          same media height and the whole product stays visible and undistorted. */}
       <div
         className={`
           relative shrink-0 overflow-hidden
@@ -115,17 +116,23 @@ export default function ProductCard({
           ${
             list
               ? "aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(12rem,30%,17rem)] sm:border-r sm:border-b-0"
-              : product.image ? "w-full" : "aspect-square w-full"
+              : "aspect-square w-full"
           }
         `}
       >
         {product.image ? (
-          <div className={list ? "absolute inset-0" : "w-full"}>
+          <div
+            className="
+              absolute inset-0 grid place-items-center
+              p-2
+              @[18rem]:p-3
+              @[24rem]:p-4
+            "
+          >
             <Img
               image={product.image}
-              uncropped={!list}
-              fit={list ? "contain" : false}
-              className={list ? "block size-full object-contain object-center" : "block h-auto w-full"}
+              fit="contain"
+              className="block size-full object-contain object-center"
             />
           </div>
         ) : (
@@ -184,12 +191,8 @@ export default function ProductCard({
       <div
         className="
           flex min-w-0 flex-1 flex-col p-4
-          @[18rem]:px-5
-          @[18rem]:pt-5
-          @[18rem]:pb-5
-          @[24rem]:px-6
-          @[24rem]:pt-6
-          @[24rem]:pb-7
+          @[18rem]:p-5
+          @[24rem]:p-6
         "
       >
         {/* CATEGORY - height reserved even when a product has no category */}
@@ -217,9 +220,10 @@ export default function ProductCard({
             id={titleId}
             className="
               min-w-0 min-h-[2.3em] font-display
-              text-[1.375rem] leading-[1.15]
+              text-[1.25rem] leading-[1.15]
               text-forest-deep
-              @[20rem]:text-[1.625rem]
+              @[20rem]:text-[1.5rem]
+              @[28rem]:text-[1.625rem]
             "
           >
             <Link
@@ -238,10 +242,11 @@ export default function ProductCard({
 
           <p
             className="
-    flex shrink-0 flex-col
-    @[22rem]:items-end
-    @[22rem]:pt-0.5
-  "
+              flex min-h-[2.4em] shrink-0
+              flex-col justify-start
+              @[22rem]:items-end
+              @[22rem]:pt-0.5
+            "
           >
             <span
               className={`
@@ -292,32 +297,28 @@ export default function ProductCard({
         <div
           className={`
             relative z-10 mt-auto
-            flex flex-wrap items-center
+            grid grid-cols-1 items-stretch
             gap-2 pt-5
-            @[15rem]:flex-nowrap
-            ${list ? "@[40rem]:justify-end" : ""}
+            @[19rem]:grid-cols-2
+            ${list ? "@[40rem]:ml-auto @[40rem]:max-w-[26rem]" : ""}
           `}
         >
           {/* BUY NOW */}
           <Link
             to={`/checkout?product=${product.slug}&qty=${qty}`}
-            className={`
+            className="
               order-last inline-flex min-h-12
               w-full items-center justify-center
               gap-2 rounded-full
-              bg-forest px-4
+              bg-forest px-3
               text-[0.9375rem]
               font-semibold whitespace-nowrap
               text-white
               shadow-[0_0.5rem_1rem_-0.5rem_rgb(41_76_104/0.6)]
               transition-colors
               hover:bg-forest-dark
-              @[15rem]:order-none
-              @[15rem]:w-auto
-              @[15rem]:flex-1
               @[20rem]:px-5
-              ${list ? "@[40rem]:max-w-[16rem]" : ""}
-            `}
+            "
           >
             <span>
               Buy now
@@ -343,11 +344,10 @@ export default function ProductCard({
               role="group"
               aria-label={`Cart quantity for ${product.name}`}
               className="
-                flex flex-1 items-center
+                flex min-h-12 w-full items-center
                 overflow-hidden rounded-full
                 border border-forest/40
                 bg-surface
-                @[15rem]:flex-none
               "
             >
               <button
@@ -382,7 +382,7 @@ export default function ProductCard({
                 value={qty}
                 onChange={(e) => setQty(Number(e.target.value))}
                 className="
-                  h-11 w-full min-w-10
+                  h-12 w-full min-w-8
                   border-x border-border
                   bg-surface text-center
                   text-[1rem] font-semibold
@@ -390,7 +390,6 @@ export default function ProductCard({
                   [appearance:textfield]
                   focus:outline-none
                   focus-visible:bg-forest-soft/50
-                  @[15rem]:w-10
                   @[20rem]:w-12
                   [&::-webkit-inner-spin-button]:appearance-none
                 "
@@ -414,18 +413,18 @@ export default function ProductCard({
               aria-label={`Add ${product.name} to cart`}
               className="
                 inline-flex min-h-12
-                flex-1 items-center
+                w-full items-center
                 justify-center gap-2
                 rounded-full
                 border border-forest
-                bg-surface px-4
+                bg-surface px-3
                 text-[0.9375rem]
                 font-semibold whitespace-nowrap
                 text-forest
                 transition-colors
                 hover:bg-forest
                 hover:text-white
-                @[15rem]:flex-none
+                @[20rem]:px-5
               "
             >
               <ShoppingBasket
@@ -433,9 +432,7 @@ export default function ProductCard({
                 className="size-[1.125rem] shrink-0"
               />
 
-              <span className="@min-[15rem]:@max-[19rem]:sr-only">
-                Add to cart
-              </span>
+              <span>Add to cart</span>
             </button>
           )}
         </div>
