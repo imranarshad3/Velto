@@ -13,7 +13,6 @@ import WishlistButton from "./WishlistButton.tsx";
 interface ProductCardProps {
   product: CatalogProduct;
   layout?: "grid" | "list";
-  density?: "default" | "roomy";
 }
 
 const categories = new Map(demoCategories.map((c) => [c.slug, c]));
@@ -108,27 +107,31 @@ export default function ProductCard({
         ${list ? "flex-col sm:flex-row" : "flex-col"}
       `}
     >
-      {/* PRODUCT IMAGE - TALLER AND NO CROPPING */}
+      {/* PRODUCT IMAGE - FULL BLEED FRAME, GUTTERED CONTENTS, NEVER CROPPED */}
       <div
         className={`
-          relative shrink-0 overflow-hidden bg-sand
+          relative shrink-0 overflow-hidden
+          border-b border-border/60 bg-sand
           ${
             list
-              ? "aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(10rem,28%,14rem)]"
+              ? "aspect-[5/4] w-full sm:aspect-square sm:w-[clamp(12rem,30%,17rem)] sm:border-r sm:border-b-0"
               : "aspect-square w-full"
           }
         `}
       >
         {product.image ? (
-          <Img
-            image={product.image}
-            fit="contain"
-            className="
-    absolute inset-0 block
-    h-full w-full max-w-none
-    object-contain object-center
-  "
-          />
+          /* The gutter keeps the whole image clear of the frame edge and the overlay
+             controls; `fit="contain"` fills this padded box without crop or stretch. */
+          <div className="absolute inset-0">
+            <Img
+              image={product.image}
+              fit="contain"
+              className="
+                block h-full w-full max-w-none
+                object-contain object-center
+              "
+            />
+          </div>
         ) : (
           <span
             className="
@@ -186,45 +189,47 @@ export default function ProductCard({
         className="
           flex min-w-0 flex-1 flex-col p-4
           @[18rem]:px-5
-          @[18rem]:pt-4
+          @[18rem]:pt-5
           @[18rem]:pb-5
+          @[24rem]:px-6
+          @[24rem]:pt-6
+          @[24rem]:pb-7
         "
       >
-        {/* CATEGORY */}
-        {categoryLabel && (
-          <p
-            className="
-              text-[0.6875rem] font-semibold
-              tracking-[0.16em] text-sage uppercase
-              @[18rem]:text-[0.75rem]
-            "
-          >
-            {categoryLabel}
-          </p>
-        )}
+        {/* CATEGORY - height reserved even when a product has no category */}
+        <p
+          className="
+            min-h-[1.4em] text-[0.6875rem]
+            font-semibold tracking-[0.16em]
+            text-sage uppercase
+            @[18rem]:text-[0.75rem]
+          "
+        >
+          {categoryLabel}
+        </p>
 
         {/* TITLE AND PRICE */}
         <div
           className="
             mt-1 flex flex-col gap-x-4 gap-y-1
-            @[18rem]:flex-row
-            @[18rem]:items-start
-            @[18rem]:justify-between
+            @[22rem]:flex-row
+            @[22rem]:items-start
+            @[22rem]:justify-between
           "
         >
           <h3
             id={titleId}
             className="
-              min-w-0 font-display
-              text-[1.3125rem] leading-[1.15]
+              min-w-0 min-h-[2.3em] font-display
+              text-[1.375rem] leading-[1.15]
               text-forest-deep
-              @[20rem]:text-[1.5rem]
+              @[20rem]:text-[1.625rem]
             "
           >
             <Link
               to={productPath(product)}
               className="
-                transition-colors
+                line-clamp-2 transition-colors
                 after:absolute
                 after:inset-0
                 after:rounded-[var(--radius-card)]
@@ -238,8 +243,8 @@ export default function ProductCard({
           <p
             className="
     flex shrink-0 flex-col
-    @[18rem]:items-end
-    @[18rem]:pt-0.5
+    @[22rem]:items-end
+    @[22rem]:pt-0.5
   "
           >
             <span
@@ -248,8 +253,8 @@ export default function ProductCard({
       whitespace-nowrap tabular-nums
       ${
         price
-          ? "text-[1.125rem] @[18rem]:text-[1.1875rem] text-copper-hover"
-          : "text-[0.9375rem] text-forest"
+          ? "text-[1.1875rem] @[18rem]:text-[1.3125rem] text-copper-hover"
+          : "text-[1rem] text-forest"
       }
     `}
             >
@@ -279,8 +284,8 @@ export default function ProductCard({
         {/* DESCRIPTION */}
         <p
           className="
-            mt-3 line-clamp-2
-            text-[0.875rem]
+            mt-3 line-clamp-2 min-h-[3.25em]
+            text-[0.9375rem]
             leading-relaxed text-muted
           "
         >
@@ -292,7 +297,7 @@ export default function ProductCard({
           className={`
             relative z-10 mt-auto
             flex flex-wrap items-center
-            gap-2 pt-4
+            gap-2 pt-5
             @[15rem]:flex-nowrap
             ${list ? "@[40rem]:justify-end" : ""}
           `}

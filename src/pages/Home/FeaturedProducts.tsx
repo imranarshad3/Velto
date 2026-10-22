@@ -31,11 +31,11 @@ export default function FeaturedProducts() {
             }
           />
         </Reveal>
-        <ul aria-busy={loading || undefined} className="mt-[clamp(1.75rem,3vw,2.75rem)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 md:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
+        <ul aria-busy={loading || undefined} className="mt-[clamp(1.75rem,3vw,2.75rem)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
           {loading && [0, 1, 2].map((i) => <li key={i} className="min-w-0"><CardSkeleton /></li>)}
           {featured.map((product, index) => (
             <Reveal as="li" key={product.id} delay={index * 0.08} className="min-w-0">
-              <ProductCard product={product} density="roomy" />
+              <ProductCard product={product} />
             </Reveal>
           ))}
         </ul>

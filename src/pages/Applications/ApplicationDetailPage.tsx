@@ -146,10 +146,10 @@ export default function ApplicationDetailPage() {
               </ButtonLink>
             }
           />
-          <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 md:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
+          <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
             {matching.slice(0, 3).map((product) => (
               <li key={product.id}>
-                <ProductCard product={product} density="roomy" />
+                <ProductCard product={product} />
               </li>
             ))}
           </ul>

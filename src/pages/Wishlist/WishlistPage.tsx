@@ -70,7 +70,7 @@ export default function WishlistPage() {
                   </button>
                 </div>
               </div>
-              <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 md:gap-[var(--grid-gap-lg)]">
+              <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
                 {products.map((product) => (
                   <li key={product.slug} className="min-w-0">
                     <ProductCard product={product} />

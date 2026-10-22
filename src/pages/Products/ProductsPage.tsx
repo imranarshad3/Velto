@@ -207,7 +207,7 @@ export default function ProductsPage() {
               >
                 {visible.map((product, i) => (
                   <li key={product.id} className="animate-rise" style={{ '--delay': `${Math.min(i, 8) * 0.04}s` } as CSSProperties}>
-                    <ProductCard product={product} layout={query.view} density="roomy" />
+                    <ProductCard product={product} layout={query.view} />
                   </li>
                 ))}
               </ul>

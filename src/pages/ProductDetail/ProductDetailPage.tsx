@@ -453,7 +453,7 @@ export default function ProductDetailPage() {
                 </ButtonLink>
               }
             />
-            <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 md:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
+            <ul className="mt-[var(--heading-gap)] grid grid-cols-1 gap-[var(--grid-gap)] min-[30rem]:grid-cols-2 lg:grid-cols-3 lg:gap-[var(--grid-gap-lg)]">
               {related.map((p) => (
                 <li key={p.id}>
                   <ProductCard product={p} />
