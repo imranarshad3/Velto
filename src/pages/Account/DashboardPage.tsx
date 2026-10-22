@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import { ArrowRight, ArrowUpRight, Calculator, ClipboardList, Heart, Hourglass, PackageSearch, Search, ShoppingBasket } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import StatCard from '../../components/ui/StatCard.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { useCart } from '../../features/cart/cartStore.ts'
 import { useMyQuotes } from '../../features/quotes/useMyQuotes.ts'
 import { useWishlist } from '../../features/wishlist/wishlistStore.ts'
@@ -36,7 +35,7 @@ export default function DashboardPage() {
         crumbs={[]}
         actions={
           <ButtonLink to="/quote">
-            Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+            Ask for a price
           </ButtonLink>
         }
       >
@@ -87,7 +86,7 @@ export default function DashboardPage() {
                     <ClipboardList aria-hidden="true" className="size-5" />
                   </span>
                   <p className="min-w-0 flex-1 text-muted">
-                    No requests yet. <Link to="/products#product-results" className="font-semibold text-forest underline decoration-copper/50 underline-offset-4">Browse products</Link> to get started.
+                    No requests yet. <Link to="/products#product-results" className="font-semibold text-forest underline decoration-forest/50 underline-offset-4">Browse products</Link> to get started.
                   </p>
                 </div>
               )
@@ -96,7 +95,7 @@ export default function DashboardPage() {
         </section>
 
         <section aria-labelledby="actions-title" className="relative isolate overflow-hidden rounded-[var(--radius-panel)] bg-forest-deep p-[clamp(1.25rem,3vw,1.75rem)] text-white shadow-[var(--shadow-float)]">
-          <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
+          <p className="text-[0.875rem] font-medium text-white/65">
             <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
             Shortcuts
           </p>

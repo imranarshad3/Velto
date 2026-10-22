@@ -1,9 +1,8 @@
 import { SignIn, SignUp } from '@clerk/react'
 import { Navigate, useSearchParams } from 'react-router'
-import { ArrowRight, ClipboardList, Heart, KeyRound, Repeat, ShieldCheck } from 'lucide-react'
+import { ClipboardList, Heart, KeyRound, Repeat, ShieldCheck } from 'lucide-react'
 import Img from '../../components/ui/Img.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { professionalImage } from '../../data/images.ts'
 import { authAppearance } from '../../lib/auth/clerkAppearance.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
@@ -34,7 +33,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
         <div className="animate-rise relative mx-auto grid min-h-[min(44rem,calc(100svh-8rem))] max-w-[34rem] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[var(--radius-panel)] border border-border bg-surface shadow-[var(--shadow-float)] lg:max-w-[72rem] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
           <section aria-label="VELTO account" className="flex items-center gap-3 border-b border-white/10 bg-forest-deep px-5 py-4 text-white lg:hidden">
             <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/10 text-gold"><ShieldCheck className="size-5" /></span>
-            <span className="min-w-0"><span className="block text-[0.6875rem] font-bold tracking-[0.18em] text-gold uppercase">VELTO account</span><span className="mt-0.5 block text-[0.875rem] text-white/85">Your orders and products, together.</span></span>
+            <span className="min-w-0"><span className="block text-[0.875rem] font-semibold text-gold">VELTO account</span><span className="mt-0.5 block text-[0.875rem] text-white/85">Your orders and products, together.</span></span>
           </section>
           {/* Brand panel */}
           <section aria-labelledby="auth-brand-title" className="relative isolate hidden overflow-hidden bg-forest-deep text-white lg:block">
@@ -43,7 +42,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
 
             <div className="flex h-full flex-col gap-6 p-[clamp(1.5rem,4vw,3rem)] lg:justify-end lg:gap-8 lg:pt-[clamp(10rem,22vw,18rem)]">
               <div>
-                <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-gold uppercase">
+                <p className="text-[0.875rem] font-medium text-white/65">
                   <span aria-hidden="true" className="h-px w-8 bg-gold/70" />
                   VELTO account
                 </p>
@@ -70,8 +69,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
 
           {/* Form panel */}
           <div className="flex min-w-0 flex-col justify-center px-4 py-6 sm:p-8 lg:p-10">
-            <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-              <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+            <p className="text-[0.875rem] font-medium text-muted">
               {signIn ? 'Sign in' : 'Create account'}
             </p>
             {auth.mode !== 'clerk' && <><h1 id="auth-title" className="mt-2 font-display text-[clamp(1.75rem,1.35rem+1.5vw,2.5rem)] leading-[1.05] tracking-[-0.01em] text-ink">
@@ -89,7 +87,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
               ) : (
                 <div className="rounded-[var(--radius-card)] border border-border bg-canvas p-[clamp(1.25rem,3vw,1.75rem)]">
                   <div className="flex items-start gap-4">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-copper-soft text-copper">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-forest-soft text-forest">
                       <KeyRound aria-hidden="true" className="size-5" />
                     </span>
                     <div className="min-w-0">
@@ -99,7 +97,7 @@ export default function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
                   </div>
                   <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2">
                     <ButtonLink to="/quote">
-                      Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                      Ask for a price
                     </ButtonLink>
                     <ButtonLink to="/track" variant="secondary">
                       Track a request

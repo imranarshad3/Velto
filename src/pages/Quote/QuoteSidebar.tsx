@@ -44,7 +44,7 @@ export default function QuoteSidebar({ products }: { products: CatalogProduct[] 
                       )}
                     </div>
                     <div className="min-w-0">
-                      {category && <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-copper uppercase">{category.name}</p>}
+                      {category && <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-forest uppercase">{category.name}</p>}
                       <Link to={productPath(product)} className="font-semibold text-ink transition-colors hover:text-forest hover:underline">
                         {product.name}
                       </Link>

@@ -141,7 +141,7 @@ export default function ProductGallery({
             setDragging(false);
             void add(e.dataTransfer.files);
           }}
-          className={`flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed p-6 text-center transition-colors focus-within:outline-[0.1875rem] focus-within:outline-offset-2 focus-within:outline-copper ${dragging ? "border-forest bg-forest-soft" : "border-forest/30 bg-forest-soft/30 hover:bg-forest-soft/60"} ${disabled ? "pointer-events-none opacity-60" : ""}`}
+          className={`flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed p-6 text-center transition-colors focus-within:outline-[0.1875rem] focus-within:outline-offset-2 focus-within:outline-forest ${dragging ? "border-forest bg-forest-soft" : "border-forest/30 bg-forest-soft/30 hover:bg-forest-soft/60"} ${disabled ? "pointer-events-none opacity-60" : ""}`}
         >
           {busy ? (
             <LoaderCircle

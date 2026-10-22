@@ -1,8 +1,7 @@
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router'
-import { ArrowRight, ClipboardList, Heart, LayoutDashboard, LogOut, Package, ShieldCheck, UserCog, UserRound } from 'lucide-react'
+import { ClipboardList, Heart, LayoutDashboard, LogOut, Package, ShieldCheck, UserCog, UserRound } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import Skeleton from '../../components/ui/Skeleton.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { useIsAdmin } from '../../features/admin/useIsAdmin.ts'
 import { useAppAuth } from '../../lib/auth/context.ts'
 import AccountAvatar from './AccountAvatar.tsx'
@@ -37,16 +36,14 @@ export default function AccountLayout() {
             <span className="grid size-14 place-items-center rounded-2xl bg-forest-soft text-forest">
               <UserRound aria-hidden="true" className="size-6" />
             </span>
-            <p className="mt-6 flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-              <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+            <p className="mt-6 text-[0.875rem] font-medium text-muted">
               My account
-              <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
             </p>
             <h1 className="mt-2 font-display text-[clamp(2rem,1.6rem+1.6vw,2.75rem)] leading-tight">Accounts are coming soon</h1>
             <p className="mt-3 max-w-[30rem] leading-relaxed text-muted">You can ask for a price without an account and track your request with its reference and code.</p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <ButtonLink to="/quote">
-                Ask for a price <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                Ask for a price
               </ButtonLink>
               <ButtonLink to="/track" variant="secondary">
                 Track a request
@@ -102,7 +99,7 @@ export default function AccountLayout() {
                 ))}
                 {isAdmin && (
                   <li className="shrink-0 snap-start">
-                    <NavLink to="/admin" className={`${itemBase} border-copper/40 bg-surface text-copper hover:border-copper lg:bg-transparent lg:hover:bg-copper-soft/60`}>
+                    <NavLink to="/admin" className={`${itemBase} border-forest/40 bg-surface text-forest hover:border-forest lg:bg-transparent lg:hover:bg-forest-soft`}>
                       <ShieldCheck aria-hidden="true" className="size-[1.125rem]" /> Admin
                     </NavLink>
                   </li>

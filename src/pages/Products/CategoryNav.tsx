@@ -10,7 +10,7 @@ const allProducts: Category = {
   name: 'All Products',
   icon: LayoutGrid,
   texture: 'tile',
-  image: { src: '/images/hero/concept-products.webp', alt: '', width: 504, height: 234 },
+  image: { src: '/images/categories/all-products.webp', alt: '', width: 1122, height: 1402 },
 }
 
 export default function CategoryNav({ query }: { query: CatalogQuery }) {
@@ -28,8 +28,7 @@ export default function CategoryNav({ query }: { query: CatalogQuery }) {
     >
       <div className="md:rounded-[var(--radius-panel)] md:border md:border-white/70 md:bg-surface/80 md:p-[clamp(0.875rem,1.4vw,1.25rem)] md:shadow-[var(--shadow-float)] md:backdrop-blur-xl">
         <div className="mb-3 flex items-center justify-between gap-3 md:mb-4 md:px-1">
-          <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-            <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+          <p className="text-[0.875rem] font-medium text-muted">
             Browse by category
           </p>
           <span className="text-[0.75rem] text-muted md:hidden" aria-hidden="true">

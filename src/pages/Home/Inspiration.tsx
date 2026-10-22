@@ -29,8 +29,7 @@ export default function Inspiration() {
                   <Img image={item.image} uncropped />
                 </div>
                 <figcaption className="bg-forest-deep p-[clamp(1rem,2.5vw,1.75rem)] text-white">
-                  <span className="text-[0.6875rem] font-bold tracking-[0.18em] text-gold uppercase">0{index + 1}</span>
-                  <span className={`mt-1 block font-display leading-tight text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)]`}>{item.title}</span>
+                  <span className={`block font-display leading-tight text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)]`}>{item.title}</span>
                   <span className="mt-1 block text-[0.875rem] text-white/80">{item.caption}</span>
                 </figcaption>
               </figure>

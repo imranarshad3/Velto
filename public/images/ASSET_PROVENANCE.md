@@ -1,5 +1,19 @@
 # VELTO editorial illustrations
 
+## All Products category — 2026-10-21
+
+`categories/all-products.webp` was generated with the built-in imagegen tool
+(generation `eb04b30b-3bee-4c18-9f70-ff1b4db46f91`) and encoded with Sharp at
+WebP quality 88: 1122 × 1402, 276,684 bytes. It replaces the small legacy image
+in the All Products category card. This is a generic illustration, not official
+VELTO product packaging. The storefront's image-example notice still applies.
+
+Generation prompt:
+
+> Use case: product-mockup. Create a high-resolution premium editorial illustration for the All Products category thumbnail on VELTO, a construction materials storefront. Portrait 4:5 composition. A crisp, beautifully lit collection of construction supplies: two unbranded navy-and-white coating pails, a kraft mortar bag, a white sealant cartridge, a notched steel trowel and elegant stone/tile samples, arranged together on a concrete plinth in a warm neutral architectural studio. All objects grouped centrally, fully inside the frame, main products visible in the upper middle two thirds; leave calm lower space for a website title overlay. Sharp material textures and clean edges, professional commercial lighting, navy, warm limestone and subtle muted gold palette. Entire frame filled with the scene, no letterboxing or borders. This is a generic illustrative assortment, not official product packaging. No text, no logos, no labels, no invented claims, no watermark.
+
+## Earlier editorial replacements
+
 The following replacement assets were generated with the built-in imagegen tool
 on 2026-10-20 for this project, then encoded as WebP (quality 85) with Sharp.
 Each original is 1536 × 1024. They are illustrations, not verified photographs of

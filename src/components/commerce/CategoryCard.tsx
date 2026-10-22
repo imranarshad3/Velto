@@ -1,5 +1,5 @@
-import { imageSizeStyle } from '../../features/cms/imageSizing.ts'
-import { resolveImageAsset } from '../../data/images.ts'
+import { imageSizeStyle } from "../../features/cms/imageSizing.ts";
+import { resolveImageAsset } from "../../data/images.ts";
 import { useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import type { Category } from "../../data/demoCategories.ts";
@@ -37,7 +37,7 @@ const textures: Record<Category["texture"], CSSProperties> = {
   },
   tools: {
     background:
-      "radial-gradient(circle at 75% 30%, rgb(135 99 41 / 0.55) 0 18%, transparent 40%), linear-gradient(140deg, #4c514d, #262a27)",
+      "radial-gradient(circle at 75% 30%, rgb(14 47 98 / 0.5) 0 18%, transparent 40%), linear-gradient(140deg, #4c514d, #262a27)",
   },
 };
 
@@ -75,14 +75,14 @@ export default function CategoryCard({
           {image && (
             <img
               src={image.src}
-              style={{ ...imageSizeStyle(image.displaySize), width: '100%', height: '100%', objectFit: 'contain', aspectRatio: 'auto' }}
+              style={{ ...imageSizeStyle(image.displaySize), width: '100%', height: '100%', objectFit: 'cover', aspectRatio: 'auto' }}
               alt=""
               width={image.width}
               height={image.height}
               onError={() => setImageFailed(true)}
               loading="lazy"
               decoding="async"
-              className="block size-full object-contain"
+              className="block size-full object-cover"
             />
           )}
         </div>
@@ -114,7 +114,7 @@ export default function CategoryCard({
         {image && (
           <img
             src={image.src}
-              style={imageSizeStyle(image.displaySize)}
+            style={imageSizeStyle(image.displaySize)}
             alt=""
             width={image.width}
             height={image.height}
@@ -127,7 +127,7 @@ export default function CategoryCard({
       </div>
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(21_43_64/0)_30%,rgb(21_43_64/0.55)_62%,rgb(21_43_64/0.92)_100%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(6_22_47/0)_30%,rgb(6_22_47/0.55)_62%,rgb(6_22_47/0.94)_100%)]"
       />
       <span
         aria-hidden="true"
@@ -136,7 +136,7 @@ export default function CategoryCard({
         <Icon className="size-[1.125rem]" />
       </span>
       {active && (
-        <span className="absolute top-2.5 right-2.5 rounded-full bg-copper px-2 py-0.5 text-[0.625rem] font-bold tracking-[0.1em] text-white uppercase">
+        <span className="absolute top-2.5 right-2.5 rounded-full bg-copper px-2 py-0.5 text-[0.625rem] font-bold tracking-[0.1em] text-ink uppercase">
           Selected
         </span>
       )}

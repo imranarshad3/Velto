@@ -27,7 +27,7 @@ export const clerkAppearance = {
     colorDanger: 'var(--color-danger)',
     colorSuccess: 'var(--color-success)',
     colorWarning: 'var(--color-copper)',
-    colorRing: 'var(--color-copper)',
+    colorRing: 'var(--color-forest)',
     colorShadow: 'var(--color-forest-deep)',
     colorModalBackdrop: 'var(--color-forest-deep)',
     fontFamily: 'var(--font-sans)',

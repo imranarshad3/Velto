@@ -2,7 +2,6 @@ import { useContent } from "../../features/cms/context.ts";
 import { ArrowRight } from "lucide-react";
 import CategoryCard from "../../components/commerce/CategoryCard.tsx";
 import ButtonLink from "../../components/ui/ButtonLink.tsx";
-import { buttonArrow } from "../../components/ui/button.ts";
 import Reveal from "../../components/ui/Reveal.tsx";
 import SectionHeading from "../../components/ui/SectionHeading.tsx";
 import { useCatalog } from "../../features/catalog/catalogContext.ts";
@@ -40,10 +39,6 @@ export default function CategoryPreview() {
                     {cms("field-6", " Categories")}
                   </span>
                 </span>
-                <ArrowRight
-                  aria-hidden="true"
-                  className={`size-4 ${buttonArrow}`}
-                />
               </ButtonLink>
             }
           />

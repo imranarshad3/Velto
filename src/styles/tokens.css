@@ -1,58 +1,91 @@
 /* VELTO design tokens (NOVARO_Claude_Code_Kit/docs/DESIGN_SYSTEM.md). All authored sizing is rem-based.
-   Values in @theme generate Tailwind utilities, e.g. bg-forest, text-ink, font-display, shadow-lift, rounded-panel. */
-/* Slate & Brass palette. Legacy token names remain for component compatibility. */
+   Values in @theme generate Tailwind utilities, e.g. bg-forest, text-ink, font-display, shadow-lift, rounded-panel.
+
+   Palette: "Pack livery" — sourced from VELTO product packaging (deep pack blue + signal yellow)
+   over cool concrete greys. Legacy token names (forest/copper/gold/cream/sand) are kept so the
+   existing components keep compiling; their values now carry the new roles described below.
+
+   Colour rules:
+   - Pack blue carries structure: primary buttons, dark bands, headings, accents on light surfaces.
+   - Signal yellow is a signal, not a decoration. It is legible only as a FILL (with ink text) or
+     against a dark band. Never use it as text or a hairline on white — it fails contrast there.
+   - Deep amber (`copper-hover`) is the text colour for amber status chips, nothing else. */
 @theme {
-  --color-forest: #294c68;
-  --color-forest-dark: #1e384f;
-  --color-forest-deep: #152b40;
-  --color-forest-mid: #365f7e;
-  --color-forest-soft: #e6edf3;
-  --color-copper: #876329;
-  --color-copper-hover: #6d4e20;
-  --color-copper-soft: #f3eadb;
-  --color-nav: #1b344b;
-  --color-footer: #112538;
-  --color-emerald-muted: #b2c9dc;
-  /* Admin accents and analytics series (validated with the dataviz palette checker). */
-  --color-mint: #8fd4b3;
-  /* Muted sage for card eyebrows (AA on white). */
-  --color-sage: #5c6e7c;
-  --color-chart-views: #13845a;
-  --color-chart-quotes: #b4572a;
-  --color-gold: #e6cca0;
-  --color-gold-deep: #876329;
-  --color-ink: #202c36;
-  --color-muted: #596671;
-  --color-canvas: #f8f8f6;
-  --color-cream: #f4f2ec;
+  /* --- Pack blue: primary structure -------------------------------------------------- */
+  --color-forest: #0e2f62;
+  --color-forest-dark: #0a2449;
+  --color-forest-deep: #06162f;
+  --color-forest-mid: #18447f;
+  --color-forest-soft: #e1e8f2;
+  --color-nav: #0a2449;
+  --color-footer: #06162f;
+  --color-emerald-muted: #9fb4d2;
+
+  /* --- Signal yellow: fills and dark-band accents only -------------------------------- */
+  --color-copper: #f5b811;
+  /* Deep amber. TEXT role: readable on `copper-soft` status chips (yellow text never is). */
+  --color-copper-hover: #7a5400;
+  --color-copper-soft: #fbf0d1;
+  --color-gold: #f5b811;
+  --color-gold-deep: #b88700;
+
+  /* --- Admin accents and analytics series (validated with the dataviz palette checker) - */
+  --color-mint: #6fbf9b;
+  /* Cool slate for card eyebrows (AA on white). */
+  --color-sage: #5a6a7a;
+  --color-chart-views: #0e5fa8;
+  --color-chart-quotes: #b88700;
+
+  /* --- Cool concrete neutrals ---------------------------------------------------------- */
+  --color-ink: #121a24;
+  --color-muted: #556374;
+  --color-canvas: #eceeef;
+  /* Legacy name; now the cool concrete band that alternates with canvas and white. */
+  --color-cream: #e2e5e8;
   --color-surface: #fff;
-  --color-sand: #eae7df;
-  --color-sand-deep: #ddd8cc;
-  --color-border: #dce1e4;
+  --color-sand: #d7dbdf;
+  --color-sand-deep: #c5cbd1;
+  --color-border: #d2d7dc;
+
   --color-danger: #b42318;
   --color-danger-soft: #fdecea;
-  --color-success: #1f6b45;
+  --color-success: #1c6b4a;
   --color-success-soft: #e3f1e8;
 
-  --font-sans: "Manrope", system-ui, sans-serif;
-  --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
+  /* --- Type: one family, three widths ------------------------------------------------- */
+  /* Archivo is a variable grotesque with a 62–125% width axis. Display text uses the wide
+     cut, body the normal cut, and dense technical data the narrow cut (`.font-data`), so
+     hierarchy comes from width and weight rather than from a second typeface. */
+  --font-sans: "Archivo", system-ui, -apple-system, sans-serif;
+  --font-display: "Archivo", system-ui, -apple-system, sans-serif;
 
-  --radius-card: 1rem;
-  --radius-panel: 1.5rem;
+  /* --- Crisp industrial radii. Overrides Tailwind's default scale so every existing
+         rounded-xl / rounded-2xl tightens in one place; rounded-full is untouched. ------- */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.1875rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.375rem;
+  --radius-2xl: 0.5rem;
+  --radius-3xl: 0.75rem;
+  --radius-4xl: 1rem;
+  --radius-card: 0.375rem;
+  --radius-panel: 0.5rem;
 
-  /* Elevation: layered, low-opacity shadows tinted with the brand ink. */
-  --shadow-soft: 0 0.0625rem 0.125rem rgb(32 44 54 / 0.04), 0 0.25rem 0.75rem -0.25rem rgb(32 44 54 / 0.06);
-  --shadow-card: 0 0.75rem 2rem -1rem rgb(32 44 54 / 0.25);
-  --shadow-lift: 0 0.125rem 0.25rem rgb(32 44 54 / 0.04), 0 1.5rem 3rem -1.5rem rgb(41 76 104 / 0.35);
-  --shadow-float: 0 0.5rem 1rem -0.5rem rgb(32 44 54 / 0.12), 0 2.5rem 5rem -2rem rgb(30 56 79 / 0.4);
-  --shadow-button: 0 0.0625rem 0 rgb(255 255 255 / 0.12) inset, 0 0.5rem 1.25rem -0.625rem rgb(41 76 104 / 0.7);
+  /* Elevation: tight and low-opacity. Hairline borders carry most of the separation; shadow
+     only marks what is genuinely lifted off the page. */
+  --shadow-soft: 0 0.0625rem 0.0625rem rgb(18 26 36 / 0.04);
+  --shadow-card: 0 0.125rem 0.25rem rgb(18 26 36 / 0.06), 0 0.5rem 1rem -0.5rem rgb(18 26 36 / 0.08);
+  --shadow-lift: 0 0.25rem 0.5rem rgb(18 26 36 / 0.07), 0 1rem 1.75rem -0.875rem rgb(14 47 98 / 0.22);
+  --shadow-float: 0 0.5rem 1rem -0.375rem rgb(18 26 36 / 0.1), 0 1.75rem 3rem -1.5rem rgb(6 22 47 / 0.3);
+  /* A pressed-edge hairline rather than a glow. */
+  --shadow-button: inset 0 -0.0625rem 0 rgb(0 0 0 / 0.22);
 
   --ease-premium: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 :root {
-  --h1: clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem);
-  --h2: clamp(1.75rem, 1.35rem + 1.8vw, 2.75rem);
+  --h1: clamp(2.375rem, 1.5rem + 3.9vw, 4.25rem);
+  --h2: clamp(1.625rem, 1.3rem + 1.6vw, 2.5rem);
   --container-width: 84rem;
   --container-wide: 108rem;
   --page-gutter: clamp(1.25rem, 5vw, 4.5rem);

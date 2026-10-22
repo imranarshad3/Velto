@@ -8,8 +8,17 @@ export default function ImageSizeFields({ fieldKey, size, disabled, onChange }: 
   const current = size ?? { width: '', height: '' }
   const hasSizing = Boolean(current.width || current.height || current.fit || current.position || current.ratio)
   const helpId = `image-size-${fieldKey}-help`
-  const naturalLayout = ['WhyChoose.image-src', 'ProfessionalsBanner.image-src', 'ApplicationSolutions.image-src', 'AboutPage.image-src'].includes(fieldKey)
-    || /^(ApplicationDetails|Inspiration)\.data\..+\.image\.src$/.test(fieldKey)
+  const coverLayout = ['WhyChoose.image-src', 'ProfessionalsBanner.image-src', 'ApplicationSolutions.image-src', 'SolutionsPage.image-src'].includes(fieldKey)
+  const naturalLayout = fieldKey === 'AboutPage.image-src' || /^Inspiration\.data\..+\.image\.src$/.test(fieldKey)
+  if (coverLayout) return <fieldset disabled={disabled} className="rounded-xl border border-border p-3">
+    <legend className="px-1 text-sm font-semibold">Edge-to-edge photo</legend>
+    <p className="text-xs leading-relaxed text-muted">This photo fills its section without empty bands. The frame adjusts to the screen; choose which part of the photo stays visible when the edges are cropped.</p>
+    <label htmlFor={`${helpId}-focus`} className="mt-3 block text-sm font-semibold">Photo focus
+      <select id={`${helpId}-focus`} className={`${inputClass} mt-1 font-normal`} value={current.position ?? 'center'} onChange={event => onChange({ width: '', height: '', fit: 'cover', position: event.target.value as ImagePosition })}>
+        <option value="center">Center</option><option value="top">Top</option><option value="right">Right</option><option value="bottom">Bottom</option><option value="left">Left</option>
+      </select>
+    </label>
+  </fieldset>
   if (naturalLayout) return <div className="rounded-xl border border-border p-3">
     <p className="text-sm font-semibold">Full image · automatic proportions</p>
     <p className="mt-2 text-xs leading-relaxed text-muted">This photo is shown completely. Its height adjusts to its original proportions on every screen, so it stays clear without cropping or empty bands.</p>

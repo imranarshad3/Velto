@@ -48,8 +48,7 @@ export default function QuotePage() {
         <div className="quote-hero-grid container-page grid grid-cols-[minmax(0,1fr)] gap-6 pt-2 pb-[clamp(2rem,4.5vw,3.5rem)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:items-center lg:gap-14">
           <div className="quote-hero-copy min-w-0">
             <Breadcrumb items={[{ label: 'Home', to: '/' }, ...(fromCart ? [{ label: 'Cart', to: '/cart' }] : []), { label: 'Get a project price' }]} />
-            <p className="animate-rise mt-3 flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">
-              <span aria-hidden="true" className="h-px w-8 bg-copper/60" />
+            <p className="animate-rise mt-3 text-[0.875rem] font-medium text-muted">
               Get a project price
             </p>
             <h1 id="quote-title" className="animate-rise mt-3 font-display text-[clamp(2.375rem,1.6rem+2.9vw,3.875rem)] leading-[1.02] tracking-[-0.015em] text-ink [--delay:0.05s]">

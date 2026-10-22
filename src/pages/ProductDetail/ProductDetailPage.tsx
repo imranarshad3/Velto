@@ -76,7 +76,7 @@ function NotFound() {
               <PackageX aria-hidden="true" className="size-6" />
             </span>
           </span>
-          <p className="mt-7 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase">Error 404</p>
+          <p className="mt-7 text-[0.75rem] font-bold tracking-[0.2em] text-forest uppercase">Error 404</p>
           <h1 id="not-found-title" className="mt-2 font-display text-[length:var(--h2)] leading-tight">
             Product not found
           </h1>
@@ -358,7 +358,7 @@ export default function ProductDetailPage() {
                   {linkedDocs.map((d) => (
                     <li key={d.id}>
                       <a href={resourceDownloadPath(d.id)} download className="group flex min-h-11 items-center gap-3 rounded-xl border border-border bg-surface p-4 transition-colors hover:border-forest">
-                        <FileText aria-hidden="true" className="size-6 shrink-0 text-copper" />
+                        <FileText aria-hidden="true" className="size-6 shrink-0 text-forest" />
                         <span className="min-w-0 flex-1">
                           <span className="block font-semibold text-ink group-hover:text-forest">{d.title}</span>
                           <span className="block text-[0.8125rem] text-muted">
@@ -372,7 +372,7 @@ export default function ProductDetailPage() {
                   {product.documents?.map((d) => (
                     <li key={d.url}>
                       <a href={d.url} download className="flex min-h-11 items-center gap-3 rounded-xl border border-border bg-surface p-4 hover:border-forest">
-                        <FileText aria-hidden="true" className="size-6 text-copper" />
+                        <FileText aria-hidden="true" className="size-6 text-forest" />
                         <span className="flex-1 font-semibold">{d.title}</span>
                         <span className="text-[0.75rem] text-muted uppercase">{d.fileType}</span>
                       </a>

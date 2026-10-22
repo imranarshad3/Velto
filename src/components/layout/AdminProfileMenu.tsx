@@ -60,14 +60,14 @@ export default function AdminProfileMenu({ name, email, imageUrl }: { name: stri
             <div className="min-w-0">
               <p className="truncate text-[0.9375rem] font-semibold">{name}</p>
               {email && <p className="truncate text-[0.8125rem] text-muted">{email}</p>}
-              <p className="mt-1 text-[0.6875rem] font-bold tracking-[0.14em] text-copper uppercase">VELTO Admin</p>
+              <p className="mt-1 text-[0.6875rem] font-bold tracking-[0.14em] text-forest uppercase">VELTO Admin</p>
             </div>
           </div>
           <div className="grid gap-1 p-2">
-            <Link to="/account/profile" onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-[0.9375rem] font-medium text-ink transition-colors hover:bg-forest-soft focus-visible:outline-2 focus-visible:outline-copper">
+            <Link to="/account/profile" onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-[0.9375rem] font-medium text-ink transition-colors hover:bg-forest-soft focus-visible:outline-2 focus-visible:outline-forest">
               <UserRound aria-hidden="true" className="size-[1.125rem] text-muted" /> Manage account
             </Link>
-            <button type="button" onClick={() => void signOut()} disabled={signingOut} className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-left text-[0.9375rem] font-medium text-ink transition-colors hover:bg-danger-soft hover:text-danger focus-visible:outline-2 focus-visible:outline-copper disabled:opacity-60">
+            <button type="button" onClick={() => void signOut()} disabled={signingOut} className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-left text-[0.9375rem] font-medium text-ink transition-colors hover:bg-danger-soft hover:text-danger focus-visible:outline-2 focus-visible:outline-forest disabled:opacity-60">
               <LogOut aria-hidden="true" className="size-[1.125rem]" /> {signingOut ? 'Signing out…' : 'Sign out'}
             </button>
           </div>

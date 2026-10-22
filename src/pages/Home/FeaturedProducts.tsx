@@ -1,8 +1,6 @@
 import { useContent } from '../../features/cms/context.ts'
-import { ArrowRight } from 'lucide-react'
 import ProductCard from '../../components/commerce/ProductCard.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import CardSkeleton from '../../components/commerce/CardSkeleton.tsx'
 import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
@@ -29,7 +27,6 @@ export default function FeaturedProducts() {
                 <span>
                   {cms("field-5", "View All")}<span className="hidden sm:inline"> {cms("field-6", " Products")}</span>
                 </span>
-                <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
               </ButtonLink>
             }
           />

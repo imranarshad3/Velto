@@ -6,7 +6,7 @@ export type ButtonVariant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'ligh
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 const base =
-  'group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-300 ease-[var(--ease-premium)] active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0'
+  'group/btn relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-semibold tracking-[-0.005em] transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[var(--ease-premium)] active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0'
 
 const sizes: Record<ButtonSize, string> = {
   sm: 'min-h-11 px-4 text-[0.875rem]',
@@ -14,15 +14,18 @@ const sizes: Record<ButtonSize, string> = {
   lg: 'min-h-[3.25rem] px-7 text-[1rem]',
 }
 
+/* Flat fills, no gradients: the pack blue and the signal yellow are the only two emphatic
+   surfaces, so weight comes from colour and area rather than from glow. */
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-[linear-gradient(180deg,var(--color-forest-mid),var(--color-forest))] text-white shadow-[var(--shadow-button)] hover:bg-[linear-gradient(180deg,var(--color-forest),var(--color-forest-dark))] hover:shadow-[0_0.75rem_1.75rem_-0.75rem_rgb(41_76_104/0.75)]',
+    'bg-forest text-white shadow-[var(--shadow-button)] hover:bg-forest-dark',
+  /* Signal yellow carries ink text — yellow with white text is unreadable. */
   accent:
-    'bg-copper text-white shadow-[0_0.5rem_1.25rem_-0.625rem_rgb(135_99_41/0.7)] hover:bg-copper-hover',
-  secondary: 'border border-ink/12 bg-surface text-ink shadow-[var(--shadow-soft)] hover:border-forest/40 hover:text-forest',
-  ghost: 'text-forest hover:bg-forest-soft/70',
-  light: 'bg-white text-forest-dark shadow-[0_0.5rem_1.5rem_-0.75rem_rgb(0_0_0/0.45)] hover:bg-cream',
-  'outline-light': 'border border-white/35 text-white hover:border-white hover:bg-white/10',
+    'bg-copper text-ink shadow-[var(--shadow-button)] hover:bg-[#dca40c]',
+  secondary: 'border border-ink/15 bg-surface text-ink hover:border-forest hover:text-forest',
+  ghost: 'text-forest hover:bg-forest-soft',
+  light: 'bg-white text-forest-dark hover:bg-sand',
+  'outline-light': 'border border-white/35 text-white hover:border-gold hover:text-gold',
   danger: 'border border-danger/30 bg-surface text-danger hover:bg-danger-soft',
 }
 

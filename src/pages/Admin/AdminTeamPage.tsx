@@ -234,7 +234,7 @@ export default function AdminTeamPage() {
                       const expired = left <= 0
                       return (
                         <li key={i.id} className="flex flex-wrap items-center gap-3 px-5 py-4">
-                          <span className={`grid size-10 shrink-0 place-items-center rounded-full ${expired ? 'bg-sand text-muted' : 'bg-copper-soft text-copper'}`}>
+                          <span className={`grid size-10 shrink-0 place-items-center rounded-full ${expired ? 'bg-sand text-muted' : 'bg-forest-soft text-forest'}`}>
                             <Clock aria-hidden="true" className="size-[1.125rem]" />
                           </span>
                           <div className="min-w-0 flex-1">

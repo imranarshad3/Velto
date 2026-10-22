@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useSearchParams } from 'react-router'
 import { ArrowRight, CircleAlert, CircleCheck, ClipboardList, LifeBuoy, LoaderCircle, Mail, Search, Send, ShieldCheck } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
+import { buttonClass } from '../../components/ui/button.ts'
 import Field, { inputClass } from '../../components/ui/form/Field.tsx'
 import PageHeader, { PageHeaderSkeleton } from '../../components/ui/PageHeader.tsx'
 import { contactSchema, contactTopicLabels, contactTopics, type ContactInput, type ContactMessage } from '../../features/contact/schema.ts'
@@ -119,7 +119,7 @@ export default function ContactPage() {
                 <button type="button" onClick={() => setSent(false)} className={buttonClass('secondary', 'md')}>
                   {cms("field-10", "Send another message")}</button>
                 <ButtonLink to={`${cms("field-11", "/products").split('#')[0]}#product-results`} variant="ghost">
-                  {cms("field-12", "Browse products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                  {cms("field-12", "Browse products")}
                 </ButtonLink>
               </div>
             </section>
@@ -140,7 +140,7 @@ export default function ContactPage() {
                 <h2 id="contact-form-title" className="font-display text-[clamp(1.625rem,1.35rem+1vw,2.25rem)] leading-tight">
                   {cms("field-13", "Send a message")}</h2>
                 <p className="text-[0.875rem] text-muted">
-                  {cms("field-14", "Fields marked ")}<span className="text-copper">*</span> {cms("field-15", " are required.")}</p>
+                  {cms("field-14", "Fields marked")}<span className="text-forest">*</span> {cms("field-15", " are required.")}</p>
               </div>
               <div className="px-[clamp(1.25rem,4vw,2.5rem)] py-[clamp(1.5rem,3vw,2rem)]">
                 {formError && (
@@ -149,8 +149,8 @@ export default function ContactPage() {
                     <p>{formError}</p>
                   </div>
                 )}
-                <p aria-hidden="true" className="flex items-center gap-3 text-[0.6875rem] font-bold tracking-[0.2em] text-copper uppercase">
-                  <span className="font-display text-[1rem] tracking-normal text-copper/80">01</span>
+                <p aria-hidden="true" className="flex items-center gap-3 text-[0.6875rem] font-bold tracking-[0.2em] text-forest uppercase">
+                  <span className="font-display text-[1rem] tracking-normal text-forest/80">01</span>
                   {cms("field-16", "Your details")}<span className="h-px flex-1 bg-border" />
                 </p>
                 <div className="mt-5 grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)] sm:grid-cols-2">
@@ -177,8 +177,8 @@ export default function ContactPage() {
                     )}
                   </Field>
                 </div>
-                <p aria-hidden="true" className="mt-9 flex items-center gap-3 text-[0.6875rem] font-bold tracking-[0.2em] text-copper uppercase">
-                  <span className="font-display text-[1rem] tracking-normal text-copper/80">02</span>
+                <p aria-hidden="true" className="mt-9 flex items-center gap-3 text-[0.6875rem] font-bold tracking-[0.2em] text-forest uppercase">
+                  <span className="font-display text-[1rem] tracking-normal text-forest/80">02</span>
                   {cms("field-18", "Your message")}<span className="h-px flex-1 bg-border" />
                 </p>
                 <div className="relative mt-5 grid grid-cols-[minmax(0,1fr)] gap-[var(--grid-gap)]">
@@ -192,7 +192,7 @@ export default function ContactPage() {
                         {cms("field-19", "I agree that VELTO may use these details to reply to my message. See our")}{' '}
                         <Link to={cms("field-20", "/privacy")} className="font-semibold text-forest underline underline-offset-2">
                           {cms("field-21", "privacy policy")}</Link>
-                        . <span aria-hidden="true" className="text-copper">*</span>
+                        . <span aria-hidden="true" className="text-forest">*</span>
                       </span>
                     </label>
                     {err('consent') && (
@@ -230,7 +230,7 @@ export default function ContactPage() {
               {shortcuts.map(({ icon: Icon, title, text, to, cta }) => (
                 <li key={title}>
                   <section aria-label={title} className="group surface-card flex gap-4 p-5 transition-[box-shadow,border-color] duration-300 hover:border-forest/25 hover:shadow-[var(--shadow-lift)]">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-copper-soft text-copper">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-forest-soft text-forest">
                       <Icon aria-hidden="true" className="size-5" />
                     </span>
                     <div className="min-w-0">

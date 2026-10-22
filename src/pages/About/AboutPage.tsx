@@ -7,7 +7,6 @@ import PageHeader, {
   PageHeaderSkeleton,
 } from "../../components/ui/PageHeader.tsx";
 import {
-  ArrowRight,
   BookOpen,
   Check,
   ClipboardList,
@@ -19,7 +18,6 @@ import ButtonLink from "../../components/ui/ButtonLink.tsx";
 import Img from "../../components/ui/Img.tsx";
 import Reveal from "../../components/ui/Reveal.tsx";
 import SectionHeading from "../../components/ui/SectionHeading.tsx";
-import { buttonArrow } from "../../components/ui/button.ts";
 import { brandStoryImage } from "../../data/images.ts";
 import { demoCategories as defaultdemoCategories } from "../../data/demoCategories.ts";
 
@@ -134,7 +132,7 @@ export default function AboutPage() {
       >
         <div className="container-page">
           <Reveal className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,0.32fr)_minmax(0,1fr)] lg:gap-12">
-            <p className="flex items-center gap-3 text-[0.75rem] font-bold tracking-[0.2em] text-copper uppercase lg:items-start lg:pt-4">
+            <p className="text-[0.875rem] font-medium text-muted lg:items-start lg:pt-4">
               <span
                 aria-hidden="true"
                 className="h-px w-8 bg-copper/60 lg:mt-2"
@@ -204,11 +202,7 @@ export default function AboutPage() {
                   <ButtonLink
                     to={`${cms("field-17", "/products").split("#")[0]}#product-results`}
                   >
-                    {cms("field-18", "Browse products ")}
-                    <ArrowRight
-                      aria-hidden="true"
-                      className={`size-4 ${buttonArrow}`}
-                    />
+                    {cms("field-18", "Browse products")}
                   </ButtonLink>
                   <ButtonLink
                     to={cms("field-19", "/contact")}
@@ -243,13 +237,7 @@ export default function AboutPage() {
                 delay={i * 0.08}
                 className="group relative flex flex-col gap-4 border-b border-white/12 py-7 sm:px-6 sm:odd:pl-0 lg:border-b-0 lg:border-l lg:px-7 lg:py-9 lg:first:border-l-0 lg:first:pl-0"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <span
-                    aria-hidden="true"
-                    className="font-display text-[clamp(2.5rem,2rem+1.6vw,3.5rem)] leading-none text-gold/90 tabular-nums"
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+                <div className="flex items-center gap-4">
                   <span className="grid size-11 place-items-center rounded-2xl bg-white/8 text-gold ring-1 ring-white/12 transition-colors duration-300 group-hover:bg-white/14">
                     <Icon aria-hidden="true" className="size-5" />
                   </span>

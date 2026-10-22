@@ -25,8 +25,7 @@ export default function FilterPanel({ idPrefix, products, query, onToggle }: Fil
         const counts = facetCounts(products, query, facet)
         return (
           <fieldset key={facet} className="min-w-0 py-5 first:pt-0 last:pb-0">
-            <legend className="mb-2 flex items-center gap-2.5 text-[0.6875rem] font-bold tracking-[0.18em] text-copper uppercase">
-              <span aria-hidden="true" className="h-px w-5 bg-copper/60" />
+            <legend className="mb-2 text-[0.8125rem] font-semibold text-ink">
               {legend}
             </legend>
             <ul className="flex flex-col gap-0.5">
@@ -47,7 +46,7 @@ export default function FilterPanel({ idPrefix, products, query, onToggle }: Fil
                           type="checkbox"
                           checked={checked}
                           onChange={() => onToggle(facet, option.value)}
-                          className="peer size-5 cursor-pointer appearance-none rounded-md border border-ink/25 bg-surface transition-[background-color,border-color] duration-200 group-hover/opt:border-forest/60 checked:border-forest checked:bg-forest focus-visible:outline-[0.1875rem] focus-visible:outline-offset-2 focus-visible:outline-copper"
+                          className="peer size-5 cursor-pointer appearance-none rounded-md border border-ink/25 bg-surface transition-[background-color,border-color] duration-200 group-hover/opt:border-forest/60 checked:border-forest checked:bg-forest focus-visible:outline-[0.1875rem] focus-visible:outline-offset-2 focus-visible:outline-forest"
                         />
                         <Check
                           aria-hidden="true"

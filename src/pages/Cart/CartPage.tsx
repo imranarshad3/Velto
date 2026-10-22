@@ -1,10 +1,10 @@
 import { Link } from 'react-router'
-import { ArrowRight, ClipboardCheck, ImageOff, Info, MessagesSquare, Minus, Plus, Send, ShoppingBasket, Trash } from 'lucide-react'
+import { ClipboardCheck, ImageOff, Info, MessagesSquare, Minus, Plus, Send, ShoppingBasket, Trash } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import EmptyState from '../../components/ui/EmptyState.tsx'
 import Img from '../../components/ui/Img.tsx'
 import PageHeader from '../../components/ui/PageHeader.tsx'
-import { buttonArrow, buttonClass } from '../../components/ui/button.ts'
+import { buttonClass } from '../../components/ui/button.ts'
 import { productPath } from '../../data/catalog.ts'
 import { demoCategories } from '../../data/demoCategories.ts'
 import { useCart } from '../../features/cart/cartStore.ts'
@@ -59,7 +59,7 @@ export default function CartPage() {
               actions={
                 <>
                   <ButtonLink to="/products#product-results">
-                    Browse products <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+                    Browse products
                   </ButtonLink>
                   <ButtonLink to="/wishlist" variant="secondary">
                     View wishlist
@@ -74,7 +74,7 @@ export default function CartPage() {
               <section aria-labelledby="cart-items-title" className="min-w-0">
                 <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
                   <div>
-                    <p className="text-[0.75rem] font-bold tracking-[0.18em] text-copper uppercase">In your basket</p>
+                    <p className="text-[0.75rem] font-bold tracking-[0.18em] text-forest uppercase">In your basket</p>
                     <h2 id="cart-items-title" className="mt-1 font-display text-[clamp(1.5rem,1.3rem+0.7vw,1.875rem)] leading-tight">
                       {items.length} {items.length === 1 ? 'product' : 'products'}
                     </h2>
@@ -86,7 +86,7 @@ export default function CartPage() {
 
                 {unavailable.length > 0 && (
                   <div role="note" className="mt-5 flex flex-wrap items-center gap-3 rounded-[var(--radius-card)] border border-copper/25 bg-copper-soft/60 p-4 text-[0.9375rem]">
-                    <Info aria-hidden="true" className="size-5 shrink-0 text-copper" />
+                    <Info aria-hidden="true" className="size-5 shrink-0 text-forest" />
                     <p className="min-w-0 flex-1">
                       {unavailable.length === 1 ? 'One product is' : `${unavailable.length} products are`} no longer listed and will not be included.
                     </p>
@@ -120,7 +120,7 @@ export default function CartPage() {
                           )}
                         </Link>
                         <div className="min-w-0 self-center">
-                          <p className="text-[0.6875rem] font-bold tracking-[0.14em] text-copper uppercase">{p.categoryName ?? categoryName.get(p.categorySlug)}</p>
+                          <p className="text-[0.6875rem] font-bold tracking-[0.14em] text-forest uppercase">{p.categoryName ?? categoryName.get(p.categorySlug)}</p>
                           <Link to={productPath(p)} className="mt-1 block font-display text-[clamp(1.125rem,1.05rem+0.3vw,1.3125rem)] leading-snug text-ink transition-colors hover:text-forest">
                             {p.name}
                           </Link>
@@ -208,7 +208,7 @@ export default function CartPage() {
                   <div className="p-6">
                     <p className="mb-4 flex justify-between"><span>Delivery</span><strong>{money(300)}</strong></p>
                     <p className="mb-5 flex justify-between text-lg"><span>Total</span><strong>{money(subtotal+300)}</strong></p>
-                    <ButtonLink to="/checkout" size="lg" className="w-full whitespace-normal text-center">Proceed to checkout <ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} /></ButtonLink>
+                    <ButtonLink to="/checkout" size="lg" className="w-full whitespace-normal text-center">Proceed to checkout</ButtonLink>
                     <p className="mt-4 text-sm text-muted">Planning a large project? <Link to="/quote" className="underline">Request a project consultation</Link>.</p>
 
                     <h3 className="mt-6 text-[0.75rem] font-bold tracking-[0.16em] text-muted uppercase">How it works</h3>

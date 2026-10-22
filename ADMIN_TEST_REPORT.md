@@ -1,5 +1,77 @@
 # Admin panel test report
 
+## Follow-up — 2026-10-21
+
+Scope: live image verification, CMS, orders/tracking and admin notifications,
+checkout, permissions, and the requested shorter application cards. Live checks
+were read-only. Writes used disposable PostgreSQL 17/PostgREST 16.4 on loopback,
+with local test identities. Storage bucket metadata was a fixture; actual Storage
+uploads and real Clerk session refresh were not exercised. The application handlers
+and SQL functions were real; test identity verification was injected locally.
+
+The built-in browser verified the live images and opened the isolated CMS. The
+subsequent interruption removed browser control and stopped the temporary server;
+the disposable database was restarted for API/database tests. Fresh browser
+recovery, notifications, checkout and card visuals are therefore BLOCKED, not PASS.
+
+| ID | Test | Expected | Actual | Status |
+|---|---|---|---|---|
+| Q01 | Live All Products image | New high-resolution image loads | `/images/categories/all-products.webp`, loaded 1122×1402 | PASS |
+| Q02 | Live homepage image frames | No empty bands or horizontal overflow | At 1280 viewport: Why Choose 539×926 and Professionals 512×649 matched wrappers, cover fit, no overflow | PASS |
+| Q03 | CMS draft persistence/privacy | Save in DB without public exposure | Draft row stored; published null; public API omitted draft | PASS |
+| Q04 | CMS stale write | Reject outdated version | 409; no overwrite | PASS |
+| Q05 | CMS publish | Public API returns saved headline | Published test headline returned | PASS |
+| Q06 | CMS revision/private edit | Keep revisions; new edit remains private | Revision rows present; second draft did not replace published headline | PASS |
+| Q07 | CMS browser interruption/reload | Unsaved draft restored; save/publish usable | Unit recovery checks passed, but fresh browser recovery flow not executed after interruption | BLOCKED |
+| Q08 | Admin new-order feed | New isolated order appears | Admin feed returned newly created order with placed status | PASS |
+| Q09 | Shipment persistence | Save status, courier and tracking ID | API and DB agreed on shipped status; VT tracking ID and QA courier saved | PASS |
+| Q10 | Guest tracking | Require matching contact; mask private details | Matching email returned masked view/public note; wrong contact returned 404 | PASS |
+| Q11 | Order transition protection | Reject stale/backwards/closed changes | 409 stale, 422 backwards, successful delivery, 409 closed | PASS |
+| Q12 | Notification UI | Toast for a newly received order; actionable new-order banner | Polling/toast implementation found and feed tested; actual browser toast/banner interaction not completed | BLOCKED |
+| Q13 | Invalid checkout | Clear rejection and no order | 422 with delivery/cart guidance | PASS |
+| Q14 | Tampered price | Server rejects incorrect total | 409 on total of 1 | PASS |
+| Q15 | Order creation/idempotency | One DB order for repeated request key | Two requests returned 201; one row with correct customer, two grout units and total 2800 | PASS |
+| Q16 | Browser checkout | Form → submit → confirmation | Isolated API flow passed; browser flow not executed | BLOCKED |
+| Q17 | Admin order permissions | Guests/customers/editors denied | 401/403/403 respectively | PASS |
+| Q18 | Customer isolation | Customer B cannot read A's order | Empty scoped result | PASS |
+| Q19 | Editor tracking bypass | No unmasked lookup by reference alone | Initially 200 (defect B04); after fix, 422 contact-required; regression cases passed | PASS |
+| Q20 | CMS write permissions | Customers and sales cannot publish | Both received 403 | PASS |
+| Q21 | Direct database access | anon/authenticated cannot read protected tables | Orders, CMS pages/revisions, memberships and roles all denied via PostgREST | PASS |
+| Q22 | SQL tracking regression | Database transitions, history and anon RPC access enforced | All SQL assertions passed; transaction rolled back | PASS |
+| Q23 | Live unauthenticated APIs | Deny protected data without credentials | `/api/admin/cms`, `/api/admin/products`, `/api/admin/roles`, `/api/orders?admin=1`, `/api/my/quotes`: all 401 | PASS |
+| Q24 | Card frame implementation | Shorter image area without stretching | 4:5 → square reduces image height by 20% at equal width; cover fit retained | PASS |
+| Q25 | Card visual regression | Good subjects/layout on phone/tablet/desktop | Browser tool unavailable; no new visual pass claimed | BLOCKED |
+| Q26 | TypeScript | No type errors | Node 24 typecheck passed | PASS |
+| Q27 | Production build | Build completes | Vite production build passed | PASS |
+| Q28 | Targeted lint | Changed source/test files pass | No lint errors/warnings in targeted files | PASS |
+| Q29 | Email notifications | Deferred pending verified sender | Not enabled or sent, as requested | SKIP |
+
+Automated evidence in `qa/admin/2026-10-21/`: `cms.tap` (10), `orders.tap`
+(36), `checkout.tap` (4), `permissions.tap` (14): **64 cases, all passing**.
+Run with Node 24.22.0, `--import ./tests/register.mjs --test --test-isolation=none
+--test-reporter=tap` and the respective existing test files. Isolation-none was
+used for explicit individual-case reporting; no new dependencies were installed.
+`order-database.log` records the existing SQL regression. API/database results
+above are backed by the task's executed assertions against the disposable DB.
+
+| Metric | Result |
+|---|---:|
+| Total Test Cases | 93 |
+| Passed | 88 |
+| Failed | 0 |
+| Skipped | 1 |
+| Blocked | 4 |
+| Fixed Bugs (verified this run) | 1 |
+| Remaining Bugs (awaiting visual retest) | 1 |
+
+Counts combine 64 automated cases and Q01–Q29 (24 PASS, 4 BLOCKED, 1 SKIP).
+The first order fixture omitted `paymentMethod: cod` and correctly failed schema
+validation; correcting the fixture allowed the real order flow to execute. A new
+permission-error regression initially exposed an unawaited tracking promise; both
+tracking callers were corrected and the complete order suite then passed.
+
+## Historical full-admin audit
+
 The local admin app was tested with disposable in-memory data and local fake identities. No production database, customer records, or live integrations were modified. “PASS” applies only to the stated check and environment.
 
 | ID | Test / feature | Expected result | Actual result | Status | Evidence |

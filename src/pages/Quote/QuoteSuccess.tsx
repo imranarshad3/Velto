@@ -61,7 +61,7 @@ export default function QuoteSuccess({ result, signedIn }: QuoteSuccessProps) {
           <>
             <CopyValue label="Tracking code" value={result.guestToken} />
             <p role="note" className="flex gap-3 rounded-2xl border border-copper/25 bg-copper-soft p-4 text-[0.875rem] leading-relaxed text-ink">
-              <ShieldAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-copper" />
+              <ShieldAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-forest" />
               <span>
               <strong>Save your tracking code now.</strong> It is shown only once and is needed, with your reference, to
               check the request status. Keep it private — anyone with both can see the status.

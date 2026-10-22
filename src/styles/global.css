@@ -21,6 +21,7 @@
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-stretch: 100%;
     font-size: 1rem;
     line-height: 1.6;
     font-synthesis: none;
@@ -45,9 +46,26 @@
     text-wrap: balance;
   }
 
+  /* Display cut of Archivo: wide, heavy, tightly tracked. Hierarchy comes from the width
+     axis rather than a second typeface. Explicit weight/tracking utilities still win. */
+  .font-display {
+    font-stretch: 112%;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+  }
+
   :focus-visible {
-    outline: 0.1875rem solid var(--color-copper);
+    outline: 0.1875rem solid var(--color-forest);
     outline-offset: 0.1875rem;
+  }
+
+  /* Dark chrome: pack blue would disappear, so the signal yellow carries focus there. */
+  header :focus-visible,
+  footer :focus-visible,
+  .glass-dark :focus-visible,
+  [data-on-dark] :focus-visible {
+    outline-color: var(--color-gold);
   }
 }
 
@@ -78,9 +96,16 @@
 }
 
 @utility glass-dark {
-  background: rgb(21 43 64 / 0.55);
+  background: rgb(6 22 47 / 0.6);
   border: 1px solid rgb(255 255 255 / 0.12);
   backdrop-filter: blur(0.875rem) saturate(1.2);
+}
+
+/* Narrow cut of Archivo for dense technical data: spec tables, SKUs, pack sizes. */
+@utility font-data {
+  font-stretch: 86%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 
 @utility no-scrollbar {
@@ -183,7 +208,7 @@
 .area-editorial-header { background: var(--color-cream); }
 .area-editorial-header > .container-page > .grid { align-items: center; }
 .area-image-composition { display: grid; grid-template-columns: 1.15fr 0.85fr; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.875rem; width: 100%; min-height: 25rem; }
-.area-image-card { position: relative; isolation: isolate; min-height: 12rem; overflow: hidden; border-radius: 1rem; background: var(--color-forest-deep); box-shadow: 0 1rem 2rem -1.5rem rgb(21 43 64 / 0.45); }
+.area-image-card { position: relative; isolation: isolate; min-height: 12rem; overflow: hidden; border-radius: 1rem; background: var(--color-forest-deep); box-shadow: 0 1rem 2rem -1.5rem rgb(6 22 47 / 0.45); }
 .area-image-main { grid-row: span 2; }
 .area-editorial-header > .container-page > .grid > :last-child { display: block; min-width: 0; }
 .area-editorial-header h1 { max-width: 12ch; }
@@ -192,21 +217,12 @@
 .application-editorial .edge-image-copy > ul { gap: 0; border-top: 1px solid var(--color-border); }
 .application-editorial .edge-image-copy > ul > li > a { border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; background: transparent; box-shadow: none; padding: 1.5rem 0.75rem; align-items: flex-start; }
 .application-editorial .edge-image-copy > ul > li > a:hover { background: rgb(255 255 255 / 0.6); transform: none; }
-.application-editorial .edge-image-copy > ul > li > a > span:first-child { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: transparent; color: var(--color-copper); box-shadow: none; }
+.application-editorial .edge-image-copy > ul > li > a > span:first-child { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: transparent; color: var(--color-forest); box-shadow: none; }
 .application-editorial .edge-image-copy > ul > li > a > span:last-child { width: 1.75rem; height: 2.75rem; border: 0; }
 .application-editorial .edge-image-copy > ul > li > a > span:nth-child(2) > span:first-child { font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; }
 .application-spotlight-copy { padding: clamp(1.75rem, 3.5vw, 3.5rem); }
 .application-spotlight-copy > p:first-child { border-top: 1px solid rgb(255 255 255 / 0.35); padding-top: 1.5rem; }
 .application-spotlight-copy h3 { max-width: 19ch; font-size: clamp(1.75rem, 2.5vw, 2.75rem); }
-.premium-assistance { background: var(--color-cream); }
-.premium-assistance .container-page > div { border: 1px solid rgb(198 161 100 / 0.35); border-radius: 1.5rem; box-shadow: 0 1.5rem 3rem -2rem rgb(21 43 64 / 0.5); }
-.premium-assistance h2 { max-width: 11ch; font-size: clamp(2.5rem, 4vw, 4rem); }
-.premium-assistance .container-page > div > div:first-child { padding: clamp(1.75rem, 4vw, 4rem); }
-.assistance-steps { margin-top: 2rem; display: grid; gap: 0.875rem; border-top: 1px solid rgb(255 255 255 / 0.15); padding-top: 1.5rem; }
-.assistance-steps li { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: rgb(255 255 255 / 0.8); }
-.assistance-steps li > span:first-child { font-size: 1.125rem; }
-.premium-assistance .container-page > div > div:last-child { margin: 0.75rem; overflow: hidden; border-radius: 0.875rem; }
-.assistance-image-caption { padding: 1.5rem; max-width: 22rem; }
 @media (min-width: 64rem) {
   .area-editorial-header > .container-page > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); margin-top: 2rem; }
   .area-image-composition { min-height: 30rem; }
@@ -226,9 +242,9 @@
 .edge-image-media { padding: 0 !important; }
 .edge-image-media > div { border-radius: 0 !important; }
 .edge-image-copy { padding-block: clamp(2rem, 5vw, 4.5rem); }
-.application-editorial .edge-image-media { display: grid; align-items: center; }
-.application-editorial .edge-image-media > div { min-height: 0; height: auto; }
-.solutions-edge-header { background: radial-gradient(ellipse at 70% 45%, rgb(221 209 187 / 0.36), transparent 52%), var(--color-cream); }
+.application-editorial .edge-image-media { display: grid; align-items: stretch; }
+.application-editorial .edge-image-media > div { min-height: 0; height: 100%; }
+.solutions-edge-header { background: radial-gradient(ellipse at 70% 45%, rgb(197 203 209 / 0.5), transparent 52%), var(--color-cream); }
 
 /* Inset the home brand story so it reads as a feature card, with space before
    the next section instead of touching the following content. */
@@ -260,12 +276,12 @@
   min-height: 0;
   padding: 0 !important;
   display: grid;
-  align-items: center;
+  align-items: stretch;
 }
 .why-choose-section .edge-image-media > div {
   width: 100%;
-  height: auto;
-  min-height: 0;
+  height: 100%;
+  min-height: 28rem;
   aspect-ratio: auto;
   border-radius: 0 !important;
   box-shadow: none;
@@ -290,8 +306,9 @@
   .why-choose-section .edge-image-media { grid-row: 1; }
   .why-choose-section .edge-image-copy { grid-row: 2; padding: clamp(1.5rem, 5vw, 2.5rem); }
   .why-choose-section .edge-image-media > div {
+    height: auto;
     min-height: 0;
-    aspect-ratio: auto;
+    aspect-ratio: 3 / 2;
     max-height: none;
   }
 }
@@ -303,7 +320,7 @@
 }
 
 /* Quote page: clearer editorial hero and a quieter, more confident form entry. */
-.quote-editorial { background: radial-gradient(ellipse at 75% 30%, rgb(221 209 187 / 0.42), transparent 45%), var(--color-cream); }
+.quote-editorial { background: radial-gradient(ellipse at 75% 30%, rgb(197 203 209 / 0.55), transparent 45%), var(--color-cream); }
 .quote-hero-grid { padding-block: clamp(1.5rem, 3vw, 2.5rem) clamp(2.5rem, 5vw, 4.5rem); }
 .quote-hero-copy h1 { max-width: 13ch; font-size: clamp(2.5rem, 4.2vw, 4.25rem); }
 .quote-hero-art { width: 100%; max-width: 38rem; margin-inline: auto; }

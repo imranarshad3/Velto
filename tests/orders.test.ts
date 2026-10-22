@@ -48,6 +48,7 @@ function createMockDb(options: {
   roles?: Record<string, 'admin' | 'editor' | 'sales'>
   rateLimitHits?: number
   rateLimitAllowed?: boolean
+  permissionError?: 'admin_members' | 'workspace_roles'
 } = {}) {
   const admins = new Set(options.admins ?? ['user_admin', 'user_sales', 'user_editor'])
   const roles = options.roles ?? { user_admin: 'admin', user_sales: 'sales', user_editor: 'editor' }
@@ -79,6 +80,7 @@ function createMockDb(options: {
           return chain
         },
         maybeSingle: async () => {
+          if (table === options.permissionError) return { data: null, error: { message: 'Test permission lookup failure' } }
           if (table === 'orders') {
             const found = orders.find((o) => {
               if (filterCol === 'reference') return o.reference === filterVal
@@ -94,8 +96,8 @@ function createMockDb(options: {
             return { data: has ? { clerk_user_id: filterVal } : null, error: null }
           }
           if (table === 'workspace_roles') {
-            const role = roles[filterVal ?? ''] ?? 'admin'
-            return { data: { role }, error: null }
+            const role = roles[filterVal ?? '']
+            return { data: role ? { role } : null, error: null }
           }
           return { data: null, error: null }
         },
@@ -434,6 +436,69 @@ describe('single order detail access', () => {
 const patch = (body: unknown, token = 'token-admin') =>
   new Request(`${SITE}/api/orders`, { method: 'PATCH', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(body) })
 const ORDER_A = 'a0000000-0000-4000-8000-000000000001'
+
+describe('tracking staff permissions', () => {
+  const track = (path: string, token: string, reference: string, contact?: string) => new Request(`${SITE}${path}`, {
+    method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ reference, contact }),
+  })
+
+  it('requires editor contact verification through every tracking alias and identifier', async () => {
+    const db = createMockDb()
+    db.orders[0].tracking_number = 'VTABCDEF1234'
+    const handler = createOrdersHandler({ db, verifyAuth, allowedOrigins: [SITE] })
+    for (const reference of [testOrders[0].reference, 'VTABCDEF1234']) {
+      const requests = [
+        new Request(`${SITE}/api/orders?reference=${reference}`, { headers: { authorization: 'Bearer token-editor' } }),
+        ...['/api/orders/track', '/api/orders?action=track', '/api/orders', '/api/admin?path=checkout-orders&action=track'].map(path => track(path, 'token-editor', reference)),
+      ]
+      for (const request of requests) {
+        const response = await handler(request)
+        assert.equal(response.status, 422)
+        assert.equal((await response.json()).error, 'contact_required')
+      }
+    }
+  })
+
+  it('gives an editor only masked public tracking after contact verification', async () => {
+    const handler = createOrdersHandler({ db: createMockDb(), verifyAuth, allowedOrigins: [SITE] })
+    const response = await handler(track('/api/orders/track', 'token-editor', testOrders[0].reference, 'cust_a@example.com'))
+    assert.equal(response.status, 200)
+    const { order } = await response.json()
+    assert.equal(order.isOwner, false)
+    assert.match(order.customer.phone, /•/)
+    assert.match(order.customer.email, /•/)
+    assert.equal((await handler(track('/api/orders/track', 'token-editor', testOrders[0].reference, 'wrong@example.com'))).status, 404)
+  })
+
+  it('preserves owner, admin, sales and legacy admin access', async () => {
+    const db = createMockDb()
+    const handler = createOrdersHandler({ db, verifyAuth, allowedOrigins: [SITE] })
+    for (const token of ['token-admin', 'token-sales', 'token-cust-A']) {
+      const response = await handler(track('/api/orders/track', token, testOrders[0].reference))
+      assert.equal(response.status, 200)
+      assert.equal((await response.json()).order.customer.email, 'cust_a@example.com')
+    }
+    db.orders[0].clerk_user_id = 'user_editor'
+    assert.equal((await handler(track('/api/orders/track', 'token-editor', testOrders[0].reference))).status, 200)
+    const legacy = createOrdersHandler({ db: createMockDb({ roles: {} }), verifyAuth, allowedOrigins: [SITE] })
+    assert.equal((await legacy(track('/api/orders/track', 'token-admin', testOrders[0].reference))).status, 200)
+    const removed = createOrdersHandler({ db: createMockDb({ admins: [] }), verifyAuth, allowedOrigins: [SITE] })
+    assert.equal((await removed(track('/api/orders/track', 'token-admin', testOrders[0].reference))).status, 422)
+  })
+
+  it('fails closed when either staff permission lookup fails', async () => {
+    for (const permissionError of ['admin_members', 'workspace_roles'] as const) {
+      const handler = createOrdersHandler({ db: createMockDb({ permissionError }), verifyAuth, allowedOrigins: [SITE] })
+      const response = await handler(track('/api/orders/track', 'token-admin', testOrders[0].reference))
+      assert.equal(response.status, 503)
+      assert.equal((await response.json()).order, undefined)
+      const getTracking = await handler(new Request(`${SITE}/api/orders?reference=${testOrders[0].reference}`, { headers: { authorization: 'Bearer token-admin' } }))
+      assert.equal(getTracking.status, 503)
+      assert.equal((await getTracking.json()).order, undefined)
+      assert.equal((await handler(new Request(`${SITE}/api/orders?admin=1`, { headers: { authorization: 'Bearer token-admin' } }))).status, 503)
+    }
+  })
+})
 
 describe('order tracking updates', () => {
   it('passes shipment details to the database and returns the refreshed order', async () => {

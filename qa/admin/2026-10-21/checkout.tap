@@ -1,0 +1,41 @@
+TAP version 13
+# Subtest: checkout validation messages
+    # Subtest: explains how to fix each missing delivery detail
+    ok 1 - explains how to fix each missing delivery detail
+      ---
+      duration_ms: 4.060833
+      type: 'test'
+      ...
+    # Subtest: gives a useful example for malformed email and phone values
+    ok 2 - gives a useful example for malformed email and phone values
+      ---
+      duration_ms: 0.718456
+      type: 'test'
+      ...
+    # Subtest: explains what is missing from an incomplete delivery address
+    ok 3 - explains what is missing from an incomplete delivery address
+      ---
+      duration_ms: 0.24182
+      type: 'test'
+      ...
+    # Subtest: accepts a valid Pakistan delivery address and phone number
+    ok 4 - accepts a valid Pakistan delivery address and phone number
+      ---
+      duration_ms: 0.345857
+      type: 'test'
+      ...
+    1..4
+ok 1 - checkout validation messages
+  ---
+  duration_ms: 7.035182
+  type: 'suite'
+  ...
+1..1
+# tests 4
+# suites 1
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 167.975488

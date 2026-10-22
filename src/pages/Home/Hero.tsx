@@ -1,9 +1,8 @@
 import { useContent, useContentReady } from '../../features/cms/context.ts'
 import type { CSSProperties } from 'react'
-import { ArrowRight, ClipboardList, Compass, PackageCheck } from 'lucide-react'
+import { ClipboardList, Compass, PackageCheck } from 'lucide-react'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
 import Skeleton from '../../components/ui/Skeleton.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { heroImage } from '../../data/images.ts'
 import { heroStats } from '../../data/siteStats.ts'
 import HeroStats from './HeroStats.tsx'
@@ -89,23 +88,17 @@ export default function Hero() {
 
       <div className="container-page grid gap-[clamp(1.75rem,5vw,3rem)] py-[clamp(2rem,5vw,5rem)] sm:gap-8 lg:grid-cols-[minmax(0,46fr)_minmax(0,54fr)] lg:items-center lg:gap-10">
         <div className="relative z-10 min-w-0">
-          <p
-            className="animate-rise inline-flex items-center gap-2.5 text-[0.75rem] font-bold tracking-[0.12em] text-forest uppercase"
-            style={delay(0)}
-          >
-            <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-forest">
-              <span className="size-1.5 rounded-full bg-gold" />
-            </span>
+          <p className="animate-rise text-[0.9375rem] font-medium text-muted" style={delay(0)}>
             {cms("field-1", "Products for building and repair")}</p>
 
           <h1
             id="hero-title"
-            className="animate-rise mt-5 font-display text-[clamp(2.5rem,1.5rem+3.6vw,4.75rem)] leading-[1.04] tracking-[-0.025em] text-ink sm:mt-6 sm:leading-[1.06]"
+            className="animate-rise mt-4 font-display text-[clamp(2.375rem,1.5rem+3.4vw,4.25rem)] text-ink sm:mt-5"
             style={delay(0.08)}
           >
             <span className="block">{cms("field-2", "Stronger Spaces.")}</span>
-            <span className="block text-forest">
-              {cms("field-3", "Brighter ")}<span>{cms("field-4", "Tomorrows.")}</span>
+            <span className="block">
+              {cms("field-3", "Brighter")}<span>{cms("field-4", "Tomorrows.")}</span>
             </span>
           </h1>
 
@@ -118,7 +111,7 @@ export default function Hero() {
 
           <div className="animate-rise mt-6 flex flex-col gap-3 min-[30rem]:flex-row min-[30rem]:flex-wrap sm:mt-8" style={delay(0.24)}>
             <ButtonLink to={`${cms("field-7", "/products").split('#')[0]}#product-results`} variant="primary" size="lg" className="max-sm:w-full">
-              {cms("field-8", "Shop Products ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-8", "Shop Products")}
             </ButtonLink>
             <ButtonLink to={cms("field-9", "/solutions")} variant="secondary" size="lg" className="max-sm:w-full">
               {cms("field-10", "View Solutions")}</ButtonLink>

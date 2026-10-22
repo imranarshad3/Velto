@@ -5,7 +5,6 @@ import { ArrowRight } from 'lucide-react'
 import Reveal from '../../components/ui/Reveal.tsx'
 import SectionHeading from '../../components/ui/SectionHeading.tsx'
 import ButtonLink from '../../components/ui/ButtonLink.tsx'
-import { buttonArrow } from '../../components/ui/button.ts'
 import { resources as defaultresources } from '../../data/homeContent.ts'
 
 export default function TechnicalResources() {
@@ -25,7 +24,7 @@ export default function TechnicalResources() {
             <p className="text-[0.9375rem] leading-relaxed text-muted">
               {cms("field-4", "Find product details and how-to guides, or work out how much material you need.")}</p>
             <ButtonLink to={cms("field-5", "/resources")} variant="secondary" className="mt-4">
-              {cms("field-6", "See all guides ")}<ArrowRight aria-hidden="true" className={`size-4 ${buttonArrow}`} />
+              {cms("field-6", "See all guides")}
             </ButtonLink>
           </div>
         </Reveal>
@@ -35,7 +34,7 @@ export default function TechnicalResources() {
           {resources.map(({ title, text, icon: Icon, href }, index) => {
             const body = (
               <>
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-copper-soft text-copper">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-forest-soft text-forest">
                   <Icon aria-hidden="true" className="size-5" />
                 </span>
                 <span className="min-w-0 flex-1">
